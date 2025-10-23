@@ -1,0 +1,24 @@
+[
+  {
+    "id": 500001,
+    "status": "Shipped",
+    "createdAt": "2025-01-02T10:00:00Z",
+    "lastUpdate": "2025-01-05T16:00:00Z",
+    "trackingNumber": "RV-502391",
+    "city": "Ottawa",
+    "items": [ { "id": 1001, "name": "iPhone 14 128GB Midnight", "qty": 1 } ],
+    "steps": ["Placed", "Shipped", "Delivered"],
+    "currentStep": 1
+  },
+  {
+    "id": 500002,
+    "status": "Processing",
+    "createdAt": "2025-01-05T09:15:00Z",
+    "lastUpdate": "2025-01-05T18:45:00Z",
+    "trackingNumber": "RV-673884",
+    "city": "Vancouver",
+    "items": [ { "id": 2001, "name": "Galaxy S23 256GB Phantom Black", "qty": 2 } ],
+    "steps": ["Placed", "Shipped", "Delivered"],
+    "currentStep": 0
+  }
+]

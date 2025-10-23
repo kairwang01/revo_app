@@ -1,0 +1,7 @@
+{
+  "id": 1,
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "city": "Ottawa",
+  "stats": { "vouchers": 3, "carbonSavedKg": 18.5, "orders": 5 }
+}
