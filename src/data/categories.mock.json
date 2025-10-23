@@ -1,7 +1,0 @@
-[
-  { "id": "phones", "name": "Phones", "icon": "star" },
-  { "id": "laptops", "name": "Laptops", "icon": "bag" },
-  { "id": "tablets", "name": "Tablets", "icon": "planet" },
-  { "id": "wearables", "name": "Wearables", "icon": "leaf" },
-  { "id": "accessories", "name": "Accessories", "icon": "ticket" }
-]
