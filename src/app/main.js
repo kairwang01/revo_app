@@ -13,10 +13,12 @@ const MIN_W = 320;
 const roundEven = (value) => Math.round(value / 2) * 2;
 
 function applyRootMetrics() {
-  const width = Math.max(MIN_W, Math.min(window.innerWidth, MAX_W));
-  const base = roundEven((width / MAX_W) * 200);
+  const viewportWidth = window.innerWidth;
+  const width = Math.max(MIN_W, Math.min(viewportWidth, MAX_W));
+  const scaled = (width / 375) * 16;
+  const base = roundEven(Math.max(14, Math.min(18, scaled)));
   document.documentElement.style.fontSize = `${base}px`;
-  const extra = Math.max(0, window.innerWidth - MAX_W) / 2;
+  const extra = Math.max(0, viewportWidth - MAX_W) / 2;
   document.documentElement.style.setProperty('--wide-screen-extra-space', `${extra}px`);
 }
 
