@@ -3,6 +3,14 @@ import { API } from './config.js';
 const KEY_PREFIX = 'REVO_';
 const allowedBrands = new Set(API.ALLOWED_BRANDS);
 
+const DEFAULTS = {
+  AUTH: null,
+  CITY: 'Vancouver',
+  CART: { items: [] },
+  WALLET: { balance: 0 },
+  COUNTERS: { cartCount: 0 }
+};
+
 const storage = {
   read(key, fallback = null) {
     try {
@@ -24,6 +32,19 @@ const storage = {
     try { localStorage.removeItem(`${KEY_PREFIX}${key}`); } catch (err) { console.warn('[storage] remove failed', err); }
   }
 };
+
+function ensureDefaults() {
+  try {
+    Object.entries(DEFAULTS).forEach(([key, value]) => {
+      const storageKey = `${KEY_PREFIX}${key}`;
+      if (localStorage.getItem(storageKey) === null) {
+        localStorage.setItem(storageKey, JSON.stringify(value));
+      }
+    });
+  } catch (err) {
+    console.warn('[storage] ensure defaults failed', err);
+  }
+}
 
 export const authStore = {
   get() { return storage.read('AUTH', null); },
@@ -69,4 +90,4 @@ export const countersStore = {
   set(counts) { storage.write('COUNTERS', { cartCount: Math.max(0, counts?.cartCount || 0) }); }
 };
 
-export { storage };
+export { storage, ensureDefaults };

@@ -46,9 +46,9 @@
 
   /* Z-index map */
   --z-header: 30;
-  --z-toast: 50;
-  --z-overlay: 60;
   --z-fab: 70;
+  --z-overlay: 90;
+  --z-toast: 100;
 
   /* Safe areas + layout */
   --safe-area-inset-top: env(safe-area-inset-top, 0px);

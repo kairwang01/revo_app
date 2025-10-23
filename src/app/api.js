@@ -14,14 +14,17 @@ async function http(path, { method = 'GET', body } = {}) {
   return type.includes('application/json') ? res.json() : res.text();
 }
 
+const mockCache = new Map();
+const clone = (value) => (typeof structuredClone === 'function' ? structuredClone(value) : JSON.parse(JSON.stringify(value)));
+
 async function mockImport(file) {
-  try {
-    const module = await import(`../data/${file}`, { assert: { type: 'json' } });
-    return structuredClone(module.default);
-  } catch (err) {
-    const response = await fetch(`../src/data/${file}`);
-    return response.json();
-  }
+  if (mockCache.has(file)) return clone(mockCache.get(file));
+  const url = new URL(`../data/${file}`, import.meta.url);
+  const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
+  if (!response.ok) throw new Error(`Failed to load mock data: ${file}`);
+  const json = await response.json();
+  mockCache.set(file, json);
+  return clone(json);
 }
 
 function guardBrands(list) {

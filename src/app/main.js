@@ -1,7 +1,7 @@
 import { registerSW } from './sw-register.js';
 import { startRouter, beforeEach, afterEach } from './router.js';
 import { injectSprite, qs, showLoader } from './ui.js';
-import { cityStore } from './storage.js';
+import { cityStore, ensureDefaults } from './storage.js';
 import { API } from './config.js';
 import Header from '../components/Header.js';
 import BottomBar from '../components/BottomBar.js';
@@ -82,6 +82,7 @@ function mountShell() {
 (function init() {
   applyRootMetrics();
   updateSafeAreas();
+  ensureDefaults();
   ensureCity();
   wireCityEvents();
   bootstrapIcons();
