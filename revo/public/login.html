@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#43CD80">
+  <title>Login - Revo</title>
+  
+  <link rel="stylesheet" href="./assets/css/tokens.css">
+  <link rel="stylesheet" href="./assets/css/base.css">
+  <link rel="stylesheet" href="./assets/css/layout.css">
+  <link rel="stylesheet" href="./assets/css/components.css">
+  <link rel="stylesheet" href="./assets/css/pages.css">
+  
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <h1>Revo</h1>
+        <p class="text-muted">Sign in to your account</p>
+      </div>
+
+      <form id="login-form" class="stack">
+        <div class="form-group">
+          <label for="email" class="form-label">Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            class="form-input" 
+            placeholder="your@email.com"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="form-input" 
+            placeholder="Enter your password"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" name="remember" id="remember">
+            <span class="text-muted" style="font-size: 0.875rem;">Remember me</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg">
+          Sign In
+        </button>
+
+        <div class="auth-link">
+          <a href="#" style="color: var(--brand-600); font-weight: 500;">Forgot password?</a>
+        </div>
+      </form>
+
+      <div class="auth-divider">or</div>
+
+      <div class="stack-sm">
+        <button type="button" class="btn btn-secondary btn-full">
+          Continue with Apple
+        </button>
+        <button type="button" class="btn btn-secondary btn-full">
+          Continue with Google
+        </button>
+      </div>
+
+      <div class="auth-link">
+        Don't have an account? <a href="./register.html">Sign up</a>
+      </div>
+
+      <div class="auth-link" style="margin-top: 1rem;">
+        <a href="./index.html" style="color: var(--muted);">← Back to Home</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="./assets/js/storage.js"></script>
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/ui.js"></script>
+  <script src="./assets/js/pages/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+/* Layout structure */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.page-wrapper {
+  min-height: 100vh;
+  padding-top: var(--header-height);
+  padding-bottom: calc(var(--tabbar-height) + var(--safe-area-inset-bottom));
+}
+
+/* Header */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  padding: var(--space-2) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: rgba(246, 249, 247, 0.96);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.24);
+  z-index: var(--z-header);
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* Bottom Navigation */
+.bottom-tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--tabbar-height);
+  padding: var(--space-2) var(--space-4);
+  padding-bottom: calc(var(--safe-area-inset-bottom) + var(--space-2));
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  gap: var(--space-2);
+  background: rgba(246, 249, 247, 0.94);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(148, 163, 184, 0.24);
+  z-index: var(--z-header);
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  color: var(--muted);
+  font-size: var(--font-size-xs);
+  transition: color var(--transition-fast);
+  cursor: pointer;
+  text-align: center;
+  border-radius: var(--radius-sm);
+}
+
+.tab-item:hover {
+  color: var(--brand-600);
+  background: var(--surface-subtle);
+}
+
+.tab-item.active {
+  color: var(--brand-600);
+}
+
+.tab-item svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* FAB (Floating Action Button) */
+.fab {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--tabbar-height) + var(--fab-gap) + var(--safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: var(--fab-size);
+  height: var(--fab-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+  color: white;
+  border-radius: 50%;
+  box-shadow: var(--shadow-elevated);
+  z-index: var(--z-fab);
+  border: 3px solid var(--bg);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.fab:hover {
+  transform: translateX(-50%) scale(1.05);
+  box-shadow: 0 20px 40px rgba(34, 179, 122, 0.25);
+}
+
+.fab:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+.fab svg {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+}
+
+/* Grid layouts */
+.grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-auto-fit {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Flex utilities */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+
+/* Stack layout */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.stack-sm {
+  gap: var(--space-2);
+}
+
+.stack-lg {
+  gap: var(--space-6);
+}
+
+/* Section */
+.section {
+  padding: var(--space-6) 0;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+/* Responsive */
+@media (min-width: 640px) {
+  .container {
+    padding: 0 var(--space-6);
+  }
+
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 var(--space-8);
+  }
+}

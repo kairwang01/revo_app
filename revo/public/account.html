@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#43CD80">
+  <title>My Account - Revo</title>
+  
+  <link rel="stylesheet" href="./assets/css/tokens.css">
+  <link rel="stylesheet" href="./assets/css/base.css">
+  <link rel="stylesheet" href="./assets/css/layout.css">
+  <link rel="stylesheet" href="./assets/css/components.css">
+  <link rel="stylesheet" href="./assets/css/pages.css">
+  
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+  <!-- Icon Sprite -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="icon-home" viewBox="0 0 24 24">
+      <path d="M3 11.2 12 4l9 7.2V21a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1z"/>
+    </symbol>
+    <symbol id="icon-star" viewBox="0 0 24 24">
+      <path d="M12 3.3 14.9 9l6.1.5-4.6 3.9 1.4 6L12 16.8 6.2 19.4l1.4-6-4.6-3.9 6.1-.5z"/>
+    </symbol>
+    <symbol id="icon-cart" viewBox="0 0 24 24">
+      <path d="M4 5H2v2h2l2.4 9.3a2 2 0 0 0 2 1.5h8.4a2 2 0 0 0 1.9-1.4L20 9H7.1zM9 21.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+    </symbol>
+    <symbol id="icon-user" viewBox="0 0 24 24">
+      <path d="M12 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zM4.5 19.6c0-3.1 3.3-5 7.5-5s7.5 1.9 7.5 5V21H4.5z"/>
+    </symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24">
+      <path d="M10.5 4a6.5 6.5 0 0 1 5.2 10.4l4.1 3.9-1.8 1.8-4-4.1A6.5 6.5 0 1 1 10.5 4zm0 2.4a4.1 4.1 0 1 0 .1 8.2 4.1 4.1 0 0 0-.1-8.2z"/>
+    </symbol>
+    <symbol id="icon-chevron-right" viewBox="0 0 24 24">
+      <path d="M9 4 7.6 5.4 13.2 11l-5.6 5.6L9 18l7-7z"/>
+    </symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24">
+      <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/>
+    </symbol>
+    <symbol id="icon-leaf" viewBox="0 0 24 24">
+      <path d="M20.5 3.5S11 3 6.7 7.3C4.6 9.5 4 12.4 4 15.1 4 18 6 21 9.8 21c4.8 0 7-4.2 7-7.4 0-2.6-1.6-3.9-1.6-3.9s-1.4 2.2-4.3 3.1c-1.3.4-2.8.4-4 .3 0 0 1.4-.9 2.5-1.8 1.7-1.3 4.6-2.9 11.1-7.8z"/>
+    </symbol>
+    <symbol id="icon-bag" viewBox="0 0 24 24">
+      <path d="M7 8V7.2C7 4.9 8.8 3 11.1 3h1.8C15.2 3 17 4.9 17 7.2V8h2.2A1.8 1.8 0 0 1 21 9.8v9.4A1.8 1.8 0 0 1 19.2 21H4.8A1.8 1.8 0 0 1 3 19.2V9.8A1.8 1.8 0 0 1 4.8 8H7zm2-.8c0-1 .8-1.9 2.1-1.9h.8c1.3 0 2.1.9 2.1 1.9V8H9z"/>
+    </symbol>
+    <symbol id="icon-gear" viewBox="0 0 24 24">
+      <path d="M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7zm8.2 1.4-.9-.3a6.3 6.3 0 0 0-.6-1.5l.6-.8-1.4-1.4-.8.6a6.3 6.3 0 0 0-1.5-.6l-.3-.9h-2l-.3.9a6.3 6.3 0 0 0-1.5.6l-.8-.6L6.5 7.3l.6.8c-.3.5-.5 1-.6 1.5l-.9.3V12l.9.3c.1.5.3 1 .6 1.5l-.6.8 1.4 1.4.8-.6c.5.3 1 .5 1.5.6l.3.9h2l.3-.9a6.3 6.3 0 0 0 1.5-.6l.8.6 1.4-1.4-.6-.8c.3-.5.5-1 .6-1.5l.9-.3z"/>
+    </symbol>
+  </svg>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <a href="./index.html" class="icon-btn">
+        <span style="font-size: 1.25rem;">←</span>
+        <span class="sr-only">Back</span>
+      </a>
+    </div>
+    <div class="header-center">
+      <h1 style="font-size: 1rem; font-weight: 600;">My Account</h1>
+    </div>
+    <div class="header-right">
+      <a href="./settings.html" class="icon-btn">
+        <svg><use href="#icon-gear"></use></svg>
+        <span class="sr-only">Settings</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="page-wrapper">
+    <div class="container">
+      <!-- Wallet Banner -->
+      <section class="account-wallet">
+        <div style="font-size: 0.875rem; opacity: 0.9;">Wallet Balance</div>
+        <div class="wallet-balance" id="wallet-balance">$0.00 CAD</div>
+        <button class="btn btn-secondary btn-sm" style="margin-top: 1rem;">
+          Top Up
+        </button>
+      </section>
+
+      <!-- Orders Summary -->
+      <section class="account-orders">
+        <h3>Order Summary</h3>
+        <div class="orders-summary">
+          <div class="order-stat">
+            <div class="order-stat-value" id="pending-count">0</div>
+            <div class="order-stat-label">Pending</div>
+          </div>
+          <div class="order-stat">
+            <div class="order-stat-value" id="completed-count">0</div>
+            <div class="order-stat-label">Completed</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- My Orders -->
+      <section class="account-section">
+        <h2>My Orders</h2>
+        <div class="grid grid-2" style="gap: 1rem;">
+          <a href="./orders.html?type=buy" class="btn btn-outline btn-full">
+            <svg width="20" height="20"><use href="#icon-bag"></use></svg>
+            Buy Orders
+          </a>
+          <a href="./orders.html?type=sell" class="btn btn-outline btn-full">
+            <svg width="20" height="20"><use href="#icon-leaf"></use></svg>
+            Sell Orders
+          </a>
+        </div>
+      </section>
+
+      <!-- More Functions -->
+      <section class="account-section">
+        <h2>More Functions</h2>
+        <div class="list">
+          <a href="./settings.html" class="list-item">
+            <span>Settings & Preferences</span>
+            <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
+          </a>
+          <a href="#" class="list-item">
+            <span>Customer Support</span>
+            <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
+          </a>
+          <a href="#" class="list-item">
+            <span>Refer a Friend</span>
+            <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
+          </a>
+          <a href="#" class="list-item">
+            <span>About Revo</span>
+            <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
+          </a>
+        </div>
+      </section>
+
+      <!-- Logout -->
+      <section class="account-section">
+        <button class="btn btn-secondary btn-full" id="logout-btn">
+          Sign Out
+        </button>
+      </section>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-tabbar">
+    <a href="./index.html" class="tab-item">
+      <svg><use href="#icon-home"></use></svg>
+      <span>Home</span>
+    </a>
+    <a href="./products.html" class="tab-item">
+      <svg><use href="#icon-star"></use></svg>
+      <span>Curated</span>
+    </a>
+    <div class="tab-item" style="opacity: 0; pointer-events: none;"></div>
+    <a href="./sell.html" class="tab-item">
+      <svg><use href="#icon-leaf"></use></svg>
+      <span>Recycle</span>
+    </a>
+    <a href="./account.html" class="tab-item active">
+      <svg><use href="#icon-user"></use></svg>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- FAB -->
+  <a href="./sell.html" class="fab" title="Trade-In Estimate">
+    <svg><use href="#icon-plus"></use></svg>
+    <span class="sr-only">Trade-In</span>
+  </a>
+
+  <script src="./assets/js/storage.js"></script>
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/ui.js"></script>
+  <script src="./assets/js/pages/account.js"></script>
+</body>
+</html>

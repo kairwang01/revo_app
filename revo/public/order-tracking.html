@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#43CD80">
+  <title>Order Tracking - Revo</title>
+  
+  <link rel="stylesheet" href="./assets/css/tokens.css">
+  <link rel="stylesheet" href="./assets/css/base.css">
+  <link rel="stylesheet" href="./assets/css/layout.css">
+  <link rel="stylesheet" href="./assets/css/components.css">
+  <link rel="stylesheet" href="./assets/css/pages.css">
+  
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  
+  <style>
+    .tracking-header {
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      padding: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      border-bottom: 1px solid var(--border-light);
+      z-index: 100;
+    }
+    
+    .tracking-back {
+      font-size: 1.25rem;
+      color: var(--text-strong);
+      text-decoration: none;
+    }
+    
+    .tracking-title {
+      font-size: var(--font-size-base);
+      font-weight: 600;
+      color: var(--text-strong);
+    }
+    
+    .timeline-container {
+      padding: var(--space-5) var(--space-4);
+      background: var(--surface);
+    }
+    
+    .timeline {
+      position: relative;
+      padding-left: 2.5rem;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0.75rem;
+      top: 1rem;
+      bottom: 1rem;
+      width: 2px;
+      background: var(--border-light);
+    }
+    
+    .timeline-item {
+      position: relative;
+      padding-bottom: var(--space-6);
+    }
+    
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+    
+    .timeline-marker {
+      position: absolute;
+      left: -2.5rem;
+      top: 0;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: var(--bg-alt);
+      border: 3px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+    
+    .timeline-marker.active {
+      background: var(--brand-600);
+      border-color: var(--brand-600);
+    }
+    
+    .timeline-marker.completed {
+      background: var(--brand-600);
+      border-color: var(--brand-600);
+    }
+    
+    .timeline-marker svg {
+      width: 1rem;
+      height: 1rem;
+      fill: white;
+    }
+    
+    .timeline-content {
+      background: var(--bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+    }
+    
+    .timeline-title {
+      font-weight: 600;
+      margin-bottom: var(--space-1);
+      color: var(--text-strong);
+    }
+    
+    .timeline-desc {
+      font-size: var(--font-size-sm);
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    
+    .timeline-time {
+      font-size: var(--font-size-xs);
+      color: var(--muted);
+      margin-top: var(--space-2);
+    }
+    
+    .order-summary {
+      margin: var(--space-4);
+      padding: var(--space-4);
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-light);
+    }
+    
+    .order-row {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    
+    .order-row:last-child {
+      border-bottom: none;
+    }
+    
+    .order-label {
+      color: var(--muted);
+      font-size: var(--font-size-sm);
+    }
+    
+    .order-value {
+      font-weight: 500;
+      color: var(--text-strong);
+    }
+    
+    .order-value.highlight {
+      color: var(--brand-600);
+      font-size: var(--font-size-lg);
+      font-weight: 700;
+    }
+    
+    .inspection-report {
+      margin: var(--space-4);
+      padding: var(--space-5);
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-light);
+    }
+    
+    .report-badge {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto var(--space-4);
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      border: 4px solid var(--brand-600);
+    }
+    
+    .report-grade {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .report-label {
+      font-size: var(--font-size-xs);
+      margin-top: var(--space-1);
+    }
+    
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+    
+    .report-item {
+      text-align: center;
+      padding: var(--space-3);
+      background: var(--bg-alt);
+      border-radius: var(--radius-sm);
+    }
+    
+    .report-item-label {
+      font-size: var(--font-size-xs);
+      color: var(--muted);
+      margin-bottom: var(--space-1);
+    }
+    
+    .report-item-value {
+      font-weight: 600;
+      color: var(--text-strong);
+    }
+    
+    .price-confirm {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      padding: var(--space-4);
+      box-shadow: 0 -4px 12px var(--shadow-color);
+      z-index: 100;
+    }
+    
+    .price-comparison {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-3);
+      padding: var(--space-3);
+      background: var(--bg-alt);
+      border-radius: var(--radius-md);
+    }
+    
+    .price-item {
+      text-align: center;
+    }
+    
+    .price-item-label {
+      font-size: var(--font-size-xs);
+      color: var(--muted);
+      margin-bottom: var(--space-1);
+    }
+    
+    .price-item-value {
+      font-size: var(--font-size-lg);
+      font-weight: 700;
+    }
+    
+    .price-arrow {
+      font-size: 1.5rem;
+      color: var(--muted);
+    }
+    
+    .confirm-actions {
+      display: flex;
+      gap: var(--space-3);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="tracking-header">
+    <a href="./orders.html" class="tracking-back">←</a>
+    <span class="tracking-title">Order Tracking</span>
+  </header>
+
+  <!-- Loading State -->
+  <div id="loading" class="loader-container" style="min-height: 400px;">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Main Content -->
+  <main id="tracking-content" class="hidden">
+    
+    <!-- Order Summary -->
+    <section class="order-summary">
+      <h2 style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--space-4);">Order Information</h2>
+      <div class="order-row">
+        <span class="order-label">Order ID</span>
+        <span class="order-value" id="order-id">Loading...</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Device</span>
+        <span class="order-value" id="device-name">Loading...</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Initial Quote</span>
+        <span class="order-value highlight" id="initial-quote">$0.00</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Status</span>
+        <span class="order-value">
+          <span class="chip" style="background: var(--brand-100); color: var(--brand-700);" id="order-status">Processing</span>
+        </span>
+      </div>
+    </section>
+
+    <!-- Timeline -->
+    <section class="timeline-container">
+      <h2 style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--space-5);">Progress Timeline</h2>
+      <div class="timeline" id="timeline">
+        <!-- Timeline items will be inserted here -->
+      </div>
+    </section>
+
+    <!-- Inspection Report (Hidden until inspection complete) -->
+    <section class="inspection-report hidden" id="inspection-report">
+      <h2 style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--space-4); text-align: center;">Quality Inspection Report</h2>
+      
+      <div class="report-badge">
+        <div class="report-grade" id="report-grade">99%</div>
+        <div class="report-label">NEW</div>
+      </div>
+      
+      <div class="report-grid">
+        <div class="report-item">
+          <div class="report-item-label">Screen</div>
+          <div class="report-item-value" id="report-screen">Normal</div>
+        </div>
+        <div class="report-item">
+          <div class="report-item-label">Wi-Fi</div>
+          <div class="report-item-value" id="report-wifi">Working</div>
+        </div>
+        <div class="report-item">
+          <div class="report-item-label">Battery</div>
+          <div class="report-item-value" id="report-battery">Excellent</div>
+        </div>
+        <div class="report-item">
+          <div class="report-item-label">Camera</div>
+          <div class="report-item-value" id="report-camera">Normal</div>
+        </div>
+      </div>
+      
+      <div style="margin-top: var(--space-4); padding: var(--space-3); background: var(--bg-alt); border-radius: var(--radius-sm); text-align: center;">
+        <div style="font-size: var(--font-size-sm); color: var(--muted); margin-bottom: var(--space-2);">Final Quote</div>
+        <div style="font-size: 2rem; font-weight: 700; color: var(--brand-600);" id="final-quote">$0.00</div>
+      </div>
+    </section>
+
+    <!-- Price Confirmation (Hidden until inspection complete) -->
+    <div class="price-confirm hidden" id="price-confirm">
+      <div class="price-comparison">
+        <div class="price-item">
+          <div class="price-item-label">Initial Quote</div>
+          <div class="price-item-value" style="color: var(--muted);" id="compare-initial">$0.00</div>
+        </div>
+        <div class="price-arrow">→</div>
+        <div class="price-item">
+          <div class="price-item-label">Final Quote</div>
+          <div class="price-item-value" style="color: var(--brand-600);" id="compare-final">$0.00</div>
+        </div>
+      </div>
+      
+      <div id="price-reason" style="font-size: var(--font-size-sm); color: var(--muted); text-align: center; margin-bottom: var(--space-3);"></div>
+      
+      <div class="confirm-actions">
+        <button class="btn btn-secondary" id="reject-btn">Reject & Return</button>
+        <button class="btn btn-primary" id="accept-btn">Accept Payment</button>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="./assets/js/storage.js"></script>
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/ui.js"></script>
+  <script>
+    // TODO: bind to Python FastAPI backend
+    
+    const orderStages = [
+      {
+        key: 'created',
+        title: 'Order Created',
+        desc: 'Your trade-in order has been created successfully',
+        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+      },
+      {
+        key: 'in_pickup',
+        title: 'Pickup Scheduled',
+        desc: 'Courier has been dispatched to collect your device',
+        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+      },
+      {
+        key: 'in_transit',
+        title: 'In Transit',
+        desc: 'Your device is on its way to our inspection center',
+        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+      },
+      {
+        key: 'inspecting',
+        title: 'Quality Inspection',
+        desc: 'Technicians are performing 280+ quality checks on your device',
+        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+      },
+      {
+        key: 'awaiting_confirmation',
+        title: 'Awaiting Your Confirmation',
+        desc: 'Please review the final quote and inspection report',
+        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+      },
+      {
+        key: 'confirmed',
+        title: 'Payment Processing',
+        desc: 'Your payment is being processed',
+        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+      },
+      {
+        key: 'paid',
+        title: 'Payment Complete',
+        desc: 'Payment has been successfully transferred to your account',
+        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+      }
+    ];
+
+    async function loadOrderTracking() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderId = urlParams.get('id');
+      
+      if (!orderId) {
+        window.location.href = './orders.html';
+        return;
+      }
+
+      try {
+        // TODO: Replace with actual API call
+        const mockOrder = {
+          id: orderId,
+          deviceName: 'iPhone 13 Pro 256GB',
+          initialQuote: 450.00,
+          finalQuote: 420.00,
+          status: 'awaiting_confirmation',
+          currentStage: 'awaiting_confirmation',
+          timeline: [
+            { stage: 'created', timestamp: '2025-10-20T10:00:00Z', completed: true },
+            { stage: 'in_pickup', timestamp: '2025-10-20T14:00:00Z', completed: true },
+            { stage: 'in_transit', timestamp: '2025-10-21T09:00:00Z', completed: true },
+            { stage: 'inspecting', timestamp: '2025-10-22T15:30:00Z', completed: true },
+            { stage: 'awaiting_confirmation', timestamp: '2025-10-23T10:00:00Z', completed: false }
+          ],
+          inspectionReport: {
+            grade: '99%',
+            screen: 'Normal',
+            wifi: 'Working',
+            battery: 'Excellent',
+            camera: 'Normal'
+          },
+          priceChangeReason: 'Battery health slightly lower than initially reported'
+        };
+
+        renderOrderInfo(mockOrder);
+        renderTimeline(mockOrder);
+        
+        if (mockOrder.status === 'awaiting_confirmation') {
+          renderInspectionReport(mockOrder);
+          renderPriceConfirmation(mockOrder);
+        }
+        
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('tracking-content').classList.remove('hidden');
+        
+      } catch (error) {
+        console.error('Failed to load order:', error);
+        showToast('Failed to load order details', 'error');
+      }
+    }
+
+    function renderOrderInfo(order) {
+      document.getElementById('order-id').textContent = order.id;
+      document.getElementById('device-name').textContent = order.deviceName;
+      document.getElementById('initial-quote').textContent = `$${order.initialQuote.toFixed(2)}`;
+      document.getElementById('order-status').textContent = formatStatus(order.status);
+    }
+
+    function renderTimeline(order) {
+      const timeline = document.getElementById('timeline');
+      const currentStageIndex = orderStages.findIndex(s => s.key === order.currentStage);
+      
+      timeline.innerHTML = orderStages.map((stage, index) => {
+        const isCompleted = index < currentStageIndex;
+        const isActive = index === currentStageIndex;
+        const timelineData = order.timeline.find(t => t.stage === stage.key);
+        
+        return `
+          <div class="timeline-item">
+            <div class="timeline-marker ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}">
+              ${isCompleted || isActive ? `<svg viewBox="0 0 24 24">${stage.icon}</svg>` : ''}
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title">${stage.title}</div>
+              <div class="timeline-desc">${stage.desc}</div>
+              ${timelineData ? `<div class="timeline-time">${formatDate(timelineData.timestamp)}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderInspectionReport(order) {
+      const report = order.inspectionReport;
+      document.getElementById('report-grade').textContent = report.grade;
+      document.getElementById('report-screen').textContent = report.screen;
+      document.getElementById('report-wifi').textContent = report.wifi;
+      document.getElementById('report-battery').textContent = report.battery;
+      document.getElementById('report-camera').textContent = report.camera;
+      document.getElementById('final-quote').textContent = `$${order.finalQuote.toFixed(2)}`;
+      
+      document.getElementById('inspection-report').classList.remove('hidden');
+    }
+
+    function renderPriceConfirmation(order) {
+      if (order.finalQuote < order.initialQuote) {
+        document.getElementById('compare-initial').textContent = `$${order.initialQuote.toFixed(2)}`;
+        document.getElementById('compare-final').textContent = `$${order.finalQuote.toFixed(2)}`;
+        document.getElementById('price-reason').textContent = order.priceChangeReason;
+        
+        document.getElementById('accept-btn').onclick = () => acceptPrice(order.id);
+        document.getElementById('reject-btn').onclick = () => rejectPrice(order.id);
+        
+        document.getElementById('price-confirm').classList.remove('hidden');
+        document.querySelector('main').style.paddingBottom = '200px';
+      }
+    }
+
+    async function acceptPrice(orderId) {
+      // TODO: API call to confirm payment
+      showToast('Payment confirmed! Processing...', 'success');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    }
+
+    async function rejectPrice(orderId) {
+      if (confirm('Are you sure you want to reject the offer and have your device returned?')) {
+        // TODO: API call to initiate return
+        showToast('Return initiated. Your device will be shipped back.', 'info');
+        setTimeout(() => {
+          window.location.href = './orders.html';
+        }, 1500);
+      }
+    }
+
+    function formatStatus(status) {
+      const statusMap = {
+        'created': 'Created',
+        'in_pickup': 'Pickup Scheduled',
+        'in_transit': 'In Transit',
+        'inspecting': 'Inspecting',
+        'awaiting_confirmation': 'Awaiting Confirmation',
+        'confirmed': 'Confirmed',
+        'paid': 'Paid',
+        'returned': 'Returned'
+      };
+      return statusMap[status] || status;
+    }
+
+    function formatDate(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', loadOrderTracking);
+  </script>
+  <script src="./assets/js/main.js"></script>
+</body>
+</html>

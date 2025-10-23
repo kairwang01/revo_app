@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#43CD80">
+  <title>My Orders - Revo</title>
+  
+  <link rel="stylesheet" href="./assets/css/tokens.css">
+  <link rel="stylesheet" href="./assets/css/base.css">
+  <link rel="stylesheet" href="./assets/css/layout.css">
+  <link rel="stylesheet" href="./assets/css/components.css">
+  <link rel="stylesheet" href="./assets/css/pages.css">
+  
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+  <!-- Icon Sprite -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="icon-home" viewBox="0 0 24 24">
+      <path d="M3 11.2 12 4l9 7.2V21a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1z"/>
+    </symbol>
+    <symbol id="icon-star" viewBox="0 0 24 24">
+      <path d="M12 3.3 14.9 9l6.1.5-4.6 3.9 1.4 6L12 16.8 6.2 19.4l1.4-6-4.6-3.9 6.1-.5z"/>
+    </symbol>
+    <symbol id="icon-user" viewBox="0 0 24 24">
+      <path d="M12 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zM4.5 19.6c0-3.1 3.3-5 7.5-5s7.5 1.9 7.5 5V21H4.5z"/>
+    </symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24">
+      <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/>
+    </symbol>
+    <symbol id="icon-leaf" viewBox="0 0 24 24">
+      <path d="M20.5 3.5S11 3 6.7 7.3C4.6 9.5 4 12.4 4 15.1 4 18 6 21 9.8 21c4.8 0 7-4.2 7-7.4 0-2.6-1.6-3.9-1.6-3.9s-1.4 2.2-4.3 3.1c-1.3.4-2.8.4-4 .3 0 0 1.4-.9 2.5-1.8 1.7-1.3 4.6-2.9 11.1-7.8z"/>
+    </symbol>
+  </svg>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <a href="./account.html" class="icon-btn">
+        <span style="font-size: 1.25rem;">←</span>
+        <span class="sr-only">Back</span>
+      </a>
+    </div>
+    <div class="header-center">
+      <h1 style="font-size: 1rem; font-weight: 600;">My Orders</h1>
+    </div>
+    <div class="header-right"></div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="page-wrapper">
+    <div class="container">
+      <!-- Tabs -->
+      <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+        <button class="btn btn-outline btn-sm" id="tab-all" data-tab="all">All Orders</button>
+        <button class="btn btn-outline btn-sm" id="tab-buy" data-tab="buy">Buy</button>
+        <button class="btn btn-outline btn-sm" id="tab-sell" data-tab="sell">Sell</button>
+      </div>
+
+      <!-- Orders List -->
+      <div id="orders-list">
+        <div class="loader-container">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state hidden" id="empty-orders">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M7 8V7.2C7 4.9 8.8 3 11.1 3h1.8C15.2 3 17 4.9 17 7.2V8h2.2A1.8 1.8 0 0 1 21 9.8v9.4A1.8 1.8 0 0 1 19.2 21H4.8A1.8 1.8 0 0 1 3 19.2V9.8A1.8 1.8 0 0 1 4.8 8H7zm2-.8c0-1 .8-1.9 2.1-1.9h.8c1.3 0 2.1.9 2.1 1.9V8H9z"/>
+        </svg>
+        <h3>No orders yet</h3>
+        <p>Your orders will appear here once you make a purchase</p>
+        <a href="./products.html" class="btn btn-primary" style="margin-top: 1rem;">
+          Start Shopping
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-tabbar">
+    <a href="./index.html" class="tab-item">
+      <svg><use href="#icon-home"></use></svg>
+      <span>Home</span>
+    </a>
+    <a href="./products.html" class="tab-item">
+      <svg><use href="#icon-star"></use></svg>
+      <span>Curated</span>
+    </a>
+    <div class="tab-item" style="opacity: 0; pointer-events: none;"></div>
+    <a href="./sell.html" class="tab-item">
+      <svg><use href="#icon-leaf"></use></svg>
+      <span>Recycle</span>
+    </a>
+    <a href="./account.html" class="tab-item active">
+      <svg><use href="#icon-user"></use></svg>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- FAB -->
+  <a href="./sell.html" class="fab" title="Trade-In Estimate">
+    <svg><use href="#icon-plus"></use></svg>
+    <span class="sr-only">Trade-In</span>
+  </a>
+
+  <script src="./assets/js/storage.js"></script>
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/ui.js"></script>
+  <script src="./assets/js/pages/orders.js"></script>
+</body>
+</html>

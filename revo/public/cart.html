@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#43CD80">
+  <title>Shopping Cart - Revo</title>
+  
+  <link rel="stylesheet" href="./assets/css/tokens.css">
+  <link rel="stylesheet" href="./assets/css/base.css">
+  <link rel="stylesheet" href="./assets/css/layout.css">
+  <link rel="stylesheet" href="./assets/css/components.css">
+  <link rel="stylesheet" href="./assets/css/pages.css">
+  
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+  <!-- Icon Sprite -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="icon-home" viewBox="0 0 24 24">
+      <path d="M3 11.2 12 4l9 7.2V21a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1z"/>
+    </symbol>
+    <symbol id="icon-cart" viewBox="0 0 24 24">
+      <path d="M4 5H2v2h2l2.4 9.3a2 2 0 0 0 2 1.5h8.4a2 2 0 0 0 1.9-1.4L20 9H7.1zM9 21.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+    </symbol>
+  </svg>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <a href="javascript:history.back()" class="icon-btn">
+        <span style="font-size: 1.25rem;">←</span>
+        <span class="sr-only">Back</span>
+      </a>
+    </div>
+    <div class="header-center">
+      <h1 style="font-size: 1rem; font-weight: 600;">Shopping Cart</h1>
+    </div>
+    <div class="header-right">
+      <span class="text-muted" style="font-size: 0.875rem;" id="cart-count">0 items</span>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="page-wrapper">
+    <div class="container">
+      <!-- Cart Items -->
+      <div class="cart-items" id="cart-items">
+        <!-- Items will be loaded dynamically -->
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state hidden" id="empty-cart">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 5H2v2h2l2.4 9.3a2 2 0 0 0 2 1.5h8.4a2 2 0 0 0 1.9-1.4L20 9H7.1zM9 21.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+        </svg>
+        <h3>Your cart is empty</h3>
+        <p>Add products to your cart to see them here</p>
+        <a href="./products.html" class="btn btn-primary" style="margin-top: 1rem;">
+          Browse Products
+        </a>
+      </div>
+
+      <!-- Cart Summary -->
+      <div class="cart-summary hidden" id="cart-summary">
+        <h3 style="margin-bottom: 1rem;">Order Summary</h3>
+        
+        <div class="cart-summary-row">
+          <span>Subtotal</span>
+          <span id="subtotal">$0.00</span>
+        </div>
+        
+        <div class="cart-summary-row">
+          <span>Tax (<span id="tax-rate">12</span>%)</span>
+          <span id="tax-amount">$0.00</span>
+        </div>
+        
+        <div class="cart-summary-row">
+          <span>Shipping</span>
+          <span id="shipping">Free</span>
+        </div>
+        
+        <div class="cart-summary-total">
+          <span>Total</span>
+          <span id="total" style="color: var(--brand-600);">$0.00</span>
+        </div>
+        
+        <button class="btn btn-primary btn-full btn-lg" id="checkout-btn" style="margin-top: 1rem;">
+          Proceed to Checkout
+        </button>
+        
+        <a href="./products.html" class="btn btn-ghost btn-full" style="margin-top: 0.5rem;">
+          Continue Shopping
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <script src="./assets/js/storage.js"></script>
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/ui.js"></script>
+  <script src="./assets/js/pages/cart.js"></script>
+</body>
+</html>

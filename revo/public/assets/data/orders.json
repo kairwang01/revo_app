@@ -1,0 +1,45 @@
+[
+  {
+    "id": "ORD-2025-001",
+    "type": "buy",
+    "status": "completed",
+    "date": "2025-01-15",
+    "total": 899.00,
+    "tax": 107.88,
+    "items": [
+      {
+        "id": 1001,
+        "name": "iPhone 14 128GB Midnight",
+        "brand": "Apple",
+        "price": 899.00,
+        "quantity": 1,
+        "image": "https://via.placeholder.com/80x80.png?text=iPhone"
+      }
+    ],
+    "shippingAddress": {
+      "name": "John Doe",
+      "street": "123 Main Street",
+      "city": "Vancouver",
+      "province": "BC",
+      "postalCode": "V6B 1A1",
+      "phone": "+1 (604) 555-0123"
+    }
+  },
+  {
+    "id": "ORD-2025-002",
+    "type": "sell",
+    "status": "pending",
+    "date": "2025-01-18",
+    "total": 450.00,
+    "items": [
+      {
+        "id": 9001,
+        "name": "iPhone 12 Trade-In",
+        "brand": "Apple",
+        "price": 450.00,
+        "quantity": 1,
+        "condition": "good"
+      }
+    ]
+  }
+]

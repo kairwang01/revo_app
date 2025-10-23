@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#43CD80">
+  <title>Products - Revo</title>
+  
+  <link rel="stylesheet" href="./assets/css/tokens.css">
+  <link rel="stylesheet" href="./assets/css/base.css">
+  <link rel="stylesheet" href="./assets/css/layout.css">
+  <link rel="stylesheet" href="./assets/css/components.css">
+  <link rel="stylesheet" href="./assets/css/pages.css">
+  
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+  <!-- Icon Sprite -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="icon-home" viewBox="0 0 24 24">
+      <path d="M3 11.2 12 4l9 7.2V21a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1z"/>
+    </symbol>
+    <symbol id="icon-star" viewBox="0 0 24 24">
+      <path d="M12 3.3 14.9 9l6.1.5-4.6 3.9 1.4 6L12 16.8 6.2 19.4l1.4-6-4.6-3.9 6.1-.5z"/>
+    </symbol>
+    <symbol id="icon-cart" viewBox="0 0 24 24">
+      <path d="M4 5H2v2h2l2.4 9.3a2 2 0 0 0 2 1.5h8.4a2 2 0 0 0 1.9-1.4L20 9H7.1zM9 21.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+    </symbol>
+    <symbol id="icon-user" viewBox="0 0 24 24">
+      <path d="M12 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zM4.5 19.6c0-3.1 3.3-5 7.5-5s7.5 1.9 7.5 5V21H4.5z"/>
+    </symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24">
+      <path d="M10.5 4a6.5 6.5 0 0 1 5.2 10.4l4.1 3.9-1.8 1.8-4-4.1A6.5 6.5 0 1 1 10.5 4zm0 2.4a4.1 4.1 0 1 0 .1 8.2 4.1 4.1 0 0 0-.1-8.2z"/>
+    </symbol>
+    <symbol id="icon-location" viewBox="0 0 24 24">
+      <path d="M12 3.5a6.5 6.5 0 0 1 6.5 6.5c0 4.2-4.4 9-6 10.7a.7.7 0 0 1-1 0c-1.6-1.7-6-6.5-6-10.7A6.5 6.5 0 0 1 12 3.5zm0 3a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/>
+    </symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24">
+      <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/>
+    </symbol>
+    <symbol id="icon-leaf" viewBox="0 0 24 24">
+      <path d="M20.5 3.5S11 3 6.7 7.3C4.6 9.5 4 12.4 4 15.1 4 18 6 21 9.8 21c4.8 0 7-4.2 7-7.4 0-2.6-1.6-3.9-1.6-3.9s-1.4 2.2-4.3 3.1c-1.3.4-2.8.4-4 .3 0 0 1.4-.9 2.5-1.8 1.7-1.3 4.6-2.9 11.1-7.8z"/>
+    </symbol>
+  </svg>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="dropdown" id="city-dropdown">
+        <button class="dropdown-toggle" id="city-toggle">
+          <svg width="20" height="20"><use href="#icon-location"></use></svg>
+          <span id="selected-city">Vancouver</span>
+        </button>
+        <div class="dropdown-menu hidden" id="city-menu">
+          <div class="dropdown-item" data-city="Vancouver">Vancouver</div>
+          <div class="dropdown-item" data-city="Edmonton">Edmonton</div>
+          <div class="dropdown-item" data-city="Ottawa">Ottawa</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="header-center">
+      <div class="search-bar">
+        <svg class="search-icon" width="20" height="20"><use href="#icon-search"></use></svg>
+        <input type="text" class="search-input" placeholder="Search products..." id="search-input">
+      </div>
+    </div>
+    
+    <div class="header-right">
+      <a href="./cart.html" class="icon-btn">
+        <svg><use href="#icon-cart"></use></svg>
+        <span class="sr-only">Cart</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="page-wrapper">
+    <div class="container">
+      <!-- Filters -->
+      <div class="products-filters" id="filters">
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="Apple">Apple</button>
+        <button class="filter-chip" data-filter="Samsung">Samsung</button>
+        <button class="filter-chip" data-filter="phone">Phones</button>
+        <button class="filter-chip" data-filter="laptop">Laptops</button>
+        <button class="filter-chip" data-filter="tablet">Tablets</button>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="product-grid" id="products-grid">
+        <div class="loader-container">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state hidden" id="empty-state">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M7 8V7.2C7 4.9 8.8 3 11.1 3h1.8C15.2 3 17 4.9 17 7.2V8h2.2A1.8 1.8 0 0 1 21 9.8v9.4A1.8 1.8 0 0 1 19.2 21H4.8A1.8 1.8 0 0 1 3 19.2V9.8A1.8 1.8 0 0 1 4.8 8H7zm2-.8c0-1 .8-1.9 2.1-1.9h.8c1.3 0 2.1.9 2.1 1.9V8H9z"/>
+        </svg>
+        <h3>No products found</h3>
+        <p>Try adjusting your filters or search terms</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-tabbar">
+    <a href="./index.html" class="tab-item">
+      <svg><use href="#icon-home"></use></svg>
+      <span>Home</span>
+    </a>
+    <a href="./products.html" class="tab-item active">
+      <svg><use href="#icon-star"></use></svg>
+      <span>Curated</span>
+    </a>
+    <div class="tab-item" style="opacity: 0; pointer-events: none;"></div>
+    <a href="./sell.html" class="tab-item">
+      <svg><use href="#icon-leaf"></use></svg>
+      <span>Recycle</span>
+    </a>
+    <a href="./account.html" class="tab-item">
+      <svg><use href="#icon-user"></use></svg>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- FAB -->
+  <a href="./sell.html" class="fab" title="Trade-In Estimate">
+    <svg><use href="#icon-plus"></use></svg>
+    <span class="sr-only">Trade-In</span>
+  </a>
+
+  <script src="./assets/js/storage.js"></script>
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/ui.js"></script>
+  <script src="./assets/js/pages/products.js"></script>
+  <script src="./assets/js/main.js"></script>
+  
+  <!-- Geolocation integration -->
+  <script type="module">
+    import { getCity, setCity, REVO_CITIES } from "./assets/js/geo.js";
+
+    const selectedCitySpan = document.getElementById('selected-city');
+    const cityMenu = document.getElementById('city-menu');
+
+    function renderCity() {
+      const c = getCity();
+      if (selectedCitySpan && c) {
+        selectedCitySpan.textContent = c.name;
+      }
+    }
+
+    document.addEventListener("revo:cityChanged", renderCity);
+    renderCity();
+
+    // Update city dropdown
+    if (cityMenu) {
+      cityMenu.innerHTML = '';
+      REVO_CITIES.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'dropdown-item';
+        div.textContent = c.name;
+        div.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setCity(c.key);
+          renderCity();
+          cityMenu.classList.add('hidden');
+        });
+        cityMenu.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>

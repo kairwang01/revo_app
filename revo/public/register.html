@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#43CD80">
+  <title>Register - Revo</title>
+  
+  <link rel="stylesheet" href="./assets/css/tokens.css">
+  <link rel="stylesheet" href="./assets/css/base.css">
+  <link rel="stylesheet" href="./assets/css/layout.css">
+  <link rel="stylesheet" href="./assets/css/components.css">
+  <link rel="stylesheet" href="./assets/css/pages.css">
+  
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <h1>Revo</h1>
+        <p class="text-muted">Create your account</p>
+      </div>
+
+      <form id="register-form" class="stack">
+        <div class="form-group">
+          <label for="name" class="form-label">Full Name</label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name" 
+            class="form-input" 
+            placeholder="John Doe"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            class="form-input" 
+            placeholder="your@email.com"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="phone" class="form-label">Phone Number</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            name="phone" 
+            class="form-input" 
+            placeholder="+1 (555) 000-0000"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="form-input" 
+            placeholder="Create a strong password"
+            required
+            minlength="8"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="confirm-password" class="form-label">Confirm Password</label>
+          <input 
+            type="password" 
+            id="confirm-password" 
+            name="confirm-password" 
+            class="form-input" 
+            placeholder="Re-enter your password"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: start; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" name="terms" id="terms" required style="margin-top: 0.25rem;">
+            <span class="text-muted" style="font-size: 0.875rem;">
+              I agree to the <a href="#" style="color: var(--brand-600);">Terms of Service</a> 
+              and <a href="#" style="color: var(--brand-600);">Privacy Policy</a>
+            </span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg">
+          Create Account
+        </button>
+      </form>
+
+      <div class="auth-divider">or</div>
+
+      <div class="stack-sm">
+        <button type="button" class="btn btn-secondary btn-full">
+          Sign up with Apple
+        </button>
+        <button type="button" class="btn btn-secondary btn-full">
+          Sign up with Google
+        </button>
+      </div>
+
+      <div class="auth-link">
+        Already have an account? <a href="./login.html">Sign in</a>
+      </div>
+
+      <div class="auth-link" style="margin-top: 1rem;">
+        <a href="./index.html" style="color: var(--muted);">← Back to Home</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="./assets/js/storage.js"></script>
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/ui.js"></script>
+  <script src="./assets/js/pages/register.js"></script>
+</body>
+</html>

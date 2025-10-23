@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#43CD80">
+  <title>Checkout - Revo</title>
+  
+  <link rel="stylesheet" href="./assets/css/tokens.css">
+  <link rel="stylesheet" href="./assets/css/base.css">
+  <link rel="stylesheet" href="./assets/css/layout.css">
+  <link rel="stylesheet" href="./assets/css/components.css">
+  <link rel="stylesheet" href="./assets/css/pages.css">
+  
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <a href="./cart.html" class="icon-btn">
+        <span style="font-size: 1.25rem;">←</span>
+        <span class="sr-only">Back to Cart</span>
+      </a>
+    </div>
+    <div class="header-center">
+      <h1 style="font-size: 1rem; font-weight: 600;">Checkout</h1>
+    </div>
+    <div class="header-right"></div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="page-wrapper">
+    <div class="container">
+      <!-- Delivery Address -->
+      <section class="checkout-section">
+        <h3>Delivery Address</h3>
+        <div class="address-card selected" data-address="default">
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">Home</div>
+          <div class="text-muted" style="font-size: 0.875rem;">
+            123 Main Street<br>
+            Vancouver, BC V6B 1A1<br>
+            Canada<br>
+            +1 (604) 555-0123
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="margin-top: 0.75rem;">
+          + Add New Address
+        </button>
+      </section>
+
+      <!-- Payment Method -->
+      <section class="checkout-section">
+        <h3>Payment Method</h3>
+        
+        <label class="payment-method selected">
+          <input type="radio" name="payment" value="card" checked>
+          <div>
+            <div style="font-weight: 600;">Credit/Debit Card</div>
+            <div class="text-muted" style="font-size: 0.875rem;">Visa, Mastercard, Amex</div>
+          </div>
+        </label>
+        
+        <label class="payment-method">
+          <input type="radio" name="payment" value="wallet">
+          <div>
+            <div style="font-weight: 600;">Revo Wallet</div>
+            <div class="text-muted" style="font-size: 0.875rem;">Balance: $<span id="wallet-balance">0.00</span> CAD</div>
+          </div>
+        </label>
+        
+        <label class="payment-method">
+          <input type="radio" name="payment" value="cod">
+          <div>
+            <div style="font-weight: 600;">Cash on Delivery</div>
+            <div class="text-muted" style="font-size: 0.875rem;">Pay when you receive</div>
+          </div>
+        </label>
+      </section>
+
+      <!-- Order Summary -->
+      <section class="checkout-section">
+        <h3>Order Summary</h3>
+        
+        <div id="order-items" class="stack-sm">
+          <!-- Items will be loaded dynamically -->
+        </div>
+        
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span class="text-muted">Subtotal</span>
+            <span id="checkout-subtotal">$0.00</span>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span class="text-muted">Tax (<span id="checkout-tax-rate">12</span>%)</span>
+            <span id="checkout-tax">$0.00</span>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span class="text-muted">Shipping</span>
+            <span id="checkout-shipping">Free</span>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--border-strong);">
+            <strong>Total</strong>
+            <strong id="checkout-total" style="color: var(--brand-600); font-size: 1.25rem;">$0.00</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- Place Order Button -->
+      <section style="margin-top: 2rem; margin-bottom: 2rem;">
+        <button class="btn btn-primary btn-full btn-lg" id="place-order-btn">
+          Place Order
+        </button>
+        
+        <p class="text-muted text-center" style="font-size: 0.75rem; margin-top: 1rem;">
+          By placing your order, you agree to Revo's
+          <a href="#" style="color: var(--brand-600);">Terms & Conditions</a>
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <script src="./assets/js/storage.js"></script>
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/ui.js"></script>
+  <script src="./assets/js/pages/checkout.js"></script>
+</body>
+</html>

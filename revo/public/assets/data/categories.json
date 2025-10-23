@@ -1,0 +1,22 @@
+[
+  {
+    "id": "phones",
+    "name": "Phones",
+    "icon": "📱"
+  },
+  {
+    "id": "laptops",
+    "name": "Laptops",
+    "icon": "💻"
+  },
+  {
+    "id": "tablets",
+    "name": "Tablets",
+    "icon": "📲"
+  },
+  {
+    "id": "accessories",
+    "name": "Accessories",
+    "icon": "🎧"
+  }
+]

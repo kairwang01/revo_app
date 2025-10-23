@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#43CD80">
+  <title>Product Details - Revo</title>
+  
+  <link rel="stylesheet" href="./assets/css/tokens.css">
+  <link rel="stylesheet" href="./assets/css/base.css">
+  <link rel="stylesheet" href="./assets/css/layout.css">
+  <link rel="stylesheet" href="./assets/css/components.css">
+  <link rel="stylesheet" href="./assets/css/pages.css">
+  
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  
+  <style>
+    /* Product Detail Specific Styles */
+    .pd-header {
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      padding: var(--space-4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-light);
+      z-index: 100;
+    }
+    
+    .pd-back {
+      font-size: 1.25rem;
+      color: var(--text-strong);
+      text-decoration: none;
+    }
+    
+    .pd-title-text {
+      font-size: var(--font-size-base);
+      font-weight: 600;
+      color: var(--text-strong);
+    }
+    
+    .pd-actions {
+      display: flex;
+      gap: var(--space-3);
+    }
+    
+    .pd-gallery {
+      position: relative;
+      width: 100%;
+      padding-bottom: 100%;
+      background: var(--surface);
+    }
+    
+    .pd-gallery-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: var(--space-4);
+    }
+    
+    .pd-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+      color: var(--muted);
+      font-size: 3rem;
+    }
+    
+    .pd-price-section {
+      padding: var(--space-4);
+      background: var(--surface);
+    }
+    
+    .pd-price {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--brand-600);
+    }
+    
+    .pd-original-price {
+      font-size: var(--font-size-sm);
+      color: var(--muted);
+      text-decoration: line-through;
+      margin-left: var(--space-2);
+    }
+    
+    .pd-badges {
+      display: flex;
+      gap: var(--space-2);
+      margin-top: var(--space-2);
+      flex-wrap: wrap;
+    }
+    
+    .pd-badge {
+      padding: 0.25rem 0.5rem;
+      background: var(--bg-alt);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      color: var(--text-body);
+    }
+    
+    .pd-info-section {
+      padding: var(--space-4);
+      background: var(--surface);
+      border-top: 8px solid var(--bg);
+    }
+    
+    .pd-name {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-strong);
+      margin-bottom: var(--space-4);
+    }
+    
+    .pd-specs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+    
+    .pd-spec-card {
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      text-align: center;
+    }
+    
+    .pd-spec-label {
+      font-size: var(--font-size-xs);
+      color: var(--muted);
+      margin-bottom: var(--space-1);
+    }
+    
+    .pd-spec-value {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--text-strong);
+    }
+    
+    .pd-quality {
+      padding: var(--space-4);
+      background: var(--bg-alt);
+    }
+    
+    .pd-quality-card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: var(--space-5);
+      border: 1px solid var(--border-light);
+      text-align: center;
+    }
+    
+    .pd-quality-badge {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto var(--space-4);
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.75rem;
+      font-weight: 700;
+      border: 4px solid var(--brand-600);
+    }
+    
+    .pd-quality-label {
+      font-size: var(--font-size-xs);
+      margin-top: var(--space-1);
+    }
+    
+    .pd-bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      gap: var(--space-3);
+      box-shadow: 0 -4px 12px var(--shadow-color);
+      z-index: 100;
+    }
+    
+    .pd-section-title {
+      font-size: var(--font-size-base);
+      font-weight: 600;
+      color: var(--text-strong);
+      margin-bottom: var(--space-4);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="pd-header">
+    <a href="./products.html" class="pd-back">←</a>
+    <span class="pd-title-text">Product Details</span>
+    <div class="pd-actions">
+      <a href="./cart.html" class="icon-btn">
+        <svg width="24" height="24" fill="currentColor">
+          <path d="M4 5H2v2h2l2.4 9.3a2 2 0 0 0 2 1.5h8.4a2 2 0 0 0 1.9-1.4L20 9H7.1zM9 21.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- Loading State -->
+  <div id="loading" class="loader-container" style="min-height: 400px;">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Error State -->
+  <div id="error-state" class="empty-state hidden" style="padding: 4rem 2rem;">
+    <h3>Product Not Found</h3>
+    <p>Sorry, this product could not be found</p>
+    <a href="./products.html" class="btn btn-primary" style="margin-top: 1rem;">Browse Products</a>
+  </div>
+
+  <!-- Product Content -->
+  <main id="product-content" class="hidden" style="padding-bottom: 80px;">
+    
+    <!-- Product Gallery -->
+    <section class="pd-gallery">
+      <img id="product-image" class="pd-gallery-image" alt="Product" />
+      <div class="pd-placeholder">
+        <svg width="120" height="120" fill="currentColor" opacity="0.3">
+          <path d="M12 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zM4.5 19.6c0-3.1 3.3-5 7.5-5s7.5 1.9 7.5 5V21H4.5z"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Price Section -->
+    <section class="pd-price-section">
+      <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+        <span class="pd-price" id="product-price">$0.00</span>
+        <span class="pd-original-price" id="product-original-price">$0.00</span>
+        <span class="chip" id="product-discount" style="background: #FFF3E0; color: #E65100;">0% off</span>
+      </div>
+      
+      <div class="pd-badges">
+        <span class="pd-badge">Refurbished</span>
+        <span class="pd-badge">1-Year Warranty</span>
+        <span class="pd-badge">Free Shipping</span>
+      </div>
+    </section>
+
+    <!-- Product Info -->
+    <section class="pd-info-section">
+      <h1 class="pd-name" id="product-name">Loading...</h1>
+      
+      <div style="display: flex; gap: var(--space-4); margin-bottom: var(--space-4); flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: var(--space-2);">
+          <svg width="16" height="16" fill="var(--brand-600)">
+            <path d="M12 3.3 14.9 9l6.1.5-4.6 3.9 1.4 6L12 16.8 6.2 19.4l1.4-6-4.6-3.9 6.1-.5z"/>
+          </svg>
+          <span id="product-rating">4.8</span>
+          <span class="text-muted">(<span id="product-reviews">0</span> reviews)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--space-2);">
+          <svg width="16" height="16" fill="var(--muted)">
+            <path d="M12 3.5a6.5 6.5 0 0 1 6.5 6.5c0 4.2-4.4 9-6 10.7a.7.7 0 0 1-1 0c-1.6-1.7-6-6.5-6-10.7A6.5 6.5 0 0 1 12 3.5zm0 3a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/>
+          </svg>
+          <span id="product-location" class="text-muted">Ships from Ontario</span>
+        </div>
+      </div>
+
+      <!-- Specifications Grid -->
+      <div class="pd-specs-grid">
+        <div class="pd-spec-card">
+          <div class="pd-spec-label">Condition</div>
+          <div class="pd-spec-value" id="product-condition">99% New</div>
+        </div>
+        <div class="pd-spec-card">
+          <div class="pd-spec-label">Brand</div>
+          <div class="pd-spec-value" id="product-brand">-</div>
+        </div>
+        <div class="pd-spec-card">
+          <div class="pd-spec-label">Warranty</div>
+          <div class="pd-spec-value">1 Year</div>
+        </div>
+        <div class="pd-spec-card">
+          <div class="pd-spec-label">Shipping</div>
+          <div class="pd-spec-value">Free</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quality Inspection -->
+    <section class="pd-quality">
+      <h2 class="pd-section-title">Quality Inspection Report</h2>
+      <div class="pd-quality-card">
+        <div class="pd-quality-badge">
+          <div>99%</div>
+          <div class="pd-quality-label">NEW</div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); margin-top: var(--space-4);">
+          <div style="text-align: center; padding: var(--space-3); background: var(--bg-alt); border-radius: var(--radius-sm);">
+            <div style="font-size: var(--font-size-xs); color: var(--muted);">Screen</div>
+            <div style="font-weight: 600; margin-top: var(--space-1);">Normal</div>
+          </div>
+          <div style="text-align: center; padding: var(--space-3); background: var(--bg-alt); border-radius: var(--radius-sm);">
+            <div style="font-size: var(--font-size-xs); color: var(--muted);">Wi-Fi</div>
+            <div style="font-weight: 600; margin-top: var(--space-1);">Working</div>
+          </div>
+          <div style="text-align: center; padding: var(--space-3); background: var(--bg-alt); border-radius: var(--radius-sm);">
+            <div style="font-size: var(--font-size-xs); color: var(--muted);">Battery</div>
+            <div style="font-weight: 600; margin-top: var(--space-1);">Excellent</div>
+          </div>
+          <div style="text-align: center; padding: var(--space-3); background: var(--bg-alt); border-radius: var(--radius-sm);">
+            <div style="font-size: var(--font-size-xs); color: var(--muted);">Ports</div>
+            <div style="font-weight: 600; margin-top: var(--space-1);">Cleaned</div>
+          </div>
+        </div>
+        <div style="display: inline-flex; align-items: center; gap: var(--space-2); margin-top: var(--space-4); padding: var(--space-2) var(--space-4); background: var(--brand-600); color: white; border-radius: var(--radius-pill); font-size: var(--font-size-sm);">
+          <svg width="16" height="16" fill="currentColor">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>
+          Quality Certified
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Description -->
+    <section style="padding: var(--space-4); background: var(--surface); border-top: 8px solid var(--bg);">
+      <h2 class="pd-section-title">Product Highlights</h2>
+      <ul id="product-highlights" style="list-style: disc; padding-left: var(--space-5); color: var(--text-body); line-height: 1.6;">
+        <li>Official Quality Inspection</li>
+        <li>100% Genuine Product</li>
+        <li>Full Functionality Guaranteed</li>
+      </ul>
+      <div id="product-description" style="margin-top: var(--space-4); color: var(--text-body); line-height: 1.6;">
+        All devices are tested and certified before shipment.
+      </div>
+    </section>
+
+    <!-- Delivery Info -->
+    <section style="padding: var(--space-4); background: var(--surface); border-top: 1px solid var(--border-light);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <span style="font-size: var(--font-size-sm); color: var(--text-body);">Delivery</span>
+        <div style="display: flex; align-items: center; gap: var(--space-2);">
+          <span style="font-size: var(--font-size-sm); font-weight: 500;">Ships from Ontario</span>
+          <span style="font-size: var(--font-size-xs); color: var(--muted);">3-5 Days</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Guarantee Section -->
+    <section style="padding: var(--space-4); background: var(--bg-alt); border-top: 8px solid var(--bg);">
+      <h2 class="pd-section-title">Guarantee</h2>
+      <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+        <div style="display: flex; align-items: start; gap: var(--space-3);">
+          <svg width="20" height="20" fill="var(--brand-600)" style="flex-shrink: 0; margin-top: 2px;">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>
+          <div>
+            <div style="font-weight: 600; margin-bottom: var(--space-1);">7-Day Return Policy</div>
+            <div style="font-size: var(--font-size-sm); color: var(--muted);">Return within 7 days of receipt if not satisfied</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: start; gap: var(--space-3);">
+          <svg width="20" height="20" fill="var(--brand-600)" style="flex-shrink: 0; margin-top: 2px;">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>
+          <div>
+            <div style="font-weight: 600; margin-bottom: var(--space-1);">Free Return Shipping</div>
+            <div style="font-size: var(--font-size-sm); color: var(--muted);">We cover return shipping costs</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: start; gap: var(--space-3);">
+          <svg width="20" height="20" fill="var(--brand-600)" style="flex-shrink: 0; margin-top: 2px;">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>
+          <div>
+            <div style="font-weight: 600; margin-bottom: var(--space-1);">1-Year Warranty</div>
+            <div style="font-size: var(--font-size-sm); color: var(--muted);">Nationwide service at 1000+ locations</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: start; gap: var(--space-3);">
+          <svg width="20" height="20" fill="var(--brand-600)" style="flex-shrink: 0; margin-top: 2px;">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>
+          <div>
+            <div style="font-weight: 600; margin-bottom: var(--space-1);">Genuine Products</div>
+            <div style="font-size: var(--font-size-sm); color: var(--muted);">100% authentic with official invoices</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Purchase Bar -->
+  <div id="bottom-bar" class="pd-bottom-bar hidden">
+    <button class="btn btn-secondary" id="add-to-cart-btn">Add to Cart</button>
+    <button class="btn btn-primary" id="buy-now-btn">Buy Now</button>
+  </div>
+
+  <script src="./assets/js/storage.js"></script>
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/ui.js"></script>
+  <script src="./assets/js/pages/product-detail.js"></script>
+  <script src="./assets/js/main.js"></script>
+</body>
+</html>

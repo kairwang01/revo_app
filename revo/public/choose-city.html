@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Choose City · Revo</title>
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <style>
+    body { 
+      background: var(--bg); 
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .wrap { 
+      max-width: 750px; 
+      margin: 0 auto; 
+      padding: var(--space-4);
+      flex: 1;
+    }
+    .title { 
+      font-size: var(--font-size-xl); 
+      font-weight: 700; 
+      margin: var(--space-2) 0 var(--space-4); 
+      color: var(--text-strong);
+    }
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: var(--space-6);
+      font-size: var(--font-size-sm);
+    }
+    .grid { 
+      display: grid; 
+      gap: var(--space-3); 
+      grid-template-columns: repeat(2, 1fr); 
+    }
+    .city-card {
+      background: var(--surface); 
+      border-radius: var(--radius-md); 
+      padding: var(--space-4);
+      box-shadow: 0 2px 8px var(--shadow-color); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      min-height: 80px; 
+      font-weight: 600; 
+      color: var(--text-strong);
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      text-align: center;
+    }
+    .city-card:hover, 
+    .city-card:focus { 
+      border-color: var(--brand-600); 
+      outline: none; 
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow-color);
+    }
+    .cta { 
+      position: sticky;
+      bottom: 0;
+      left: 0; 
+      right: 0; 
+      padding: var(--space-4); 
+      background: linear-gradient(to top, var(--bg), transparent);
+    }
+    .btn-geo {
+      width: 100%; 
+      border: none; 
+      border-radius: var(--radius-pill); 
+      padding: var(--space-4) var(--space-6); 
+      font-weight: 700;
+      font-size: var(--font-size-base);
+      background: linear-gradient(135deg, var(--brand-500), var(--brand-700)); 
+      color: var(--surface);
+      box-shadow: 0 4px 12px rgba(67, 205, 128, 0.3);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .btn-geo:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(67, 205, 128, 0.4);
+    }
+    .btn-geo:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .back { 
+      color: var(--brand-600); 
+      text-decoration: none; 
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .back:hover {
+      text-decoration: underline;
+    }
+    @media (min-width: 640px) {
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="javascript:history.back()">← Back</a>
+    <div class="title">Choose Your City</div>
+    <p class="subtitle">Select your city to see available products and accurate pricing with local taxes.</p>
+    <div class="grid" id="cityGrid"></div>
+  </div>
+
+  <div class="cta">
+    <button class="btn-geo" id="useGeo">📍 Use My Current Location</button>
+  </div>
+
+  <script type="module">
+    import { REVO_CITIES, setCity, initCitySelection, getCity } from "./assets/js/geo.js";
+
+    const grid = document.getElementById("cityGrid");
+    const geoBtn = document.getElementById("useGeo");
+    
+    // Render city cards
+    REVO_CITIES.forEach(c => {
+      const el = document.createElement("button");
+      el.className = "city-card";
+      el.textContent = c.name;
+      el.addEventListener("click", () => {
+        setCity(c.key);
+        redirectBack();
+      });
+      grid.appendChild(el);
+    });
+
+    // Geolocation button handler
+    geoBtn.addEventListener("click", async () => {
+      geoBtn.disabled = true;
+      geoBtn.textContent = "Getting location...";
+      
+      try {
+        const city = await initCitySelection();
+        if (city) {
+          redirectBack();
+        } else {
+          alert("Location permission not available. Please choose a city above.");
+          geoBtn.disabled = false;
+          geoBtn.textContent = "📍 Use My Current Location";
+        }
+      } catch (error) {
+        console.error("Geolocation error:", error);
+        alert("Could not get your location. Please choose a city above.");
+        geoBtn.disabled = false;
+        geoBtn.textContent = "📍 Use My Current Location";
+      }
+    });
+
+    function redirectBack() {
+      const url = new URL(window.location.href);
+      const back = url.searchParams.get("from") || "index";
+      window.location.href = `./${back}.html`;
+    }
+
+    // If user somehow arrives with a saved city, bounce back
+    if (getCity()) {
+      redirectBack();
+    }
+  </script>
+</body>
+</html>

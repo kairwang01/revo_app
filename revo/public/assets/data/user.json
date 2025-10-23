@@ -1,0 +1,24 @@
+{
+  "id": 1,
+  "email": "demo@revo.com",
+  "name": "Demo User",
+  "phone": "+1 (604) 555-0123",
+  "addresses": [
+    {
+      "id": 1,
+      "name": "Home",
+      "street": "123 Main Street",
+      "city": "Vancouver",
+      "province": "BC",
+      "postalCode": "V6B 1A1",
+      "country": "Canada",
+      "phone": "+1 (604) 555-0123",
+      "isDefault": true
+    }
+  ],
+  "preferences": {
+    "notifications": true,
+    "newsletter": false,
+    "language": "en"
+  }
+}
