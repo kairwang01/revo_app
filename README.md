@@ -177,7 +177,32 @@ revo/public/
 │       ├── user.json           # User data
 │       └── wallet.json         # Wallet balance data
 │
-└── revo/README.md              # Additional documentation
+└── revo/README.md              # Multi-page build documentation
+```
+
+### MPA Build Features
+
+The Multi-Page Application (MPA) build in `revo/` provides a traditional multi-page architecture with individual HTML files. Key features include:
+
+- **11 Dedicated HTML Pages**: Complete e-commerce flow with separate pages
+- **City-Based Tax Calculation**: Dynamic pricing for 5 cities (Vancouver 12%, Edmonton 5%, Ottawa 13%)
+- **Geolocation Integration**: Auto-detect and set city using browser geolocation API
+- **Full Shopping Cart**: Add/remove products with localStorage persistence
+- **Product Filtering**: Filter by brand (Apple/Samsung) and category
+- **Mock Authentication**: Login/logout with localStorage state management
+- **Order Management**: View and track purchase orders
+- **Trade-In Estimation**: Device appraisal form for C2B2C flow
+- **Green Theme Design**: Consistent #43CD80 brand color throughout
+
+#### MPA Getting Started
+
+1. Open `revo/public/index.html` directly in a browser
+2. For optimal experience, serve with HTTP: `python -m http.server 8000` then visit `http://localhost:8000`
+3. Test city selection to see tax rate updates
+4. Add products to cart and complete checkout
+5. Test trade-in form for device estimates
+
+See `revo/README.md` for detailed MPA documentation including design system specifications and page descriptions.
 ```
 
 ## Configuration
