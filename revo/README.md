@@ -2,7 +2,7 @@
 
 A fully functional local static e-commerce platform for Apple & Samsung refurbished devices, built with vanilla HTML, CSS, and JavaScript. No frameworks required.
 
-## 🎯 Features
+## Features
 
 - **Multi-page Architecture**: 11 dedicated HTML pages for complete e-commerce flow
 - **Mobile-First Design**: Responsive design optimized for mobile devices
@@ -15,7 +15,7 @@ A fully functional local static e-commerce platform for Apple & Samsung refurbis
 - **Orders Management**: View purchase and trade-in orders
 - **Green Theme**: Revo brand color (#43CD80) throughout
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 revo/
@@ -62,7 +62,7 @@ revo/
 └── README.md
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Option 1: Open Directly in Browser
 
@@ -95,7 +95,7 @@ http-server -p 8000
 
 Then open: http://localhost:8000
 
-## 🎨 Design System
+## Design System
 
 ### Color Palette
 - **Primary Green**: `#43CD80` - Main brand color
@@ -119,7 +119,7 @@ Then open: http://localhost:8000
 - **LG**: 22px - Large cards
 - **Pill**: 999px - Fully rounded
 
-## 🛠️ Features & Functionality
+## Features & Functionality
 
 ### City Selection
 - Dropdown in header allows city selection
@@ -148,7 +148,7 @@ Then open: http://localhost:8000
 - **Edmonton, AB**: 5% (GST)
 - **Ottawa, ON**: 13% (HST)
 
-## 📱 Page Descriptions
+## Page Descriptions
 
 ### Home (`index.html`)
 - Hero banner with promotion
@@ -196,7 +196,7 @@ Then open: http://localhost:8000
 - Photo upload
 - Instant estimate calculation
 
-## 🔌 Backend Integration Placeholders
+## Backend Integration Placeholders
 
 All API calls are marked with:
 ```javascript
@@ -239,7 +239,7 @@ headers: {
 }
 ```
 
-## 💾 LocalStorage Schema
+## LocalStorage Schema
 
 ### Keys Used
 - `revo_city`: Selected city
@@ -248,7 +248,7 @@ headers: {
 - `revo_user`: User profile
 - `revo_wallet`: Wallet information
 
-## 🧪 Testing
+## Testing
 
 1. Open `public/index.html` in a browser
 2. Test city selection (check tax rates update)
@@ -257,7 +257,7 @@ headers: {
 5. Complete a checkout
 6. Test trade-in form
 
-## 📦 No Dependencies
+## No Dependencies
 
 This project uses:
 - ✅ Pure HTML5
@@ -268,14 +268,14 @@ This project uses:
 - ❌ No Bootstrap
 - ❌ No CDN dependencies
 
-## 🌐 Browser Support
+## Browser Support
 
 - Chrome/Edge 90+
 - Firefox 88+
 - Safari 14+
 - Mobile browsers (iOS Safari, Chrome Mobile)
 
-## 🔜 Future Python Backend Integration
+## Future Python Backend Integration
 
 When connecting to a Python FastAPI backend:
 
@@ -285,14 +285,14 @@ When connecting to a Python FastAPI backend:
 4. Add proper error handling
 5. Connect to PostgreSQL/MySQL database
 
-## 📝 License
+## License
 
 This is a demonstration project for educational purposes.
 
-## 🤝 Contributing
+## Contributing
 
 This is a static prototype. For production use, connect to a proper backend API.
 
 ---
 
-**Built with ❤️ using Vanilla JS, HTML5 & CSS3**
+**Built with Vanilla JS, HTML5 & CSS3**
