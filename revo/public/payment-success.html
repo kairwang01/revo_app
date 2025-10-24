@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#43CD80">
+  <title>Payment Successful - Revo</title>
+  
+  <link rel="stylesheet" href="./assets/css/tokens.css">
+  <link rel="stylesheet" href="./assets/css/base.css">
+  <link rel="stylesheet" href="./assets/css/layout.css">
+  <link rel="stylesheet" href="./assets/css/components.css">
+  <link rel="stylesheet" href="./assets/css/pages.css">
+  
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  
+  <style>
+    .success-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #43CD80 0%, #2eaa5f 100%);
+      padding: 2rem;
+    }
+    
+    .success-card {
+      background: white;
+      border-radius: 16px;
+      padding: 3rem 2rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .success-icon {
+      width: 100px;
+      height: 100px;
+      background: #43CD80;
+      border-radius: 50%;
+      margin: 0 auto 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 50px;
+      animation: scaleIn 0.5s ease-out;
+    }
+    
+    @keyframes scaleIn {
+      0% {
+        transform: scale(0);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    .success-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-strong);
+      margin-bottom: 0.5rem;
+    }
+    
+    .success-subtitle {
+      font-size: 1rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+    
+    .order-details {
+      background: var(--bg-alt);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      text-align: left;
+    }
+    
+    .order-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    
+    .order-row:last-child {
+      border-bottom: none;
+    }
+    
+    .order-label {
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+    
+    .order-value {
+      color: var(--text-strong);
+      font-weight: 600;
+    }
+    
+    .order-id-big {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--brand-600);
+    }
+    
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: #43CD80;
+      position: absolute;
+      animation: confetti-fall 3s linear forwards;
+    }
+    
+    @keyframes confetti-fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="success-container">
+    <div class="success-card">
+      <div class="success-icon">✓</div>
+      
+      <h1 class="success-title">Payment Successful!</h1>
+      <p class="success-subtitle">Your order has been placed successfully</p>
+      
+      <div class="order-details">
+        <div class="order-row">
+          <span class="order-label">Order ID</span>
+          <span class="order-id-big" id="order-id">-</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Amount Paid</span>
+          <span class="order-value" id="order-amount">$0.00</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Payment Time</span>
+          <span class="order-value" id="order-time">-</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Status</span>
+          <span class="order-value" style="color: #43CD80;">Confirmed</span>
+        </div>
+      </div>
+      
+      <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; font-size: 0.875rem; color: #1e40af; margin: 1.5rem 0;">
+        <strong>📧 Confirmation email sent!</strong><br>
+        We've sent the order details to your email address.
+      </div>
+      
+      <div class="action-buttons">
+        <a href="./orders.html" class="btn btn-primary btn-full">View My Orders</a>
+        <a href="./index.html" class="btn btn-secondary btn-full">Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Get order information from URL or localStorage
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get('orderId') || localStorage.getItem('lastOrderId') || 'ORD' + Date.now();
+    const amount = params.get('amount') || localStorage.getItem('lastOrderAmount') || '0.00';
+    const orderTime = localStorage.getItem('lastOrderTime') || new Date().toISOString();
+    
+    // Display order information
+    document.getElementById('order-id').textContent = orderId;
+    document.getElementById('order-amount').textContent = '$' + amount;
+    document.getElementById('order-time').textContent = new Date(orderTime).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    
+    // Clear cart after successful payment
+    localStorage.removeItem('revo_cart');
+    
+    // Create confetti effect
+    function createConfetti() {
+      const colors = ['#43CD80', '#667eea', '#764ba2', '#f6ad55', '#fc8181'];
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * 100 + '%';
+          confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.animationDelay = Math.random() * 0.5 + 's';
+          confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          document.body.appendChild(confetti);
+          
+          setTimeout(() => confetti.remove(), 3000);
+        }, i * 30);
+      }
+    }
+    
+    // Trigger confetti on page load
+    window.addEventListener('DOMContentLoaded', createConfetti);
+  </script>
+</body>
+</html>

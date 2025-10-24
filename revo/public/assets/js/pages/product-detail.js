@@ -35,8 +35,27 @@ async function loadProduct(productId) {
     toggleElement(content, true);
 
     // Populate product data
-    document.getElementById('product-image').src = product.image;
-    document.getElementById('product-image').alt = product.name;
+    const productImage = document.getElementById('product-image');
+    const placeholder = document.querySelector('.pd-placeholder');
+    
+    productImage.src = product.image;
+    productImage.alt = product.name;
+    
+    // Hide placeholder when image loads
+    productImage.onload = function() {
+      if (placeholder) {
+        placeholder.style.display = 'none';
+      }
+      productImage.style.display = 'block';
+    };
+    
+    // Show placeholder if image fails to load
+    productImage.onerror = function() {
+      if (placeholder) {
+        placeholder.style.display = 'flex';
+      }
+      productImage.style.display = 'none';
+    };
     document.getElementById('product-brand').textContent = product.brand;
     document.getElementById('product-condition').textContent = product.condition;
     document.getElementById('product-name').textContent = product.name;
@@ -64,6 +83,9 @@ async function loadProduct(productId) {
     if (product.description) {
       document.getElementById('product-description').textContent = product.description;
     }
+    
+    // Show bottom bar
+    toggleElement(document.getElementById('bottom-bar'), true);
   } catch (error) {
     console.error('Error loading product:', error);
     showError();
