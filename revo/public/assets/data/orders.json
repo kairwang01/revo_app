@@ -17,12 +17,12 @@
       }
     ],
     "shippingAddress": {
-      "name": "John Doe",
-      "street": "123 Main Street",
-      "city": "Vancouver",
-      "province": "BC",
-      "postalCode": "V6B 1A1",
-      "phone": "+1 (604) 555-0123"
+      "name": "Test User",
+      "street": "75 Laurier Ave E",
+      "city": "Ottawa",
+      "province": "ON",
+      "postalCode": "K1N 6N5",
+      "phone": "+1 (613) 555-0100"
     }
   },
   {

@@ -1,14 +1,16 @@
 // Product detail page functionality
 
+let currentProduct = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
   const params = getUrlParams();
   const productId = params.id;
-  
+
   if (!productId) {
     showError();
     return;
   }
-  
+
   await loadProduct(productId);
   setupAddToCart(productId);
 });
@@ -17,19 +19,21 @@ async function loadProduct(productId) {
   const loading = document.getElementById('loading');
   const content = document.getElementById('product-content');
   const errorState = document.getElementById('error-state');
-  
+
   try {
     const product = await api.getProduct(productId);
-    
+
     if (!product) {
       showError();
       return;
     }
-    
+
+    currentProduct = product;
+
     // Hide loading, show content
     toggleElement(loading, false);
     toggleElement(content, true);
-    
+
     // Populate product data
     document.getElementById('product-image').src = product.image;
     document.getElementById('product-image').alt = product.name;
@@ -39,27 +43,42 @@ async function loadProduct(productId) {
     document.getElementById('product-rating').textContent = product.rating;
     document.getElementById('product-reviews').textContent = product.reviews;
     document.getElementById('product-location').textContent = product.location;
-    document.getElementById('product-price').textContent = formatMoney(product.price);
-    document.getElementById('product-original-price').textContent = formatMoney(product.originalPrice);
-    
-    const discount = Math.round((1 - product.price / product.originalPrice) * 100);
+    const priceValue = Number(product.price) || 0;
+    const originalValue = Number(product.originalPrice);
+
+    document.getElementById('product-price').textContent = formatMoney(priceValue);
+    document.getElementById('product-original-price').textContent = Number.isFinite(originalValue)
+      ? formatMoney(originalValue)
+      : formatMoney(priceValue);
+
+    const discount = computeDiscountPercent(product);
     document.getElementById('product-discount').textContent = `${discount}% off`;
-    
+
     // Populate highlights
     const highlightsList = document.getElementById('product-highlights');
-    if (product.highlights && product.highlights.length > 0) {
+    if (Array.isArray(product.highlights) && product.highlights.length > 0) {
       highlightsList.innerHTML = product.highlights.map(h => `<li>${h}</li>`).join('');
     }
-    
+
     // Populate description if available
     if (product.description) {
       document.getElementById('product-description').textContent = product.description;
     }
-    
   } catch (error) {
     console.error('Error loading product:', error);
     showError();
   }
+}
+
+function computeDiscountPercent(product) {
+  const price = Number(product.price);
+  const original = Number(product.originalPrice);
+
+  if (!Number.isFinite(price) || !Number.isFinite(original) || original <= 0) {
+    return 0;
+  }
+
+  return Math.max(0, Math.round((1 - price / original) * 100));
 }
 
 function showError() {
@@ -71,20 +90,33 @@ function showError() {
 function setupAddToCart(productId) {
   const addBtn = document.getElementById('add-to-cart-btn');
   const buyBtn = document.getElementById('buy-now-btn');
-  
+
+  if (!addBtn || !buyBtn) {
+    return;
+  }
+
   addBtn.addEventListener('click', async () => {
-    const product = await api.getProduct(productId);
+    const product = await ensureProductLoaded(productId);
     if (product) {
       cartStore.add(product, 1);
       showToast('Added to cart!', 'success');
     }
   });
-  
+
   buyBtn.addEventListener('click', async () => {
-    const product = await api.getProduct(productId);
+    const product = await ensureProductLoaded(productId);
     if (product) {
       cartStore.add(product, 1);
       window.location.href = './checkout.html';
     }
   });
+}
+
+async function ensureProductLoaded(productId) {
+  if (currentProduct && Number(currentProduct.id) === Number(productId)) {
+    return currentProduct;
+  }
+
+  currentProduct = await api.getProduct(productId);
+  return currentProduct;
 }

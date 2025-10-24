@@ -8,7 +8,12 @@
   font-size: var(--font-size-base);
   font-weight: 500;
   border-radius: var(--radius-pill);
-  transition: all var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast),
+    border-color var(--transition-fast);
   cursor: pointer;
   border: none;
   min-height: var(--touch-target);
@@ -77,6 +82,12 @@
   cursor: not-allowed;
 }
 
+:where(.card-header, .modal-header, .list-item) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 /* Cards */
 .card {
   background: var(--surface);
@@ -91,9 +102,6 @@
 }
 
 .card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   margin-bottom: var(--space-3);
 }
 
@@ -416,9 +424,6 @@
 }
 
 .list-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding: var(--space-4);
   background: var(--surface);
   border-radius: var(--radius-md);
@@ -507,30 +512,28 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: var(--z-modal);
   padding: var(--space-4);
+  background: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-modal);
 }
 
-.modal {
+.modal,
+.modal-content {
   background: var(--surface);
   border-radius: var(--radius-lg);
-  max-width: 500px;
   width: 100%;
+  max-width: min(500px, 90vw);
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-elevated);
 }
 
 .modal-header {
   padding: var(--space-4);
   border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .modal-body {

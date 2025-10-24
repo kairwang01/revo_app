@@ -260,13 +260,13 @@ headers: {
 ## No Dependencies
 
 This project uses:
-- ✅ Pure HTML5
-- ✅ Pure CSS3 (with CSS Variables)
-- ✅ Vanilla JavaScript (ES6+)
-- ❌ No React/Vue/Angular
-- ❌ No jQuery
-- ❌ No Bootstrap
-- ❌ No CDN dependencies
+- Yes Pure HTML5
+- Yes Pure CSS3 (with CSS Variables)
+- Yes Vanilla JavaScript (ES6+)
+- No React/Vue/Angular
+- No jQuery
+- No Bootstrap
+- No CDN dependencies
 
 ## Browser Support
 

@@ -2,21 +2,21 @@
   {
     "id": "phones",
     "name": "Phones",
-    "icon": "📱"
+    "icon": "Phone"
   },
   {
     "id": "laptops",
     "name": "Laptops",
-    "icon": "💻"
+    "icon": "Laptop"
   },
   {
     "id": "tablets",
     "name": "Tablets",
-    "icon": "📲"
+    "icon": "Tablet"
   },
   {
     "id": "accessories",
     "name": "Accessories",
-    "icon": "🎧"
+    "icon": "Accessory"
   }
 ]

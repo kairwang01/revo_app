@@ -116,7 +116,7 @@
   </div>
 
   <div class="cta">
-    <button class="btn-geo" id="useGeo">📍 Use My Current Location</button>
+    <button class="btn-geo" id="useGeo">Use My Current Location</button>
   </div>
 
   <script type="module">
@@ -149,13 +149,13 @@
         } else {
           alert("Location permission not available. Please choose a city above.");
           geoBtn.disabled = false;
-          geoBtn.textContent = "📍 Use My Current Location";
+          geoBtn.textContent = "Use My Current Location";
         }
       } catch (error) {
         console.error("Geolocation error:", error);
         alert("Could not get your location. Please choose a city above.");
         geoBtn.disabled = false;
-        geoBtn.textContent = "📍 Use My Current Location";
+        geoBtn.textContent = "Use My Current Location";
       }
     });
 

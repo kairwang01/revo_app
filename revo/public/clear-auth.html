@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clear Authentication</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    button {
+      background: #ff4444;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px;
+    }
+    button:hover {
+      background: #cc0000;
+    }
+    .success {
+      color: #4caf50;
+      margin-top: 1rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>清除认证状态</h1>
+    <p>点击下方按钮清除所有登录信息，确保默认状态为未登录</p>
+    <button onclick="clearAuth()">清除登录状态</button>
+    <button onclick="window.location.href='login.html'">前往登录页面</button>
+    <div class="success" id="success">✓ 已清除所有登录信息</div>
+  </div>
+
+  <script>
+    function clearAuth() {
+      // Clear all authentication related items
+      localStorage.removeItem('mockAuthToken');
+      localStorage.removeItem('mockUser');
+      localStorage.removeItem('revo_auth');
+      localStorage.removeItem('revo_user');
+      localStorage.removeItem('revo_wallet');
+      
+      // Show success message
+      document.getElementById('success').style.display = 'block';
+      
+      console.log('All authentication data cleared');
+      console.log('Current localStorage:', { ...localStorage });
+    }
+
+    // Check current auth status on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const hasAuth = localStorage.getItem('mockAuthToken') || 
+                      localStorage.getItem('revo_auth');
+      
+      if (hasAuth) {
+        console.log('⚠️ Found existing authentication data');
+      } else {
+        console.log('✓ No authentication data found - default state is logged out');
+      }
+    });
+  </script>
+</body>
+</html>

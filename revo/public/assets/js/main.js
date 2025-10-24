@@ -17,16 +17,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Update active tab in bottom navigation
 function updateActiveTab() {
-  const currentPath = window.location.pathname;
+  const currentPath = window.location.pathname.replace(/\/$/, '');
   const tabs = document.querySelectorAll('.tab-item');
-  
+
   tabs.forEach(tab => {
     const href = tab.getAttribute('href');
-    if (href && currentPath.includes(href.replace('./', ''))) {
-      tab.classList.add('active');
-    } else {
-      tab.classList.remove('active');
+    if (!href) {
+      return;
     }
+
+    const tabPath = new URL(href, window.location.origin).pathname.replace(/\/$/, '');
+    tab.classList.toggle('active', tabPath === currentPath);
   });
 }
 

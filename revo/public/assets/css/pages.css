@@ -240,7 +240,7 @@
 }
 
 .product-highlights li::before {
-  content: '✓';
+  content: '•';
   color: var(--brand-600);
   font-weight: 700;
 }
