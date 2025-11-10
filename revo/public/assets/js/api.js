@@ -1,11 +1,11 @@
 // API module for fetching data
-// Automatically uses mock data when backend is unavailable
+// Automatically uses backend API when available, falls back to mock data
 
 const API_BASE = './assets/data';
-const BACKEND_API_BASE = '/api'; // Real backend endpoint
 
-// Check if mockApi is available
-let useMockApi = true;
+// Backend API will be initialized
+let useBackendApi = false;
+let backendReady = false;
 
 const DATASET_TTL = 5 * 60 * 1000; // 5 minutes cache window
 const datasetCache = new Map();
@@ -79,23 +79,29 @@ const api = {
   // Initialize and check backend connection
   async init() {
     try {
-      // Try to check if backend is available
-      const response = await fetch(`${BACKEND_API_BASE}/health`, {
-        method: 'GET',
-        signal: AbortSignal.timeout(2000)
-      });
-      
-      if (response.ok) {
-        useMockApi = false;
-        console.log('%cBackend connected — using real API', 'color: #4caf50; font-weight: bold;');
-      } else {
-        throw new Error('Backend not available');
+      // Check if backendApi is available
+      if (typeof backendApi !== 'undefined') {
+        const isConnected = await backendApi.checkHealth();
+        
+        if (isConnected) {
+          useBackendApi = true;
+          backendReady = true;
+          console.log('%c✓ Using Backend API', 'color: #4caf50; font-weight: bold;');
+          return false; // Not using mock
+        }
       }
+      
+      // Fallback to mock
+      useBackendApi = false;
+      backendReady = false;
+      console.log('%c⚠ Using Mock API (Backend unavailable)', 'color: #ff9800; font-weight: bold;');
+      return true; // Using mock
     } catch (error) {
-      useMockApi = true;
-      console.log('%cMock mode enabled — using test data', 'color: #ff9800; font-weight: bold;');
+      useBackendApi = false;
+      backendReady = false;
+      console.log('%c⚠ Using Mock API (Error connecting)', 'color: #ff9800; font-weight: bold;');
+      return true; // Using mock
     }
-    return useMockApi;
   },
 
   // Get mock API instance
@@ -105,45 +111,75 @@ const api = {
 
   // Authentication - login
   async login(email, password) {
-    if (useMockApi && typeof mockApi !== 'undefined') {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.login(email, password);
+    }
+    
+    // Fallback to mock
+    if (typeof mockApi !== 'undefined') {
       return await mockApi.login(email, password);
     }
     
-    // Real backend call
-    try {
-      const response = await fetch(`${BACKEND_API_BASE}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      return await response.json();
-    } catch (error) {
-      console.error('Login failed, falling back to mock:', error);
-      if (typeof mockApi !== 'undefined') {
-        return await mockApi.login(email, password);
-      }
-      throw error;
-    }
+    throw new Error('No API available');
   },
 
   // Logout
   async logout() {
-    if (useMockApi && typeof mockApi !== 'undefined') {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.logout();
+    }
+    
+    // Fallback to mock
+    if (typeof mockApi !== 'undefined') {
       return await mockApi.logout();
     }
     
-    try {
-      const response = await fetch(`${BACKEND_API_BASE}/logout`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      return await response.json();
-    } catch (error) {
-      if (typeof mockApi !== 'undefined') {
-        return await mockApi.logout();
-      }
-      throw error;
+    return { success: true, message: 'Logged out' };
+  },
+
+  // Register
+  async register(email, password) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.register(email, password);
     }
+    
+    // Fallback to mock
+    if (typeof mockApi !== 'undefined') {
+      return await mockApi.register ? mockApi.register(email, password) : {
+        success: true,
+        message: 'Registration successful (mock)'
+      };
+    }
+    
+    return { success: true, message: 'Registration successful (mock)' };
+  },
+
+  // Get current user
+  async getCurrentUser() {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.getCurrentUser();
+    }
+    
+    // Fallback to mock
+    if (typeof mockApi !== 'undefined' && mockApi.getUser) {
+      return await mockApi.getUser();
+    }
+    
+    return { success: false, error: 'Not authenticated' };
+  },
+
+  // Check authentication
+  isAuthenticated() {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return backendApi.isAuthenticated();
+    }
+    
+    // Fallback to mock
+    if (typeof mockApi !== 'undefined' && mockApi.isAuthenticated) {
+      return mockApi.isAuthenticated();
+    }
+    
+    return !!localStorage.getItem('authToken') || !!localStorage.getItem('mockAuthToken');
   },
 
   // Get user wallet
@@ -360,6 +396,11 @@ const api = {
   
   // Get all products
   async getProducts(filters = {}) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.getProducts(filters);
+    }
+    
+    // Fallback to local data
     try {
       let products = await getDataset('products.json');
 
@@ -373,6 +414,12 @@ const api = {
 
       if (filters.brand) {
         products = products.filter(product => product.brand === filters.brand);
+      }
+
+      if (filters.category) {
+        products = products.filter(product => 
+          product.category && product.category.toLowerCase() === filters.category.toLowerCase()
+        );
       }
 
       if (filters.search) {
@@ -400,8 +447,48 @@ const api = {
     }
   },
 
+  // Search products
+  async searchProducts(query, filters = {}) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.searchProducts(query, filters);
+    }
+    
+    // Fallback to local search
+    return await this.getProducts({ ...filters, search: query });
+  },
+
+  // Get deals
+  async getDeals(limit = 10, minDiscount = null) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.getDeals(limit, minDiscount);
+    }
+    
+    // Fallback to local data
+    try {
+      const products = await getDataset('products.json');
+      const deals = products
+        .filter(p => p.originalPrice && p.price < p.originalPrice)
+        .sort((a, b) => {
+          const discountA = ((a.originalPrice - a.price) / a.originalPrice) * 100;
+          const discountB = ((b.originalPrice - b.price) / b.originalPrice) * 100;
+          return discountB - discountA;
+        })
+        .slice(0, limit);
+      
+      return deals;
+    } catch (error) {
+      console.error('Error fetching deals:', error);
+      return [];
+    }
+  },
+
   // Get product by ID
   async getProduct(id) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.getProduct(id);
+    }
+    
+    // Fallback to local data
     try {
       const products = await getDataset('products.json');
       return products.find(product => product.id === parseInt(id, 10)) || null;
@@ -413,6 +500,11 @@ const api = {
 
   // Get categories
   async getCategories() {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.getCategories();
+    }
+    
+    // Fallback to local data
     try {
       return await getDataset('categories.json');
     } catch (error) {
@@ -422,33 +514,98 @@ const api = {
   },
 
   // Get user orders
-  async getOrders() {
+  async getOrders(status = null, limit = 50, offset = 0) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.getOrders(status, limit, offset);
+    }
+    
+    // Fallback to local data
     try {
-      return await getDataset('orders.json');
+      const orders = await getDataset('orders.json');
+      return { success: true, data: orders };
     } catch (error) {
       console.error('Error fetching orders:', error);
-      return [];
+      return { success: false, data: [] };
     }
   },
 
-  // Mock register
-  async register(userData) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-          token: 'mock.jwt.token',
-          user: {
-            id: 1,
-            ...userData
-          }
-        });
-      }, 500);
-    });
+  // Cart operations
+  async getCart() {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.getCart();
+    }
+    
+    // Fallback to localStorage
+    const cart = JSON.parse(localStorage.getItem('cart') || '{"items": [], "total": 0}');
+    return { success: true, data: cart };
   },
 
-  // Mock checkout
+  async getCartCount() {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.getCartCount();
+    }
+    
+    // Fallback to localStorage
+    const cart = JSON.parse(localStorage.getItem('cart') || '{"items": []}');
+    return { success: true, count: cart.items?.length || 0 };
+  },
+
+  async addToCart(productId, quantity = 1) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.addToCart(productId, quantity);
+    }
+    
+    // Fallback to localStorage
+    const cart = JSON.parse(localStorage.getItem('cart') || '{"items": [], "total": 0}');
+    const existingItem = cart.items.find(item => item.product_id === productId);
+    
+    if (existingItem) {
+      existingItem.qty += quantity;
+    } else {
+      cart.items.push({ product_id: productId, qty: quantity });
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cart));
+    return { success: true, message: 'Item added to cart' };
+  },
+
+  async updateCartItem(productId, quantity) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.updateCartItem(productId, quantity);
+    }
+    
+    // Fallback to localStorage
+    const cart = JSON.parse(localStorage.getItem('cart') || '{"items": []}');
+    const item = cart.items.find(item => item.product_id === productId);
+    
+    if (item) {
+      item.qty = quantity;
+      localStorage.setItem('cart', JSON.stringify(cart));
+      return { success: true, message: 'Cart updated' };
+    }
+    
+    return { success: false, error: 'Item not found' };
+  },
+
+  async removeFromCart(productId) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.removeFromCart(productId);
+    }
+    
+    // Fallback to localStorage
+    const cart = JSON.parse(localStorage.getItem('cart') || '{"items": []}');
+    cart.items = cart.items.filter(item => item.product_id !== productId);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    return { success: true, message: 'Item removed' };
+  },
+
+  // Checkout
   async checkout(orderData) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.checkout(orderData);
+    }
+    
+    // Fallback to mock
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
@@ -458,5 +615,68 @@ const api = {
         });
       }, 1000);
     });
+  },
+
+  // Trade-in operations
+  async getTradeinBrands() {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.getTradeinBrands();
+    }
+    
+    return { success: true, data: [] };
+  },
+
+  async getTradeInEstimate(deviceData) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.getTradeInEstimate(deviceData);
+    }
+    
+    // Fallback to mock
+    if (typeof mockApi !== 'undefined' && mockApi.getTradeInEstimate) {
+      return await mockApi.getTradeInEstimate(deviceData);
+    }
+    
+    return { success: false, error: 'Service unavailable' };
+  },
+
+  async createPickupRequest(formData) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.createPickupRequest(formData);
+    }
+    
+    return { success: false, error: 'Service unavailable' };
+  },
+
+  async getMyPickups() {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.getMyPickups();
+    }
+    
+    return { success: true, data: [] };
+  },
+
+  async respondToOffer(pickupId, action) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.respondToOffer(pickupId, action);
+    }
+    
+    return { success: false, error: 'Service unavailable' };
+  },
+
+  // Locations
+  async getLocations() {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.getLocations();
+    }
+    
+    return { success: true, data: [] };
+  },
+
+  async getLocation(locationId) {
+    if (useBackendApi && typeof backendApi !== 'undefined') {
+      return await backendApi.getLocation(locationId);
+    }
+    
+    return { success: false, error: 'Service unavailable' };
   }
 };
