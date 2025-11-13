@@ -24,18 +24,6 @@
 
       <form id="register-form" class="stack">
         <div class="form-group">
-          <label for="name" class="form-label">Full Name</label>
-          <input 
-            type="text" 
-            id="name" 
-            name="name" 
-            class="form-input" 
-            placeholder="John Doe"
-            required
-          >
-        </div>
-
-        <div class="form-group">
           <label for="email" class="form-label">Email</label>
           <input 
             type="email" 
@@ -43,18 +31,6 @@
             name="email" 
             class="form-input" 
             placeholder="your@email.com"
-            required
-          >
-        </div>
-
-        <div class="form-group">
-          <label for="phone" class="form-label">Phone Number</label>
-          <input 
-            type="tel" 
-            id="phone" 
-            name="phone" 
-            class="form-input" 
-            placeholder="+1 (555) 000-0000"
             required
           >
         </div>
@@ -70,6 +46,9 @@
             required
             minlength="8"
           >
+          <p class="text-muted" style="font-size:0.875rem;margin-top:0.25rem;">
+            Must be at least 8 characters to match backend requirements.
+          </p>
         </div>
 
         <div class="form-group">
@@ -121,6 +100,8 @@
   </div>
 
   <script src="./assets/js/storage.js"></script>
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/backendApi.js"></script>
   <script src="./assets/js/api.js"></script>
   <script src="./assets/js/ui.js"></script>
   <script src="./assets/js/pages/register.js"></script>

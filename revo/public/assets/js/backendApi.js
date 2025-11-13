@@ -27,20 +27,31 @@ class BackendAPI {
    */
   async checkHealth() {
     try {
-      const response = await fetch(`${this.baseUrl}/health`, {
+      // Try /api/health first
+      let response = await fetch(`${this.baseUrl}/health`, {
         method: 'GET',
-        signal: AbortSignal.timeout(3000)
+        signal: AbortSignal.timeout(5000)
       });
+      
+      // If that fails, try root /health
+      if (!response.ok) {
+        response = await fetch(`${BACKEND_URL}/health`, {
+          method: 'GET',
+          signal: AbortSignal.timeout(5000)
+        });
+      }
       
       this.isConnected = response.ok;
       
       if (this.isConnected) {
         console.log('%c✓ Backend connected', 'color: #4caf50; font-weight: bold;');
+        console.log('Backend URL:', BACKEND_URL);
       }
       
       return this.isConnected;
     } catch (error) {
       console.log('%c✗ Backend not available', 'color: #f44336; font-weight: bold;');
+      console.error('Connection error:', error.message);
       this.isConnected = false;
       return false;
     }
@@ -128,11 +139,26 @@ class BackendAPI {
         auth: false,
         body: JSON.stringify({ email, password })
       });
+
+      if (data && data.success === false) {
+        return {
+          success: false,
+          error: data.error || 'Registration failed'
+        };
+      }
+
+      const token = data.token;
+      if (token) {
+        this.token = token;
+        localStorage.setItem('authToken', token);
+      }
       
       return {
         success: true,
-        message: 'Registration successful',
-        data
+        message: data.message || 'Registration successful',
+        data,
+        token,
+        user: data.user
       };
     } catch (error) {
       return {

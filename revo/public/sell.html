@@ -59,18 +59,29 @@
           <div class="form-group">
             <label for="brand" class="form-label">Brand</label>
             <select id="brand" name="brand" class="form-select" required>
-              <option value="">Select brand</option>
-              <option value="Apple">Apple</option>
-              <option value="Samsung">Samsung</option>
+              <option value="">Loading brands...</option>
             </select>
           </div>
 
           <!-- Model Selection -->
           <div class="form-group">
             <label for="model" class="form-label">Model</label>
-            <select id="model" name="model" class="form-select" required>
-              <option value="">Select model</option>
-            </select>
+            <input
+              id="model"
+              name="model"
+              class="form-input"
+              type="text"
+              placeholder="Start typing model name"
+              autocomplete="off"
+              list="model-options"
+              required
+              disabled
+              aria-describedby="model-helper"
+            >
+            <datalist id="model-options"></datalist>
+            <p class="text-muted" id="model-helper" style="font-size:0.875rem;margin-top:0.25rem;">
+              Select a brand to see suggested models or type your device model.
+            </p>
           </div>
 
           <!-- Storage -->
@@ -193,7 +204,8 @@
   </a>
 
   <script src="./assets/js/storage.js"></script>
-  <script src="./assets/js/mockApi.js"></script>
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/backendApi.js"></script>
   <script src="./assets/js/api.js"></script>
   <script src="./assets/js/ui.js"></script>
   <script src="./assets/js/pages/sell.js"></script>

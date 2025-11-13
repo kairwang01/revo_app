@@ -1,8 +1,13 @@
 // Checkout page functionality
 
 document.addEventListener('DOMContentLoaded', async () => {
+  if (!authStore.isAuthenticated()) {
+    window.location.href = './login.html?return=' + encodeURIComponent(window.location.href);
+    return;
+  }
+
   loadCartItems();
-  loadWalletBalance();
+  populateWalletBalance();
   setupPaymentMethods();
   setupPlaceOrder();
 });
@@ -53,15 +58,19 @@ function calculateTotals(cart) {
   window.checkoutTotal = total.toFixed(2);
 }
 
-async function loadWalletBalance() {
+function populateWalletBalance() {
+  const balanceNode = document.getElementById('wallet-balance');
+  if (!balanceNode) {
+    return;
+  }
+
   try {
-    const walletResponse = await api.getWallet();
-    if (walletResponse.success) {
-      const balance = walletResponse.data.balance || 0;
-      document.getElementById('wallet-balance').textContent = balance.toFixed(2);
-    }
+    const wallet = walletStore.get();
+    const balance = wallet?.balance || 0;
+    balanceNode.textContent = balance.toFixed(2);
   } catch (error) {
-    console.error('Error loading wallet:', error);
+    console.error('Error loading wallet balance:', error);
+    balanceNode.textContent = '0.00';
   }
 }
 
@@ -110,6 +119,8 @@ function setupPlaceOrder() {
       paymentMethodName = 'Cash on Delivery';
     }
     
+    const checkoutTotal = Number(window.checkoutTotal) || 0;
+    
     // Disable button and show loading
     placeOrderBtn.disabled = true;
     placeOrderBtn.textContent = 'Processing...';
@@ -118,21 +129,24 @@ function setupPlaceOrder() {
       // Create order
       const orderData = {
         items: cart,
-        total: window.checkoutTotal,
+        total: checkoutTotal,
         paymentMethod: paymentMethod,
         timestamp: new Date().toISOString()
       };
       
       const result = await api.checkout(orderData);
       
-      if (result.success) {
+      if (result && result.success) {
         // Generate order ID
-        const orderId = result.orderId || 'ORD' + Date.now();
+        const orderId = result.orderId || result.data?.orderId || result.data?.order_id || 'ORD' + Date.now();
+        
+        // Clear local cart after successful checkout
+        cartStore.clear();
         
         // Redirect to fake payment gateway
         window.location.href = `./fake-payment.php?amount=${window.checkoutTotal}&orderId=${orderId}&method=${encodeURIComponent(paymentMethodName)}`;
       } else {
-        showToast('Order failed. Please try again.', 'error');
+        showToast(result?.error || 'Order failed. Please try again.', 'error');
         placeOrderBtn.disabled = false;
         placeOrderBtn.textContent = 'Place Order';
       }

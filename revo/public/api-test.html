@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Test Page - Revo Backend</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .status {
+      padding: 10px 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    
+    .status.connected {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .status.disconnected {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .section {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .section h2 {
+      color: #333;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #43CD80;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+      font-weight: 500;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    
+    button {
+      background: #43CD80;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      margin-right: 10px;
+    }
+    
+    button:hover {
+      background: #3ab872;
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+    }
+    
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    
+    .btn-danger {
+      background: #dc3545;
+    }
+    
+    .btn-danger:hover {
+      background: #c82333;
+    }
+    
+    .result {
+      margin-top: 15px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      border-left: 4px solid #43CD80;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .result.error {
+      border-left-color: #dc3545;
+      background: #fff5f5;
+    }
+    
+    .result pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-size: 13px;
+      color: #333;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .info {
+      background: #e7f3ff;
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      color: #004085;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Revo Backend API Test Page</h1>
+    <div id="connection-status" class="status disconnected">
+      Checking connection...
+    </div>
+
+    <div class="info">
+      Backend URL: <strong id="backend-url"></strong>
+    </div>
+
+    <!-- Authentication Section -->
+    <div class="section">
+      <h2>Authentication</h2>
+      
+      <div class="grid">
+        <div>
+          <h3>Register</h3>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="reg-email" placeholder="user@example.com">
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="reg-password" placeholder="Min 8 characters">
+          </div>
+          <button onclick="testRegister()">Register</button>
+          <div id="register-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div>
+          <h3>Login</h3>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="login-email" placeholder="user@example.com">
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="Password">
+          </div>
+          <button onclick="testLogin()">Login</button>
+          <button class="btn-secondary" onclick="testGetCurrentUser()">Get User Info</button>
+          <button class="btn-danger" onclick="testLogout()">Logout</button>
+          <div id="login-result" class="result" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Section -->
+    <div class="section">
+      <h2>Products</h2>
+      
+      <div class="grid">
+        <div>
+          <h3>Get Products</h3>
+          <div class="form-group">
+            <label>Category</label>
+            <input type="text" id="prod-category" placeholder="Phone, Laptop, etc.">
+          </div>
+          <div class="form-group">
+            <label>Brand</label>
+            <input type="text" id="prod-brand" placeholder="Apple, Samsung, etc.">
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" id="prod-city" placeholder="Vancouver, Ottawa, Edmonton">
+          </div>
+          <button onclick="testGetProducts()">Get Products</button>
+          <button class="btn-secondary" onclick="testGetCategories()">Get Categories</button>
+          <div id="products-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div>
+          <h3>Search & Deals</h3>
+          <div class="form-group">
+            <label>Search Query</label>
+            <input type="text" id="search-query" placeholder="iPhone, MacBook, etc.">
+          </div>
+          <button onclick="testSearchProducts()">Search</button>
+          <button class="btn-secondary" onclick="testGetDeals()">Get Deals</button>
+          
+          <div class="form-group" style="margin-top: 20px;">
+            <label>Product ID</label>
+            <input type="number" id="product-id" placeholder="1">
+          </div>
+          <button onclick="testGetProduct()">Get Product by ID</button>
+          <div id="search-result" class="result" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Section -->
+    <div class="section">
+      <h2>Cart</h2>
+      
+      <div class="grid">
+        <div>
+          <h3>Cart Operations</h3>
+          <button onclick="testGetCart()">Get Cart</button>
+          <button class="btn-secondary" onclick="testGetCartCount()">Get Cart Count</button>
+          <div id="cart-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div>
+          <h3>Add/Update/Remove</h3>
+          <div class="form-group">
+            <label>Product ID</label>
+            <input type="number" id="cart-product-id" placeholder="1">
+          </div>
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" id="cart-quantity" placeholder="1" value="1">
+          </div>
+          <button onclick="testAddToCart()">Add to Cart</button>
+          <button class="btn-secondary" onclick="testUpdateCart()">Update</button>
+          <button class="btn-danger" onclick="testRemoveFromCart()">Remove</button>
+          <div id="cart-ops-result" class="result" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Section -->
+    <div class="section">
+      <h2>Orders</h2>
+      
+      <div class="grid">
+        <div>
+          <h3>Order Operations</h3>
+          <button onclick="testGetOrders()">Get My Orders</button>
+          <button class="btn-secondary" onclick="testCreateOrder()">Create Order from Cart</button>
+          <div id="orders-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div>
+          <h3>Checkout</h3>
+          <div class="form-group">
+            <label>Total Amount</label>
+            <input type="number" id="checkout-total" placeholder="299.99" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>Payment Method</label>
+            <select id="checkout-payment">
+              <option value="credit_card">Credit Card</option>
+              <option value="debit_card">Debit Card</option>
+              <option value="paypal">PayPal</option>
+            </select>
+          </div>
+          <button onclick="testCheckout()">Checkout</button>
+          <div id="checkout-result" class="result" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trade-in Section -->
+    <div class="section">
+      <h2>Trade-in</h2>
+      
+      <div class="grid">
+        <div>
+          <h3>Get Estimate</h3>
+          <div class="form-group">
+            <label>Brand</label>
+            <input type="text" id="tradein-brand" placeholder="Apple">
+          </div>
+          <div class="form-group">
+            <label>Model</label>
+            <input type="text" id="tradein-model" placeholder="iPhone 14">
+          </div>
+          <div class="form-group">
+            <label>Condition (A/B/C)</label>
+            <input type="text" id="tradein-condition" placeholder="A" maxlength="1">
+          </div>
+          <div class="form-group">
+            <label>Storage</label>
+            <input type="text" id="tradein-storage" placeholder="256GB">
+          </div>
+          <button onclick="testGetEstimate()">Get Estimate</button>
+          <button class="btn-secondary" onclick="testGetBrands()">Get Brands</button>
+          <div id="estimate-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div>
+          <h3>Pickup Request</h3>
+          <div class="form-group">
+            <label>Brand Name</label>
+            <input type="text" id="pickup-brand" placeholder="Apple">
+          </div>
+          <div class="form-group">
+            <label>Model</label>
+            <input type="text" id="pickup-model" placeholder="iPhone 14 Pro">
+          </div>
+          <div class="form-group">
+            <label>Condition</label>
+            <input type="text" id="pickup-condition" placeholder="A">
+          </div>
+          <div class="form-group">
+            <label>Storage</label>
+            <input type="text" id="pickup-storage" placeholder="256GB">
+          </div>
+          <button onclick="testCreatePickup()">Create Pickup</button>
+          <button class="btn-secondary" onclick="testGetMyPickups()">Get My Pickups</button>
+          <div id="pickup-result" class="result" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Locations Section -->
+    <div class="section">
+      <h2>Locations</h2>
+      <button onclick="testGetLocations()">Get All Locations</button>
+      <div class="form-group" style="margin-top: 15px;">
+        <label>Location ID</label>
+        <input type="text" id="location-id" placeholder="1">
+      </div>
+      <button onclick="testGetLocation()">Get Location by ID</button>
+      <div id="locations-result" class="result" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/backendApi.js"></script>
+  <script src="./assets/js/api.js"></script>
+
+  <script>
+    // Initialize
+    document.getElementById('backend-url').textContent = CONFIG.BACKEND_URL;
+
+    async function init() {
+      const connected = await api.init();
+      const statusEl = document.getElementById('connection-status');
+      
+      if (connected) {
+        statusEl.className = 'status connected';
+        statusEl.textContent = 'Backend Connected';
+      } else {
+        statusEl.className = 'status disconnected';
+        statusEl.textContent = 'Backend Not Connected';
+      }
+    }
+
+    function showResult(elementId, data, isError = false) {
+      const el = document.getElementById(elementId);
+      el.style.display = 'block';
+      el.className = isError ? 'result error' : 'result';
+      el.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+    }
+
+    // Authentication Tests
+    async function testRegister() {
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+      
+      try {
+        const result = await api.register(email, password);
+        showResult('register-result', result, !result.success);
+      } catch (error) {
+        showResult('register-result', { error: error.message }, true);
+      }
+    }
+
+    async function testLogin() {
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      
+      try {
+        const result = await api.login(email, password);
+        showResult('login-result', result, !result.success);
+      } catch (error) {
+        showResult('login-result', { error: error.message }, true);
+      }
+    }
+
+    async function testGetCurrentUser() {
+      try {
+        const result = await api.getCurrentUser();
+        showResult('login-result', result, !result.success);
+      } catch (error) {
+        showResult('login-result', { error: error.message }, true);
+      }
+    }
+
+    async function testLogout() {
+      try {
+        const result = await api.logout();
+        showResult('login-result', result, !result.success);
+      } catch (error) {
+        showResult('login-result', { error: error.message }, true);
+      }
+    }
+
+    // Products Tests
+    async function testGetProducts() {
+      const filters = {
+        category: document.getElementById('prod-category').value,
+        brand: document.getElementById('prod-brand').value,
+        city: document.getElementById('prod-city').value
+      };
+      
+      // Remove empty filters
+      Object.keys(filters).forEach(key => !filters[key] && delete filters[key]);
+      
+      try {
+        const result = await api.getProducts(filters);
+        showResult('products-result', result);
+      } catch (error) {
+        showResult('products-result', { error: error.message }, true);
+      }
+    }
+
+    async function testGetCategories() {
+      try {
+        const result = await api.getCategories();
+        showResult('products-result', result);
+      } catch (error) {
+        showResult('products-result', { error: error.message }, true);
+      }
+    }
+
+    async function testSearchProducts() {
+      const query = document.getElementById('search-query').value;
+      
+      try {
+        const result = await api.searchProducts(query);
+        showResult('search-result', result);
+      } catch (error) {
+        showResult('search-result', { error: error.message }, true);
+      }
+    }
+
+    async function testGetDeals() {
+      try {
+        const result = await api.getDeals(10);
+        showResult('search-result', result);
+      } catch (error) {
+        showResult('search-result', { error: error.message }, true);
+      }
+    }
+
+    async function testGetProduct() {
+      const id = document.getElementById('product-id').value;
+      
+      try {
+        const result = await api.getProduct(id);
+        showResult('search-result', result);
+      } catch (error) {
+        showResult('search-result', { error: error.message }, true);
+      }
+    }
+
+    // Cart Tests
+    async function testGetCart() {
+      try {
+        const result = await api.getCart();
+        showResult('cart-result', result, !result.success);
+      } catch (error) {
+        showResult('cart-result', { error: error.message }, true);
+      }
+    }
+
+    async function testGetCartCount() {
+      try {
+        const result = await api.getCartCount();
+        showResult('cart-result', result, !result.success);
+      } catch (error) {
+        showResult('cart-result', { error: error.message }, true);
+      }
+    }
+
+    async function testAddToCart() {
+      const productId = document.getElementById('cart-product-id').value;
+      const quantity = document.getElementById('cart-quantity').value;
+      
+      try {
+        const result = await api.addToCart(parseInt(productId), parseInt(quantity));
+        showResult('cart-ops-result', result, !result.success);
+      } catch (error) {
+        showResult('cart-ops-result', { error: error.message }, true);
+      }
+    }
+
+    async function testUpdateCart() {
+      const productId = document.getElementById('cart-product-id').value;
+      const quantity = document.getElementById('cart-quantity').value;
+      
+      try {
+        const result = await api.updateCartItem(parseInt(productId), parseInt(quantity));
+        showResult('cart-ops-result', result, !result.success);
+      } catch (error) {
+        showResult('cart-ops-result', { error: error.message }, true);
+      }
+    }
+
+    async function testRemoveFromCart() {
+      const productId = document.getElementById('cart-product-id').value;
+      
+      try {
+        const result = await api.removeFromCart(parseInt(productId));
+        showResult('cart-ops-result', result, !result.success);
+      } catch (error) {
+        showResult('cart-ops-result', { error: error.message }, true);
+      }
+    }
+
+    // Orders Tests
+    async function testGetOrders() {
+      try {
+        const result = await api.getOrders();
+        showResult('orders-result', result, !result.success);
+      } catch (error) {
+        showResult('orders-result', { error: error.message }, true);
+      }
+    }
+
+    async function testCreateOrder() {
+      try {
+        const result = await api.createOrder();
+        showResult('orders-result', result, !result.success);
+      } catch (error) {
+        showResult('orders-result', { error: error.message }, true);
+      }
+    }
+
+    async function testCheckout() {
+      const total = document.getElementById('checkout-total').value;
+      const paymentMethod = document.getElementById('checkout-payment').value;
+      
+      try {
+        const result = await api.checkout({
+          items: [],
+          total: parseFloat(total),
+          paymentMethod: paymentMethod
+        });
+        showResult('checkout-result', result, !result.success);
+      } catch (error) {
+        showResult('checkout-result', { error: error.message }, true);
+      }
+    }
+
+    // Trade-in Tests
+    async function testGetEstimate() {
+      const deviceData = {
+        brand: document.getElementById('tradein-brand').value,
+        model: document.getElementById('tradein-model').value,
+        condition: document.getElementById('tradein-condition').value,
+        storage: document.getElementById('tradein-storage').value
+      };
+      
+      try {
+        const result = await api.getTradeInEstimate(deviceData);
+        showResult('estimate-result', result, !result.success);
+      } catch (error) {
+        showResult('estimate-result', { error: error.message }, true);
+      }
+    }
+
+    async function testGetBrands() {
+      try {
+        const result = await api.getTradeinBrands();
+        showResult('estimate-result', result, !result.success);
+      } catch (error) {
+        showResult('estimate-result', { error: error.message }, true);
+      }
+    }
+
+    async function testCreatePickup() {
+      const formData = new FormData();
+      formData.append('brand_name', document.getElementById('pickup-brand').value);
+      formData.append('model_text', document.getElementById('pickup-model').value);
+      formData.append('condition', document.getElementById('pickup-condition').value);
+      formData.append('storage', document.getElementById('pickup-storage').value);
+      
+      try {
+        const result = await api.createPickupRequest(formData);
+        showResult('pickup-result', result, !result.success);
+      } catch (error) {
+        showResult('pickup-result', { error: error.message }, true);
+      }
+    }
+
+    async function testGetMyPickups() {
+      try {
+        const result = await api.getMyPickups();
+        showResult('pickup-result', result, !result.success);
+      } catch (error) {
+        showResult('pickup-result', { error: error.message }, true);
+      }
+    }
+
+    // Locations Tests
+    async function testGetLocations() {
+      try {
+        const result = await api.getLocations();
+        showResult('locations-result', result, !result.success);
+      } catch (error) {
+        showResult('locations-result', { error: error.message }, true);
+      }
+    }
+
+    async function testGetLocation() {
+      const id = document.getElementById('location-id').value;
+      
+      try {
+        const result = await api.getLocation(id);
+        showResult('locations-result', result, !result.success);
+      } catch (error) {
+        showResult('locations-result', { error: error.message }, true);
+      }
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

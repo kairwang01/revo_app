@@ -23,16 +23,26 @@ const authStore = {
     return data ? JSON.parse(data) : null;
   },
   set: (authData) => {
+    if (!authData) {
+      return;
+    }
     localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(authData));
+    if (authData.token) {
+      localStorage.setItem('authToken', authData.token);
+    }
     window.dispatchEvent(new CustomEvent('revo:auth-changed', { detail: authData }));
   },
   clear: () => {
     localStorage.removeItem(STORAGE_KEYS.AUTH);
+    localStorage.removeItem('authToken');
     window.dispatchEvent(new CustomEvent('revo:auth-changed', { detail: null }));
   },
   isAuthenticated: () => {
     const auth = authStore.get();
-    return auth && auth.token;
+    if (auth && auth.token) {
+      return true;
+    }
+    return !!localStorage.getItem('authToken');
   }
 };
 

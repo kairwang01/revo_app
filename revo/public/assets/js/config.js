@@ -12,7 +12,7 @@ const CONFIG = {
   
   // Feature flags
   FEATURES: {
-    USE_BACKEND: true,  // Set to false to force mock mode
+    USE_BACKEND: true,  // Frontend always relies on the live backend
     AUTO_INIT: true,    // Automatically check backend on page load
     DEBUG_MODE: true    // Enable console logging
   },

@@ -2,6 +2,7 @@
 
 // Initialize common UI elements
 document.addEventListener('DOMContentLoaded', () => {
+  initBackend();
   // Setup city dropdown if it exists
   setupCityDropdown();
   
@@ -14,6 +15,27 @@ document.addEventListener('DOMContentLoaded', () => {
   // Listen for cart changes
   window.addEventListener('revo:cart-changed', updateCartBadge);
 });
+
+async function initBackend() {
+  if (typeof api === 'undefined') {
+    console.warn('API module not available');
+    return;
+  }
+
+  const shouldInit = (typeof CONFIG !== 'undefined' && CONFIG.FEATURES?.AUTO_INIT !== undefined)
+    ? CONFIG.FEATURES.AUTO_INIT
+    : true;
+
+  if (!shouldInit) {
+    return;
+  }
+
+  try {
+    await api.init();
+  } catch (error) {
+    console.error('Failed to initialize backend connection:', error);
+  }
+}
 
 // Update active tab in bottom navigation
 function updateActiveTab() {

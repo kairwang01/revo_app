@@ -52,8 +52,8 @@ async function loadOrders() {
   setLoading(true);
 
   try {
-    const response = await api.getOrders();
-    allOrders = Array.isArray(response) ? response : [];
+    const orders = await api.getOrders();
+    allOrders = Array.isArray(orders) ? orders : [];
   } catch (error) {
     console.error('Failed to load orders:', error);
     allOrders = [];
@@ -144,6 +144,7 @@ function getOrderMarkup(order) {
   const taxValue = Number(order.tax) || 0;
   const dateLabel = formatOrderDate(order.date);
   const items = Array.isArray(order.items) ? order.items : [];
+  const orderId = order.reference || order.id || 'Order';
 
   const itemsMarkup = items.length
     ? items.map(renderOrderItem).join('')
@@ -152,7 +153,7 @@ function getOrderMarkup(order) {
   return `
     <div class="order-header">
       <div>
-        <div class="order-id">${escapeHtml(order.id || 'Unknown Order')}</div>
+        <div class="order-id">${escapeHtml(orderId)}</div>
         <div class="text-muted" style="font-size:0.875rem;">${dateLabel}&nbsp;•&nbsp;${typeLabel}</div>
       </div>
       <span class="order-status ${statusClass}">${statusLabel}</span>
@@ -174,22 +175,18 @@ function getOrderMarkup(order) {
 }
 
 function renderOrderItem(item) {
-  const qty = Number(item.quantity) || 1;
-  const price = Number(item.price) || 0;
-  const total = price * qty;
-  const image = item.image
-    ? `<img src="${item.image}" alt="${escapeHtml(item.name || 'Order item')}" class="order-item-image" loading="lazy">`
-    : '<div class="order-item-image" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:0.75rem;">No Image</div>';
+  const qty = Number(item.quantity) || Number(item.qty) || 1;
+  const price = Number(item.price) || Number(item.unit_price) || 0;
+  const total = Number.isFinite(item.total) ? item.total : price * qty;
+  const imageSrc = item.image || 'https://via.placeholder.com/80x80.png?text=Item';
+  const itemName = item.name || item.title || 'Order item';
 
   return `
     <div class="order-item">
-      ${image}
+      <img src="${imageSrc}" alt="${escapeHtml(itemName)}" class="order-item-image" loading="lazy">
       <div>
-        <div style="font-weight:600;">${escapeHtml(item.name || 'Unnamed item')}</div>
-        <div class="text-muted" style="font-size:0.875rem;">
-          ${escapeHtml(item.brand || '')}${item.brand ? ' • ' : ''}Qty ${qty}
-          ${item.condition ? ` • Condition: ${escapeHtml(capitalize(item.condition))}` : ''}
-        </div>
+        <div style="font-weight:600;">${escapeHtml(itemName)}</div>
+        <div class="text-muted" style="font-size:0.875rem;">Qty ${qty}</div>
       </div>
       <div style="margin-left:auto;text-align:right;">
         <div style="font-weight:600;">${formatMoney(total)}</div>
@@ -200,17 +197,18 @@ function renderOrderItem(item) {
 }
 
 function renderOrderActions(order) {
+  const orderReference = encodeURIComponent(order.reference || order.id || '');
+
   if (order.type === 'sell') {
-    const orderId = encodeURIComponent(order.id || '');
     return `
-      <a href="./order-tracking.html?orderId=${orderId}" class="btn btn-outline btn-sm">
+      <a href="./order-tracking.html?orderId=${orderReference}" class="btn btn-outline btn-sm">
         Track Progress
       </a>
     `;
   }
 
   return `
-    <a href="./orders.html#${encodeURIComponent(order.id || '')}" class="btn btn-ghost btn-sm">
+    <a href="./orders.html#${orderReference}" class="btn btn-ghost btn-sm">
       View Details
     </a>
   `;
@@ -224,14 +222,14 @@ function normalizeFilter(value) {
 
 function normalizeStatus(status) {
   const key = (status || '').toString().toLowerCase();
-  if (key === 'completed') return 'completed';
+  if (['completed', 'paid', 'fulfilled'].includes(key)) return 'completed';
   if (key === 'cancelled' || key === 'canceled') return 'cancelled';
   return 'pending';
 }
 
 function formatStatusLabel(status) {
   const key = (status || '').toString().toLowerCase();
-  if (key === 'completed') return 'Completed';
+  if (['completed', 'paid', 'fulfilled'].includes(key)) return 'Completed';
   if (key === 'cancelled' || key === 'canceled') return 'Cancelled';
   return 'Pending';
 }
@@ -251,13 +249,6 @@ function formatOrderDate(value) {
     month: 'short',
     day: 'numeric'
   });
-}
-
-function capitalize(text) {
-  if (!text) {
-    return '';
-  }
-  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 function escapeHtml(raw) {

@@ -2,34 +2,18 @@
 
 ## Overview
 
-Your Revo frontend now connects to the backend API automatically. When the backend is available, it uses real data. When unavailable, it uses mock data as fallback.
+Your Revo frontend connects directly to the backend API at https://revo-backend-o03w.onrender.com/
 
 ## Files Created
 
 1. `assets/js/backendApi.js` - Backend API integration
 2. `assets/js/config.js` - Configuration settings
-3. `assets/js/api.js` - Updated main API module
-4. `index.html` - Updated with new scripts
+3. `assets/js/api.js` - Main API module
+4. `index.html` - Updated with scripts
 
 ## Quick Setup
 
-### Step 1: Configure Backend URL
-
-Edit `assets/js/config.js` and change the backend URL:
-
-```javascript
-const CONFIG = {
-  BACKEND_URL: 'http://localhost:8000',  // Change this
-  // ...
-};
-```
-
-For production:
-```javascript
-BACKEND_URL: 'https://api.yourapp.com',
-```
-
-### Step 2: Update HTML Files
+### Step 1: Add Scripts to HTML Files
 
 Add these scripts to ALL HTML files (before other JavaScript):
 
@@ -37,7 +21,6 @@ Add these scripts to ALL HTML files (before other JavaScript):
 <!-- API Integration -->
 <script src="./assets/js/config.js"></script>
 <script src="./assets/js/backendApi.js"></script>
-<script src="./assets/js/mockApi.js"></script>
 <script src="./assets/js/api.js"></script>
 ```
 
@@ -54,15 +37,19 @@ Files to update:
 - sell.html
 - settings.html
 
-### Step 3: Start Backend
+### Step 2: Test Connection
 
-Make sure your backend is running at the configured URL.
+Open browser console and check for "Backend API Connected" message.
 
-### Step 4: Test
+## Configuration
 
-Open browser console and check for:
-- "Using Backend API" (green) - Backend connected
-- "Using Mock API" (orange) - Using fallback
+Backend URL is set in `assets/js/config.js`:
+
+```javascript
+BACKEND_URL: 'https://revo-backend-o03w.onrender.com/'
+```
+
+To change the backend URL, edit this file.
 
 ## API Endpoints
 
@@ -209,32 +196,6 @@ const pickups = await api.getMyPickups();
 await api.respondToOffer(pickupId, 'accept');
 ```
 
-## Configuration
-
-### Backend URL
-
-```javascript
-// config.js
-BACKEND_URL: 'http://localhost:8000'  // Development
-BACKEND_URL: 'https://api.yourapp.com'  // Production
-```
-
-### Force Mock Mode
-
-```javascript
-FEATURES: {
-  USE_BACKEND: false  // Use only mock data
-}
-```
-
-### Debug Mode
-
-```javascript
-FEATURES: {
-  DEBUG_MODE: true  // Show detailed logs
-}
-```
-
 ## Backend Requirements
 
 ### Authentication
@@ -256,26 +217,9 @@ Response:
 }
 ```
 
-All authenticated requests need:
+All authenticated requests include:
 ```
 Authorization: Bearer <access_token>
-```
-
-### CORS Setup
-
-Backend must allow CORS:
-
-```python
-# FastAPI example
-from fastapi.middleware.cors import CORSMiddleware
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 ```
 
 ## Testing
@@ -285,23 +229,18 @@ app.add_middleware(
 ```javascript
 // In browser console
 await api.init();
-await backendApi.checkHealth();
 ```
 
-### Test with Mock Data
-
-Mock credentials:
-- Email: test@test.com
-- Password: test
+Should show "Backend API Connected" in console.
 
 ## Troubleshooting
 
 ### Backend Not Connecting
 
 1. Check backend URL in config.js
-2. Verify backend is running: curl http://localhost:8000/api/health
-3. Check CORS settings
-4. Check browser console for errors
+2. Verify backend is running: https://revo-backend-o03w.onrender.com/api/health
+3. Check browser console for errors
+4. Check network tab in DevTools
 
 ### Authentication Issues
 
@@ -311,7 +250,7 @@ Mock credentials:
 
 ### CORS Errors
 
-Add CORS middleware to backend (see Backend Requirements section)
+Backend must have CORS enabled for your frontend domain.
 
 ### 404 Errors
 
@@ -319,61 +258,27 @@ Add CORS middleware to backend (see Backend Requirements section)
 2. Check endpoint paths match backend
 3. Verify backend version
 
-## Production Deployment
-
-### Update Configuration
-
-```javascript
-// config.js
-const CONFIG = {
-  BACKEND_URL: 'https://api.yourapp.com',
-  FEATURES: {
-    DEBUG_MODE: false
-  }
-};
-```
-
-### Environment Variables
-
-```javascript
-const CONFIG = {
-  BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:8000',
-};
-```
-
 ## Architecture
 
 ```
 Frontend Pages
       |
       v
-   api.js (Main Interface)
+   api.js
       |
-      +-- backendApi.js (Real API)
-      |        |
-      |        v
-      |   Backend Server
+      v
+backendApi.js
       |
-      +-- mockApi.js (Fallback)
-               |
-               v
-          Local JSON Files
+      v
+Backend Server
+(https://revo-backend-o03w.onrender.com/)
 ```
-
-## Key Features
-
-1. Automatic backend detection
-2. Seamless fallback to mock data
-3. Unified API interface
-4. Automatic token management
-5. Error handling with fallback
 
 ## Next Steps
 
-1. Update remaining HTML files with script includes
-2. Configure backend URL
-3. Test all features
-4. Deploy to production
+1. Add script tags to remaining HTML files
+2. Test all features with backend
+3. Deploy frontend
 
 ---
 

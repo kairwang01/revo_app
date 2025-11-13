@@ -367,57 +367,69 @@
   </main>
 
   <script src="./assets/js/storage.js"></script>
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/backendApi.js"></script>
   <script src="./assets/js/api.js"></script>
   <script src="./assets/js/ui.js"></script>
   <script>
-    // TODO: bind to Python FastAPI backend
-    
     const orderStages = [
       {
-        key: 'created',
-        title: 'Order Created',
-        desc: 'Your trade-in order has been created successfully',
+        key: 'pending',
+        title: 'Order Placed',
+        desc: 'We received your order and started processing it.',
         icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
       },
       {
-        key: 'in_pickup',
-        title: 'Pickup Scheduled',
-        desc: 'Courier has been dispatched to collect your device',
-        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
-      },
-      {
-        key: 'in_transit',
-        title: 'In Transit',
-        desc: 'Your device is on its way to our inspection center',
-        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
-      },
-      {
-        key: 'inspecting',
-        title: 'Quality Inspection',
-        desc: 'Technicians are performing 280+ quality checks on your device',
-        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
-      },
-      {
-        key: 'awaiting_confirmation',
-        title: 'Awaiting Your Confirmation',
-        desc: 'Please review the final quote and inspection report',
-        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
-      },
-      {
-        key: 'confirmed',
-        title: 'Payment Processing',
-        desc: 'Your payment is being processed',
+        key: 'processing',
+        title: 'Processing',
+        desc: 'Inventory and payment checks are underway.',
         icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
       },
       {
         key: 'paid',
-        title: 'Payment Complete',
-        desc: 'Payment has been successfully transferred to your account',
+        title: 'Payment Confirmed',
+        desc: 'Payment has been authorized.',
+        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+      },
+      {
+        key: 'fulfilled',
+        title: 'Preparing Shipment',
+        desc: 'Warehouse is preparing the package.',
+        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+      },
+      {
+        key: 'shipped',
+        title: 'Shipped',
+        desc: 'Your order is on the way.',
+        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+      },
+      {
+        key: 'completed',
+        title: 'Completed',
+        desc: 'Order delivered / trade-in finalized.',
         icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
       }
     ];
 
+    const STATUS_ALIASES = {
+      created: 'pending',
+      new: 'pending',
+      awaiting_confirmation: 'processing',
+      confirmed: 'paid',
+      in_pickup: 'processing',
+      in_transit: 'shipped',
+      inspecting: 'fulfilled',
+      returned: 'completed',
+      delivered: 'completed'
+    };
+
     async function loadOrderTracking() {
+      if (!authStore.isAuthenticated()) {
+        const redirect = encodeURIComponent(window.location.href);
+        window.location.href = `./login.html?return=${redirect}`;
+        return;
+      }
+
       const urlParams = new URLSearchParams(window.location.search);
       const orderId = urlParams.get('id');
       
@@ -427,148 +439,115 @@
       }
 
       try {
-        // TODO: Replace with actual API call
-        const mockOrder = {
-          id: orderId,
-          deviceName: 'iPhone 13 Pro 256GB',
-          initialQuote: 450.00,
-          finalQuote: 420.00,
-          status: 'awaiting_confirmation',
-          currentStage: 'awaiting_confirmation',
-          timeline: [
-            { stage: 'created', timestamp: '2025-10-20T10:00:00Z', completed: true },
-            { stage: 'in_pickup', timestamp: '2025-10-20T14:00:00Z', completed: true },
-            { stage: 'in_transit', timestamp: '2025-10-21T09:00:00Z', completed: true },
-            { stage: 'inspecting', timestamp: '2025-10-22T15:30:00Z', completed: true },
-            { stage: 'awaiting_confirmation', timestamp: '2025-10-23T10:00:00Z', completed: false }
-          ],
-          inspectionReport: {
-            grade: '99%',
-            screen: 'Normal',
-            wifi: 'Working',
-            battery: 'Excellent',
-            camera: 'Normal'
-          },
-          priceChangeReason: 'Battery health slightly lower than initially reported'
-        };
+        const orders = await api.getOrders();
+        const targetOrder = (orders || []).find(order => {
+          const matchesId = String(order.id) === orderId;
+          const matchesReference = (order.reference || '').toLowerCase() === orderId.toLowerCase();
+          return matchesId || matchesReference;
+        });
 
-        renderOrderInfo(mockOrder);
-        renderTimeline(mockOrder);
-        
-        if (mockOrder.status === 'awaiting_confirmation') {
-          renderInspectionReport(mockOrder);
-          renderPriceConfirmation(mockOrder);
+        if (!targetOrder) {
+          showTrackingError('We could not find that order. Please check the link or visit your orders list.');
+          return;
         }
-        
+
+        hideOptionalSections();
+        renderOrderInfo(targetOrder);
+        renderTimeline(targetOrder);
+
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('tracking-content').classList.remove('hidden');
-        
       } catch (error) {
         console.error('Failed to load order:', error);
-        showToast('Failed to load order details', 'error');
+        showTrackingError('Failed to load order details. Please try again later.');
       }
     }
 
     function renderOrderInfo(order) {
-      document.getElementById('order-id').textContent = order.id;
-      document.getElementById('device-name').textContent = order.deviceName;
-      document.getElementById('initial-quote').textContent = `$${order.initialQuote.toFixed(2)}`;
+      const reference = order.reference || `ORD${order.id}`;
+      const firstItem = Array.isArray(order.items) && order.items.length ? order.items[0] : null;
+      const itemName = firstItem?.name || 'Order summary';
+      const subtotal = Number.isFinite(order.subtotal) ? order.subtotal : order.total;
+
+      document.getElementById('order-id').textContent = reference;
+      document.getElementById('device-name').textContent = itemName;
+      document.getElementById('initial-quote').textContent = formatMoney(subtotal || 0);
       document.getElementById('order-status').textContent = formatStatus(order.status);
     }
 
     function renderTimeline(order) {
       const timeline = document.getElementById('timeline');
-      const currentStageIndex = orderStages.findIndex(s => s.key === order.currentStage);
-      
+      const stageKey = resolveStageKey(order.status);
+      const currentStageIndex = orderStages.findIndex(stage => stage.key === stageKey);
+      const safeIndex = currentStageIndex === -1 ? 0 : currentStageIndex;
+
       timeline.innerHTML = orderStages.map((stage, index) => {
-        const isCompleted = index < currentStageIndex;
-        const isActive = index === currentStageIndex;
-        const timelineData = order.timeline.find(t => t.stage === stage.key);
-        
+        const isCompleted = index < safeIndex;
+        const isActive = index === safeIndex;
         return `
           <div class="timeline-item">
             <div class="timeline-marker ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}">
-              ${isCompleted || isActive ? `<svg viewBox="0 0 24 24">${stage.icon}</svg>` : ''}
+              ${(isCompleted || isActive) ? `<svg viewBox="0 0 24 24">${stage.icon}</svg>` : ''}
             </div>
             <div class="timeline-content">
               <div class="timeline-title">${stage.title}</div>
               <div class="timeline-desc">${stage.desc}</div>
-              ${timelineData ? `<div class="timeline-time">${formatDate(timelineData.timestamp)}</div>` : ''}
             </div>
           </div>
         `;
       }).join('');
     }
 
-    function renderInspectionReport(order) {
-      const report = order.inspectionReport;
-      document.getElementById('report-grade').textContent = report.grade;
-      document.getElementById('report-screen').textContent = report.screen;
-      document.getElementById('report-wifi').textContent = report.wifi;
-      document.getElementById('report-battery').textContent = report.battery;
-      document.getElementById('report-camera').textContent = report.camera;
-      document.getElementById('final-quote').textContent = `$${order.finalQuote.toFixed(2)}`;
-      
-      document.getElementById('inspection-report').classList.remove('hidden');
+    function resolveStageKey(status) {
+      const normalized = (status || '').toLowerCase();
+      return STATUS_ALIASES[normalized] || normalized || 'pending';
     }
 
-    function renderPriceConfirmation(order) {
-      if (order.finalQuote < order.initialQuote) {
-        document.getElementById('compare-initial').textContent = `$${order.initialQuote.toFixed(2)}`;
-        document.getElementById('compare-final').textContent = `$${order.finalQuote.toFixed(2)}`;
-        document.getElementById('price-reason').textContent = order.priceChangeReason;
-        
-        document.getElementById('accept-btn').onclick = () => acceptPrice(order.id);
-        document.getElementById('reject-btn').onclick = () => rejectPrice(order.id);
-        
-        document.getElementById('price-confirm').classList.remove('hidden');
-        document.querySelector('main').style.paddingBottom = '200px';
+    function hideOptionalSections() {
+      const inspection = document.getElementById('inspection-report');
+      const priceConfirm = document.getElementById('price-confirm');
+      if (inspection) {
+        inspection.classList.add('hidden');
+      }
+      if (priceConfirm) {
+        priceConfirm.classList.add('hidden');
       }
     }
 
-    async function acceptPrice(orderId) {
-      // TODO: API call to confirm payment
-      showToast('Payment confirmed! Processing...', 'success');
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
-    }
-
-    async function rejectPrice(orderId) {
-      if (confirm('Are you sure you want to reject the offer and have your device returned?')) {
-        // TODO: API call to initiate return
-        showToast('Return initiated. Your device will be shipped back.', 'info');
-        setTimeout(() => {
-          window.location.href = './orders.html';
-        }, 1500);
+    function showTrackingError(message) {
+      const loading = document.getElementById('loading');
+      const content = document.getElementById('tracking-content');
+      if (loading) {
+        loading.classList.add('hidden');
+      }
+      if (content) {
+        content.classList.remove('hidden');
+        content.innerHTML = `
+          <div style="padding:2rem;text-align:center;">
+            <p class="text-muted" style="margin-bottom:1rem;">${message}</p>
+            <a class="btn btn-primary" href="./orders.html">Back to Orders</a>
+          </div>
+        `;
       }
     }
 
     function formatStatus(status) {
+      const normalized = (status || '').toLowerCase();
       const statusMap = {
-        'created': 'Created',
-        'in_pickup': 'Pickup Scheduled',
-        'in_transit': 'In Transit',
-        'inspecting': 'Inspecting',
-        'awaiting_confirmation': 'Awaiting Confirmation',
-        'confirmed': 'Confirmed',
-        'paid': 'Paid',
-        'returned': 'Returned'
+        created: 'Created',
+        pending: 'Pending',
+        processing: 'Processing',
+        paid: 'Paid',
+        fulfilled: 'Preparing Shipment',
+        shipped: 'Shipped',
+        completed: 'Completed',
+        returned: 'Returned',
+        awaiting_confirmation: 'Awaiting Confirmation',
+        confirmed: 'Confirmed'
       };
-      return statusMap[status] || status;
+      return statusMap[normalized] || (status ? status : 'Pending');
     }
 
-    function formatDate(timestamp) {
-      const date = new Date(timestamp);
-      return date.toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
-
-    // Initialize on page load
     document.addEventListener('DOMContentLoaded', loadOrderTracking);
   </script>
   <script src="./assets/js/main.js"></script>

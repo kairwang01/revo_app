@@ -1,525 +1,98 @@
-# Revo - Phone Recycling & Trading Platform
+# Revo Frontend
 
-A modern web application for buying and selling refurbished smartphones with an integrated trade-in and recycling program.
-
-## Table of Contents
-
-- [Project Overview](#project-overview)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Authentication](#authentication)
-- [Mock Data Configuration](#mock-data-configuration)
-- [Features](#features)
-- [Development](#development)
-- [API Documentation](#api-documentation)
-
----
-
-## Project Overview
-
-Revo is a Progressive Web App (PWA) focused on sustainability, allowing users to:
-- Browse and purchase refurbished smartphones
-- Trade-in old devices for credit
-- Schedule pickup services for device recycling
-- Manage orders and wallet balance
-- Access coupons and promotions
-
----
+Progressive web experience for the Revo C2B2C electronics trade-in platform. The UI now talks exclusively to the hosted backend at `https://revo-backend-o03w.onrender.com`, so there is no mock API, fixture JSON, or local data hydration step required.
 
 ## Tech Stack
 
-- **Frontend**: Vanilla HTML5, CSS3, JavaScript (ES6+)
-- **Storage**: LocalStorage for client-side data persistence
-- **Architecture**: Component-based structure with modular JS
-- **Mock API**: Simulated backend with realistic latency
-- **Design**: Mobile-first responsive design
-
----
+- **UI**: Vanilla HTML, CSS, and modern ES modules (no framework runtime).
+- **State**: LocalStorage helpers in `assets/js/storage.js`.
+- **API**: REST calls proxied through `assets/js/backendApi.js` with configuration in `assets/js/config.js`.
 
 ## Project Structure
 
 ```
 public/
-├── index.html                 # Home page
-├── login.html                 # Login page
-├── register.html              # Registration page
-├── account.html               # User account dashboard (protected)
-├── products.html              # Product browsing
-├── product-detail.html        # Product details
-├── cart.html                  # Shopping cart
-├── checkout.html              # Checkout process
-├── orders.html                # Order history
-├── sell.html                  # Trade-in/sell device
-├── settings.html              # User settings
-├── clear-auth.html            # Authentication utility
-├── assets/
-│   ├── css/
-│   │   ├── base.css          # Base styles
-│   │   ├── components.css    # UI components
-│   │   ├── layout.css        # Layout structures
-│   │   ├── pages.css         # Page-specific styles
-│   │   └── tokens.css        # Design tokens
-│   ├── js/
-│   │   ├── api.js            # API wrapper
-│   │   ├── mockApi.js        # Mock backend service
-│   │   ├── storage.js        # LocalStorage utilities
-│   │   ├── ui.js             # UI utilities
-│   │   ├── main.js           # App initialization
-│   │   ├── geo.js            # Geolocation services
-│   │   └── pages/
-│   │       ├── login.js      # Login page logic
-│   │       ├── account.js    # Account page logic
-│   │       ├── home.js       # Home page logic
-│   │       ├── products.js   # Products page logic
-│   │       ├── cart.js       # Cart page logic
-│   │       ├── sell.js       # Sell/trade-in logic
-│   │       └── product-detail.js
-│   └── data/
-│       ├── user.json         # User profile data
-│       ├── products.json     # Product catalog
-│       ├── devices.json      # User's trade-in devices
-│       ├── orders.json       # Order history
-│       ├── coupons.json      # Available coupons
-│       ├── wallet.json       # Wallet and transactions
-│       └── categories.json   # Product categories
-└── README.md                  # This file
+├── index.html
+├── account.html
+├── cart.html
+├── checkout.html
+├── login.html
+├── orders.html
+├── order-tracking.html
+├── product-detail.html
+├── products.html
+├── register.html
+├── sell.html
+├── settings.html
+└── assets/
+    ├── css/                # Design tokens + page/layout styles
+    └── js/
+        ├── config.js       # Backend URL + feature flags
+        ├── backendApi.js   # Low-level HTTP client
+        ├── api.js          # App-level API helpers
+        ├── storage.js      # LocalStorage utilities
+        ├── ui.js           # Common UI helpers (toasts, cards, etc.)
+        ├── main.js         # App bootstrap (health check, cart badge, city switcher)
+        └── pages/          # Page-specific controllers (home, products, cart, account…)
 ```
 
----
+All legacy mock data files inside `assets/data/` have been removed. Every page now depends on live responses from the backend deployment.
 
 ## Getting Started
 
-### Prerequisites
+1. `cd revo/public`
+2. Serve the directory with any static server (`python -m http.server 8000`, `npx http-server`, etc.)
+3. Navigate to `http://localhost:8000`
+4. The frontend immediately runs `api.init()` which pings `/api/health` on the configured backend. Check the browser console for connectivity messages.
 
-- A modern web browser (Chrome, Firefox, Safari, Edge)
-- A local web server (optional, for development)
+`config.js` exposes:
 
-### Installation
-
-1. Clone or download the project files
-2. Navigate to the `public` directory
-3. Open any HTML file in a web browser, or use a local server:
-
-```bash
-# Using Python
-cd public
-python -m http.server 8000
-
-# Using Node.js (with http-server)
-cd public
-npx http-server -p 8000
-
-# Using PHP
-cd public
-php -S localhost:8000
+```js
+const CONFIG = {
+  BACKEND_URL: 'https://revo-backend-o03w.onrender.com/',
+  API_PREFIX: '/api',
+  FEATURES: {
+    USE_BACKEND: true,
+    AUTO_INIT: true,
+    DEBUG_MODE: true,
+  },
+};
 ```
 
-4. Visit `http://localhost:8000` in your browser
+Adjust `BACKEND_URL` if you deploy a different backend instance.
 
----
+## Authentication Flow
 
-## Authentication
+1. Open `register.html` to create a real customer through `POST /api/auth/register`. The UI enforces the backend’s minimum password length and terms acceptance.
+2. After registration, the JWT returned by the backend is saved in `localStorage` (`authStore`), and the user is redirected to `account.html`.
+3. Existing users can sign in from `login.html`, which calls `POST /api/auth/token` and hydrates the current profile via `GET /api/auth/me`.
+4. Protected pages (`account.html`, `orders.html`, `order-tracking.html`, `checkout.html`, etc.) verify authentication on load and redirect to login with a `return` query param when necessary.
 
-### Test Login Credentials
+To reset your local session simply log out from the account screen; no mock tokens are stored anywhere else.
 
-- **Email**: `test@test.com`
-- **Password**: `test`
+## Feature Highlights
 
-### Default State
+- **Products & Deals**: `home.html` and `products.html` pull listings from `/api/products` with live filters (city, brand, etc.).
+- **Product Detail**: `product-detail.html` fetches `/api/products/{id}` and lets authenticated users sync adds to the remote cart.
+- **Cart & Checkout**: `cart.html` mirrors local cart state, and `checkout.html` submits orders to `/api/orders/checkout`.
+- **Orders Dashboard**: `orders.html` loads `/api/orders/me` and normalizes the payload for display.
+- **Trade-in Flow**: `sell.html` requests `/api/tradein/estimate`, `GET /api/tradein/brands`, and submits pickup forms to `/api/tradein/pickup-requests`.
+- **Order Tracking**: `order-tracking.html` now looks up the selected order ID against `/api/orders/me` instead of a mock payload.
 
-**The application defaults to a logged-out state.** No authentication credentials are stored by default. Users must manually log in with the test credentials.
+## Development Notes
 
-### Protected Pages
+- The browser is the runtime. There is no bundler/CLI build step.
+- Keep `storage.js` and `backendApi.js` in sync if you introduce new persistence keys or API endpoints.
+- When adding new pages, always include `config.js`, `backendApi.js`, and `api.js` so the backend health check and auth helpers stay consistent.
 
-Certain pages require authentication and will redirect to login if accessed while not logged in:
+## API Reference
 
-- **account.html**: User account dashboard
-  - Redirects to `login.html` if not authenticated
-  - Only logged-in users can see account data and the "Sign Out" button
-  - Automatically loads wallet balance and order statistics
-  - Logout button clears all authentication data
+Full OpenAPI definitions live at `https://revo-backend-o03w.onrender.com/openapi.json`. Primary groups:
 
-### Login Flow
+- `GET /api/products`, `/api/products/search`, `/api/products/{id}`
+- `POST /api/auth/register`, `POST /api/auth/token`, `GET /api/auth/me`
+- `GET/POST /api/cart/*`
+- `POST /api/orders/checkout`, `GET /api/orders/me`
+- `POST /api/tradein/estimate`, `/api/tradein/pickup-requests`, `/api/tradein/brands`
 
-1. Navigate to `login.html`
-2. Enter email: `test@test.com`
-3. Enter password: `test`
-4. Click "Sign In" button
-5. Redirected to account page or return URL
-
-### Clearing Authentication
-
-Use the `clear-auth.html` utility to ensure a clean logged-out state:
-
-1. Open `clear-auth.html` in your browser
-2. Click "清除登录状态" (Clear Login State) button
-3. All authentication data is removed from localStorage
-
-The utility clears:
-- `mockAuthToken`
-- `mockUser`
-- `revo_auth`
-- `revo_user`
-- `revo_wallet`
-
----
-
-## Mock Data Configuration
-
-All mock data has been updated with real, consistent information for testing purposes.
-
-### Recent Changes
-
-#### 1. Mock API (`assets/js/mockApi.js`)
-- Updated `MOCK_CREDENTIALS` to use email-based authentication
-- Changed from username/password to email/password
-- Login function now accepts email parameter
-- Error messages updated to reference "email"
-
-#### 2. User Data (`assets/data/user.json`)
-- **Email**: test@test.com
-- **Name**: Test User
-- **Phone**: +1 (613) 555-0100
-- **Address**: 75 Laurier Ave E, Ottawa, ON K1N 6N5
-- **City**: Ottawa
-- **User ID**: 1
-
-#### 3. API Layer (`assets/js/api.js`)
-- Updated `login()` function to accept email parameter
-- Backend API calls send email in request body
-- Fallback to mock API handles email-based authentication
-
-#### 4. Devices Data (`assets/data/devices.json`)
-- Updated `user_id` from 100 to 1 to match user.json
-- Both devices properly linked to test user account
-
-#### 5. Orders Data (`assets/data/orders.json`)
-- Shipping addresses updated with consistent test user information
-- Name, address, and phone match user.json data
-
-### Data Consistency
-
-All mock data files use consistent information:
-- **User ID**: 1
-- **Email**: test@test.com
-- **Name**: Test User
-- **Location**: Ottawa, ON
-- **Phone**: +1 (613) 555-0100
-- **Address**: 75 Laurier Ave E, K1N 6N5
-- **Postal Code**: K1N 6N5
-
----
-
-## Features
-
-### For Buyers
-- Browse refurbished smartphones by brand, condition, storage
-- Filter products by city availability
-- Add items to cart and checkout
-- Track orders and delivery status
-- Manage multiple shipping addresses
-
-### For Sellers
-- Get instant trade-in estimates
-- Schedule engineer pickup service
-- Track device inspection status
-- Receive payment to wallet
-- Apply coupons for service fee discounts
-
-### Wallet & Payments
-- Digital wallet with CAD balance
-- Top-up functionality
-- Transaction history
-- Coupon management
-- Automatic payment processing
-
-### Account Management
-- View order history (buy/sell)
-- Update profile information
-- Manage addresses
-- Notification preferences
-- Settings and support
-
----
-
-## Development
-
-### Mock API System
-
-The application uses a comprehensive mock API system (`mockApi.js`) that simulates backend behavior:
-
-**Features:**
-- Simulated network latency (200-400ms)
-- Authentication with session tokens
-- Data persistence via localStorage
-- Error handling and validation
-- Realistic response formats
-
-**Key Methods:**
-```javascript
-// Authentication
-mockApi.login(email, password)
-mockApi.logout()
-mockApi.isAuthenticated()
-
-// User & Wallet
-mockApi.getUser()
-mockApi.getWallet()
-mockApi.getCoupons()
-
-// Devices & Trade-ins
-mockApi.getDevices()
-mockApi.getDevice(deviceId)
-mockApi.getTradeInEstimate(deviceData)
-mockApi.requestPickup(deviceId, pickupDetails)
-mockApi.confirmTradeIn(deviceId, couponId)
-```
-
-### Storage System
-
-The `storage.js` module provides utilities for managing localStorage:
-
-**Stores:**
-- `cityStore` - Selected city
-- `authStore` - Authentication state
-- `cartStore` - Shopping cart items
-- `userStore` - User profile
-- `walletStore` - Wallet balance
-
-**Example Usage:**
-```javascript
-// Check authentication
-if (authStore.isAuthenticated()) {
-  const user = authStore.get();
-  console.log(user.token);
-}
-
-// Manage cart
-cartStore.add(product, quantity);
-const total = cartStore.getTotal();
-cartStore.clear();
-```
-
-### Creating Protected Pages
-
-To protect a page with authentication:
-
-1. Create a page-specific JS file in `assets/js/pages/`
-2. Add authentication check on DOMContentLoaded:
-
-```javascript
-document.addEventListener('DOMContentLoaded', async () => {
-  // Check authentication
-  if (!authStore.isAuthenticated()) {
-    window.location.href = './login.html?return=' + 
-      encodeURIComponent(window.location.href);
-    return;
-  }
-  
-  // Load page data
-  await loadPageData();
-});
-```
-
-3. Include the script in your HTML file:
-
-```html
-<script src="./assets/js/storage.js"></script>
-<script src="./assets/js/api.js"></script>
-<script src="./assets/js/ui.js"></script>
-<script src="./assets/js/pages/your-page.js"></script>
-```
-
-### UI Components
-
-Common UI components are available in `ui.js`:
-
-```javascript
-// Toast notifications
-showToast('Success message', 'success');
-showToast('Error message', 'error');
-showToast('Info message', 'info');
-
-// Loading states
-showLoading();
-hideLoading();
-```
-
----
-
-## API Documentation
-
-### Authentication Endpoints
-
-#### Login
-```javascript
-api.login(email, password)
-// Returns: { success: boolean, token: string, user: object, message: string }
-```
-
-#### Logout
-```javascript
-api.logout()
-// Returns: { success: boolean, message: string }
-```
-
-### User & Wallet Endpoints
-
-#### Get User Profile
-```javascript
-api.getWallet()
-// Returns: { success: boolean, data: { balance, currency, coupons, transactions } }
-```
-
-#### Get Coupons
-```javascript
-api.getCoupons()
-// Returns: { success: boolean, data: [coupon objects] }
-```
-
-### Product Endpoints
-
-#### Get Products
-```javascript
-api.getProducts({ city, brand, search, limit })
-// Returns: [product objects]
-```
-
-#### Get Product by ID
-```javascript
-api.getProduct(id)
-// Returns: product object or null
-```
-
-#### Get Categories
-```javascript
-api.getCategories()
-// Returns: [category objects]
-```
-
-### Trade-In & Recycling Endpoints
-
-#### Get Trade-In Estimate
-```javascript
-api.getTradeInEstimate({
-  brand: 'Apple',
-  model: 'iPhone 14',
-  condition: 'Good',
-  storage: '128GB'
-})
-// Returns: { success: boolean, data: { estimated_price, ... } }
-```
-
-#### Get User's Devices
-```javascript
-api.getDevices()
-// Returns: { success: boolean, data: [device objects] }
-```
-
-#### Request Pickup
-```javascript
-api.requestPickup(deviceId, {
-  location: 'University of Ottawa',
-  notes: 'Optional pickup notes'
-})
-// Returns: { success: boolean, data: { pickup_id, engineer_assigned, ... } }
-```
-
-#### Confirm Trade-In
-```javascript
-api.confirmTradeIn(deviceId, couponId)
-// Returns: { success: boolean, data: { transaction_id, final_amount, ... } }
-```
-
-### Order Endpoints
-
-#### Get Orders
-```javascript
-api.getOrders()
-// Returns: [order objects]
-```
-
-#### Checkout
-```javascript
-api.checkout(orderData)
-// Returns: { success: boolean, orderId: string, message: string }
-```
-
----
-
-## Testing
-
-### Manual Testing Checklist
-
-**Authentication:**
-- [ ] Login with test@test.com / test
-- [ ] Logout clears all auth data
-- [ ] Protected pages redirect to login
-- [ ] Invalid credentials show error message
-
-**Product Browsing:**
-- [ ] Products load on home page
-- [ ] City filter works correctly
-- [ ] Product detail page displays correctly
-- [ ] Add to cart functionality
-
-**Trade-In Flow:**
-- [ ] Get estimate with device details
-- [ ] Request pickup service
-- [ ] View devices awaiting pickup
-- [ ] Confirm trade-in with coupon
-
-**Cart & Checkout:**
-- [ ] Add/remove items from cart
-- [ ] Update quantities
-- [ ] Apply coupons
-- [ ] Complete checkout
-
-**Account Management:**
-- [ ] View wallet balance
-- [ ] Check order history
-- [ ] Update settings
-- [ ] Manage addresses
-
----
-
-## Troubleshooting
-
-### Issue: Not logged in by default
-**Solution**: This is expected behavior. The app defaults to logged-out state. Use clear-auth.html to ensure clean state, then login at login.html.
-
-### Issue: Account page shows "Sign Out" when not logged in
-**Solution**: This has been fixed. The account page now checks authentication and redirects to login if not authenticated.
-
-### Issue: Mock API not working
-**Solution**: Check browser console for errors. Ensure all script files are loaded in correct order.
-
-### Issue: LocalStorage data persists
-**Solution**: Use clear-auth.html utility or manually clear localStorage in browser DevTools.
-
----
-
-## License
-
-This project is for educational and demonstration purposes.
-
----
-
-## Contributing
-
-This is a demonstration project. For questions or suggestions, please refer to the project documentation.
-
----
-
-## Support
-
-For technical issues or questions about the implementation, refer to:
-- The inline code comments
-- This README file
-- Browser DevTools console logs
-
----
-
-**Last Updated**: October 2025
-**Version**: 1.0.0
+Use the backend spec when wiring up additional UI features—no local mock data is available anymore.

@@ -120,7 +120,7 @@ function setupAddToCart(productId) {
   addBtn.addEventListener('click', async () => {
     const product = await ensureProductLoaded(productId);
     if (product) {
-      cartStore.add(product, 1);
+      await addProductToCart(product, 1);
       showToast('Added to cart!', 'success');
     }
   });
@@ -128,7 +128,7 @@ function setupAddToCart(productId) {
   buyBtn.addEventListener('click', async () => {
     const product = await ensureProductLoaded(productId);
     if (product) {
-      cartStore.add(product, 1);
+      await addProductToCart(product, 1);
       window.location.href = './checkout.html';
     }
   });
@@ -141,4 +141,18 @@ async function ensureProductLoaded(productId) {
 
   currentProduct = await api.getProduct(productId);
   return currentProduct;
+}
+
+async function addProductToCart(product, quantity = 1) {
+  cartStore.add(product, quantity);
+
+  if (!authStore.isAuthenticated()) {
+    return;
+  }
+
+  try {
+    await api.addToCart(product.id, quantity);
+  } catch (error) {
+    console.warn('Failed to sync cart with backend:', error);
+  }
 }

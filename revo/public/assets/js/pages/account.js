@@ -1,45 +1,80 @@
 // Account page functionality
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Check if user is authenticated
   if (!authStore.isAuthenticated()) {
-    // Redirect to login page if not authenticated
-    window.location.href = './login.html?return=' + encodeURIComponent(window.location.href);
+    redirectToLogin();
     return;
   }
 
-  // Load user data
-  await loadUserData();
+  const user = await ensureCurrentUser();
+  if (!user) {
+    return;
+  }
+
+  updateWalletDisplay();
+  await loadOrderSummary();
   
-  // Setup logout button
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', handleLogout);
   }
 });
 
-async function loadUserData() {
+async function ensureCurrentUser() {
   try {
-    // Load wallet balance
-    const walletResponse = await api.getWallet();
-    if (walletResponse.success) {
-      const balance = walletResponse.data.balance || 0;
-      const currency = walletResponse.data.currency || 'CAD';
-      document.getElementById('wallet-balance').textContent = `$${balance.toFixed(2)} ${currency}`;
+    const response = await api.getCurrentUser();
+    if (!response || response.success === false) {
+      throw new Error(response?.error || 'Not authenticated');
     }
 
-    // Load orders summary
-    const orders = await api.getOrders();
-    if (orders && Array.isArray(orders)) {
-      const pendingCount = orders.filter(order => order.status === 'pending').length;
-      const completedCount = orders.filter(order => order.status === 'completed').length;
-      
-      document.getElementById('pending-count').textContent = pendingCount;
-      document.getElementById('completed-count').textContent = completedCount;
+    const currentAuth = authStore.get() || {};
+    if (!currentAuth.user) {
+      const token = currentAuth.token || localStorage.getItem('authToken');
+      authStore.set({
+        token,
+        user: response.data
+      });
     }
+
+    return response.data;
   } catch (error) {
-    console.error('Error loading user data:', error);
-    showToast('Failed to load account data', 'error');
+    console.error('Failed to verify session:', error);
+    redirectToLogin();
+    return null;
+  }
+}
+
+function redirectToLogin() {
+  authStore.clear();
+  window.location.href = './login.html?return=' + encodeURIComponent(window.location.href);
+}
+
+function updateWalletDisplay() {
+  const wallet = walletStore.get();
+  const balance = wallet?.balance || 0;
+  const currency = wallet?.currency || 'CAD';
+  const balanceNode = document.getElementById('wallet-balance');
+  if (balanceNode) {
+    balanceNode.textContent = formatMoney(balance, currency);
+  }
+}
+
+async function loadOrderSummary() {
+  try {
+    const orders = await api.getOrders();
+    const pendingStatuses = new Set(['pending', 'processing', 'created']);
+    const completedStatuses = new Set(['completed', 'paid', 'fulfilled', 'shipped']);
+
+    const pendingCount = orders.filter(order => pendingStatuses.has((order.status || '').toLowerCase())).length;
+    const completedCount = orders.filter(order => completedStatuses.has((order.status || '').toLowerCase())).length;
+
+    const pendingNode = document.getElementById('pending-count');
+    const completedNode = document.getElementById('completed-count');
+    if (pendingNode) pendingNode.textContent = pendingCount;
+    if (completedNode) completedNode.textContent = completedCount;
+  } catch (error) {
+    console.error('Error loading order summary:', error);
+    showToast('Could not load orders summary', 'error');
   }
 }
 
