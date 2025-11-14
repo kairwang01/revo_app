@@ -13,92 +13,96 @@
     
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #f3f4f6;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
+      color: #111827;
     }
     
-    .payment-container {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      max-width: 500px;
+    .payment-shell {
       width: 100%;
-      padding: 40px;
-      text-align: center;
+      max-width: 900px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(15,23,42,0.06);
+      padding: 32px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px;
     }
     
-    .logo {
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 50%;
-      margin: 0 auto 20px;
+    .payment-column {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 24px;
-      font-weight: bold;
+      flex-direction: column;
+      gap: 20px;
     }
     
-    h1 {
-      color: #1a202c;
-      font-size: 24px;
-      margin-bottom: 12px;
+    .payment-section {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      background: #fff;
+    }
+    
+    .brand {
+      font-size: 1.125rem;
+      font-weight: 600;
     }
     
     .subtitle {
-      color: #718096;
-      font-size: 14px;
-      margin-bottom: 30px;
+      color: #6b7280;
+      font-size: 0.95rem;
     }
     
     .amount {
-      font-size: 48px;
+      font-size: 2.5rem;
       font-weight: 700;
-      color: #667eea;
-      margin: 20px 0;
+      color: #111827;
+      margin-top: 0.5rem;
     }
     
-    .merchant {
-      background: #f7fafc;
-      padding: 16px;
+    .card-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    
+    .card-field label {
+      font-size: 0.85rem;
+      color: #4b5563;
+    }
+    
+    .card-field input {
+      padding: 0.85rem 1rem;
       border-radius: 8px;
-      margin: 24px 0;
-      text-align: left;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
     }
     
-    .merchant-label {
-      font-size: 12px;
-      color: #718096;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-    
-    .merchant-name {
-      font-size: 16px;
+    h2 {
+      font-size: 1rem;
       font-weight: 600;
-      color: #1a202c;
+      margin-bottom: 1rem;
     }
     
-    .order-info {
-      background: #f7fafc;
+    .merchant,
+    .order-info,
+    .shipping-info {
+      background: #f9fafb;
+      border-radius: 10px;
       padding: 16px;
-      border-radius: 8px;
-      margin: 16px 0;
-      text-align: left;
-      font-size: 14px;
+      font-size: 0.95rem;
     }
     
     .order-info-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 8px;
+      margin-bottom: 0.4rem;
     }
     
     .order-info-row:last-child {
@@ -106,22 +110,37 @@
     }
     
     .order-info-label {
-      color: #718096;
+      color: #6b7280;
     }
     
     .order-info-value {
-      color: #1a202c;
-      font-weight: 500;
+      font-weight: 600;
+    }
+    
+    .shipping-recipient {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .shipping-address {
+      color: #4b5563;
+      line-height: 1.5;
+    }
+    
+    .shipping-meta {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: #2563eb;
     }
     
     .spinner {
-      width: 60px;
-      height: 60px;
-      border: 4px solid #e2e8f0;
-      border-top-color: #667eea;
+      width: 46px;
+      height: 46px;
+      border: 4px solid #e5e7eb;
+      border-top-color: #2563eb;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin: 30px auto;
+      margin: 1.5rem auto;
     }
     
     @keyframes spin {
@@ -129,67 +148,23 @@
     }
     
     .processing-text {
-      color: #718096;
-      font-size: 16px;
-      margin-top: 20px;
-    }
-    
-    .security-badges {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-top: 32px;
-      padding-top: 32px;
-      border-top: 1px solid #e2e8f0;
-    }
-    
-    .badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: #718096;
-    }
-    
-    .badge svg {
-      width: 16px;
-      height: 16px;
-      fill: #48bb78;
-    }
-    
-    .success-icon {
-      width: 80px;
-      height: 80px;
-      background: #48bb78;
-      border-radius: 50%;
-      margin: 0 auto 24px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 40px;
-    }
-    
-    .success-icon.show {
-      display: flex;
+      color: #4b5563;
+      text-align: center;
+      font-size: 0.95rem;
     }
     
     .btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #111827;
       color: white;
       border: none;
-      padding: 16px 32px;
+      padding: 0.9rem 1rem;
       border-radius: 8px;
-      font-size: 16px;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       width: 100%;
-      margin-top: 24px;
+      margin-top: 1rem;
       display: none;
-    }
-    
-    .btn:hover {
-      opacity: 0.9;
     }
     
     .btn.show {
@@ -198,49 +173,70 @@
   </style>
 </head>
 <body>
-  <div class="payment-container">
-    <div class="logo">💳</div>
-    
-    <h1 id="title">Processing Payment</h1>
-    <p class="subtitle" id="subtitle">Please wait while we process your transaction</p>
-    
-    <div class="success-icon" id="success-icon">✓</div>
-    
-    <div class="amount" id="amount">$0.00</div>
-    
-    <div class="merchant">
-      <div class="merchant-label">Merchant</div>
-      <div class="merchant-name">Revo - Phone Trading Platform</div>
+  <div class="payment-shell">
+    <div class="payment-column">
+      <div class="payment-section">
+        <div class="brand">Revo Checkout</div>
+        <p class="subtitle" id="subtitle">Review and confirm your payment</p>
+        <div class="amount" id="amount">$0.00</div>
+      </div>
+
+      <div class="payment-section">
+        <h2>Payment method</h2>
+        <div class="card-field">
+          <label for="locked-card-number">Card Number</label>
+          <input id="locked-card-number" type="text" placeholder="1234 5678 9012 3456">
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+          <div class="card-field" style="flex:1;">
+            <label for="locked-expiry">Expiry</label>
+            <input id="locked-expiry" type="text" placeholder="MM / YY">
+          </div>
+          <div class="card-field" style="width:140px;">
+            <label for="locked-cvv">CVV</label>
+            <input id="locked-cvv" type="text" placeholder="123">
+          </div>
+        </div>
+      </div>
+
+      <div class="payment-section">
+        <div class="spinner" id="spinner"></div>
+        <p class="processing-text" id="processing-text">Processing payment...</p>
+        <button class="btn" id="return-btn">Return to Revo</button>
+      </div>
     </div>
-    
-    <div class="order-info">
-      <div class="order-info-row">
-        <span class="order-info-label">Order ID</span>
-        <span class="order-info-value" id="order-id">-</span>
+
+    <div class="payment-column">
+      <div class="payment-section">
+        <h2>Order summary</h2>
+        <div class="merchant">
+          <div style="font-size:0.8rem; letter-spacing:0.05em; text-transform:uppercase; color:#6b7280;">Merchant</div>
+          <div style="font-weight:600; margin-top:0.35rem;">Revo Marketplace</div>
+        </div>
+
+        <div class="order-info">
+          <div class="order-info-row">
+            <span class="order-info-label">Order ID</span>
+            <span class="order-info-value" id="order-id">-</span>
+          </div>
+          <div class="order-info-row">
+            <span class="order-info-label">Payment Method</span>
+            <span class="order-info-value" id="payment-method">Credit Card</span>
+          </div>
+          <div class="order-info-row">
+            <span class="order-info-label">Date</span>
+            <span class="order-info-value" id="payment-date">-</span>
+          </div>
+        </div>
       </div>
-      <div class="order-info-row">
-        <span class="order-info-label">Payment Method</span>
-        <span class="order-info-value" id="payment-method">Credit Card</span>
-      </div>
-      <div class="order-info-row">
-        <span class="order-info-label">Date</span>
-        <span class="order-info-value" id="payment-date">-</span>
-      </div>
-    </div>
-    
-    <div class="spinner" id="spinner"></div>
-    <p class="processing-text" id="processing-text">Securely processing your payment...</p>
-    
-    <button class="btn" id="return-btn">Return to Revo</button>
-    
-    <div class="security-badges">
-      <div class="badge">
-        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-        SSL Encrypted
-      </div>
-      <div class="badge">
-        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-        PCI Compliant
+
+      <div class="payment-section">
+        <h2>Delivery</h2>
+        <div class="shipping-info" id="shipping-info">
+          <div class="shipping-recipient" id="shipping-recipient">Awaiting details</div>
+          <div class="shipping-address" id="shipping-address">Shipping address will appear once provided.</div>
+          <div class="shipping-meta" id="shipping-meta"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -263,7 +259,9 @@
       hour: '2-digit',
       minute: '2-digit'
     });
-    
+
+    renderShippingAddress();
+
     // Simulate payment processing (2-3 seconds)
     setTimeout(() => {
       // Hide spinner and processing text
@@ -271,9 +269,8 @@
       document.getElementById('processing-text').style.display = 'none';
       
       // Show success state
-      document.getElementById('title').textContent = 'Payment Successful!';
-      document.getElementById('subtitle').textContent = 'Your order has been placed successfully';
-      document.getElementById('success-icon').classList.add('show');
+      document.getElementById('subtitle').textContent = 'Payment successful — your order has been placed';
+      document.getElementById('processing-text').textContent = 'Payment successful. You can return to the store.';
       document.getElementById('return-btn').classList.add('show');
       
       // Store order info in localStorage for success page
@@ -287,6 +284,55 @@
     document.getElementById('return-btn').addEventListener('click', () => {
       window.location.href = './payment-success.html?orderId=' + orderId + '&amount=' + amount;
     });
+
+    function renderShippingAddress() {
+      const recipientNode = document.getElementById('shipping-recipient');
+      const addressNode = document.getElementById('shipping-address');
+      const metaNode = document.getElementById('shipping-meta');
+      if (!recipientNode || !addressNode) {
+        return;
+      }
+      try {
+        const raw = localStorage.getItem('lastCheckoutAddress');
+        if (!raw) {
+          recipientNode.textContent = 'No address on file';
+          addressNode.textContent = 'Please return to checkout to provide a delivery address.';
+          if (metaNode) metaNode.textContent = '';
+          return;
+        }
+        const data = JSON.parse(raw);
+        recipientNode.textContent = data?.fullName || 'Customer';
+        const lines = [];
+        if (data.street || data.address) {
+          lines.push(data.street || data.address);
+        }
+        const cityLine = [data.city, data.province || data.state, data.postalCode || data.zipCode].filter(Boolean).join(', ');
+        if (cityLine) {
+          lines.push(cityLine);
+        }
+        if (data.country) {
+          lines.push(data.country);
+        }
+        if (data.phone) {
+          lines.push(`Phone: ${data.phone}`);
+        }
+        addressNode.innerHTML = lines.length ? lines.join('<br>') : 'Address details pending.';
+        if (metaNode && data.shipping) {
+          const shippingParts = [];
+          if (data.shipping.name || data.shipping.carrier) {
+            shippingParts.push(data.shipping.name || data.shipping.carrier);
+          }
+          if (data.shipping.eta) {
+            shippingParts.push(data.shipping.eta);
+          }
+          metaNode.textContent = shippingParts.join(' · ');
+        } else if (metaNode) {
+          metaNode.textContent = '';
+        }
+      } catch (error) {
+        console.warn('Unable to load checkout address:', error);
+      }
+    }
   </script>
 </body>
 </html>

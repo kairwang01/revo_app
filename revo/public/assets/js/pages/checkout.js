@@ -129,6 +129,13 @@ function calculateTotals(cart) {
     mode: selectedShippingMode,
     ...shippingOption
   };
+  window.checkoutBreakdown = {
+    subtotal,
+    tax,
+    taxRate,
+    shipping,
+    total
+  };
 }
 
 function populateWalletBalance() {
@@ -232,6 +239,9 @@ function setupPlaceOrder() {
         // Generate order ID
         const orderId = result.orderId || result.data?.orderId || result.data?.order_id || 'ORD' + Date.now();
         
+        rememberLastCheckoutAddress(shippingAddressPayload, shippingDetails);
+        saveLocalOrderSnapshot(orderId, cart, shippingAddressPayload, paymentMethodName, shippingDetails);
+
         // Clear local cart after successful checkout
         cartStore.clear();
         
@@ -1061,4 +1071,84 @@ function ensureLocalDefault(addresses, defaultId) {
 
 function generateLocalAddressId() {
   return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+}
+
+function saveLocalOrderSnapshot(orderId, cartItems, shippingAddress, paymentMethodLabel, shippingDetails) {
+  if (typeof orderHistoryStore === 'undefined' || !orderHistoryStore.add) {
+    return;
+  }
+
+  const breakdown = window.checkoutBreakdown || {};
+  const snapshot = {
+    id: orderId,
+    reference: orderId,
+    status: 'pending',
+    paymentStatus: 'pending',
+    total: Number(breakdown.total ?? window.checkoutTotal ?? 0),
+    subtotal: Number(breakdown.subtotal ?? 0),
+    tax: Number(breakdown.tax ?? 0),
+    shipping: Number(
+      breakdown.shipping ?? (shippingDetails?.cost ?? 0)
+    ),
+    date: new Date().toISOString(),
+    type: 'buy',
+    paymentMethod: paymentMethodLabel,
+    shippingSummary: {
+      carrier: shippingDetails?.carrier,
+      eta: shippingDetails?.eta,
+      mode: shippingDetails?.mode || selectedShippingMode,
+      name: shippingDetails?.name,
+      address: shippingAddress
+    },
+    items: normalizeCartItemsForOrder(cartItems)
+  };
+
+  try {
+    orderHistoryStore.add(snapshot);
+  } catch (error) {
+    console.warn('Unable to cache local order snapshot:', error);
+  }
+}
+
+function normalizeCartItemsForOrder(items) {
+  if (!Array.isArray(items)) {
+    return [];
+  }
+
+  return items.map(item => {
+    const quantity = Number(item.quantity) || 1;
+    const price = Number(item.price) || 0;
+    return {
+      id: item.id,
+      name: item.name || item.title || 'Device',
+      price,
+      quantity,
+      total: price * quantity,
+      image: item.image
+    };
+  });
+}
+
+function rememberLastCheckoutAddress(address, shippingInfo) {
+  if (!address || typeof localStorage === 'undefined') {
+    return;
+  }
+  const payload = {
+    ...address,
+    shipping: shippingInfo
+      ? {
+          name: shippingInfo.name,
+          carrier: shippingInfo.carrier,
+          eta: shippingInfo.eta,
+          cost: shippingInfo.cost,
+          mode: shippingInfo.mode || selectedShippingMode
+        }
+      : null,
+    savedAt: new Date().toISOString()
+  };
+  try {
+    localStorage.setItem('lastCheckoutAddress', JSON.stringify(payload));
+  } catch (error) {
+    console.warn('Unable to persist checkout address snapshot:', error);
+  }
 }

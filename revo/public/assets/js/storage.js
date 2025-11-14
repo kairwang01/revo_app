@@ -4,7 +4,8 @@ const STORAGE_KEYS = {
   AUTH: 'revo_auth',
   CART: 'revo_cart',
   USER: 'revo_user',
-  WALLET: 'revo_wallet'
+  WALLET: 'revo_wallet',
+  ORDERS: 'revo_orders_local'
 };
 
 // City storage
@@ -120,6 +121,103 @@ const walletStore = {
     localStorage.setItem(STORAGE_KEYS.WALLET, JSON.stringify(walletData));
   }
 };
+
+const LOCAL_ORDER_HISTORY_LIMIT = 25;
+
+const orderHistoryStore = {
+  get: () => {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.ORDERS);
+      const parsed = data ? JSON.parse(data) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      console.warn('Unable to read local orders:', error);
+      return [];
+    }
+  },
+  set: (orders) => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+    } catch (error) {
+      console.warn('Unable to persist local orders:', error);
+    }
+  },
+  add: (order) => {
+    if (!order) {
+      return;
+    }
+    try {
+      const reference = (order.reference || order.id || `ORD${Date.now()}`).toString();
+      const snapshot = {
+        ...order,
+        reference,
+        id: order.id || reference,
+        date: order.date || new Date().toISOString(),
+        type: order.type || 'buy',
+        status: order.status || 'pending',
+        paymentStatus: order.paymentStatus || 'pending',
+        _local: true
+      };
+      const existing = orderHistoryStore
+        .get()
+        .filter(entry => !matchOrderReference(entry, reference));
+      existing.unshift(snapshot);
+      orderHistoryStore.set(existing.slice(0, LOCAL_ORDER_HISTORY_LIMIT));
+    } catch (error) {
+      console.warn('Unable to save local order snapshot:', error);
+    }
+  },
+  update: (reference, updates = {}) => {
+    if (!reference) {
+      return false;
+    }
+    try {
+      const ref = reference.toString();
+      const orders = orderHistoryStore.get();
+      const index = orders.findIndex(entry => matchOrderReference(entry, ref));
+      if (index === -1) {
+        return false;
+      }
+      orders[index] = {
+        ...orders[index],
+        ...updates
+      };
+      orderHistoryStore.set(orders);
+      return true;
+    } catch (error) {
+      console.warn('Unable to update local order snapshot:', error);
+      return false;
+    }
+  },
+  remove: (reference) => {
+    if (!reference) {
+      return;
+    }
+    try {
+      const ref = reference.toString();
+      const filtered = orderHistoryStore
+        .get()
+        .filter(entry => !matchOrderReference(entry, ref));
+      orderHistoryStore.set(filtered);
+    } catch (error) {
+      console.warn('Unable to remove local order snapshot:', error);
+    }
+  },
+  clear: () => {
+    localStorage.removeItem(STORAGE_KEYS.ORDERS);
+  }
+};
+
+function matchOrderReference(order, reference) {
+  if (!order || !reference) {
+    return false;
+  }
+  const ref = reference.toString();
+  return (
+    (order.reference && order.reference.toString() === ref) ||
+    (order.id && order.id.toString() === ref)
+  );
+}
 
 // Tax rates by city - now handled by geo.js
 function getTaxRate(city) {

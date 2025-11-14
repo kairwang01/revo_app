@@ -51,17 +51,53 @@ function setupTabs() {
 async function loadOrders() {
   setLoading(true);
 
-  try {
-    const orders = await api.getOrders();
-    allOrders = Array.isArray(orders) ? orders : [];
-  } catch (error) {
-    console.error('Failed to load orders:', error);
-    allOrders = [];
-    showToast('Could not load orders right now. Please try again later.', 'error');
-  }
+  const [purchaseOrders, tradeInOrders] = await Promise.all([
+    fetchPurchaseOrders(),
+    fetchTradeInOrders()
+  ]);
+
+  const offlineOrders = getOfflineOrders();
+  const remoteOrders = [...tradeInOrders, ...purchaseOrders];
+  allOrders = mergeOrderSources(remoteOrders, offlineOrders);
 
   setLoading(false);
   renderOrders();
+}
+
+async function fetchPurchaseOrders() {
+  try {
+    const orders = await api.getOrders();
+    return Array.isArray(orders) ? orders : [];
+  } catch (error) {
+    console.error('Failed to load purchase orders:', error);
+    showToast('Could not load orders right now. Please try again later.', 'error');
+    return [];
+  }
+}
+
+async function fetchTradeInOrders() {
+  if (!api || typeof api.getMyPickups !== 'function') {
+    return [];
+  }
+
+  try {
+    const response = await api.getMyPickups();
+    if (response?.success === false) {
+      if (response?.error) {
+        console.warn('Unable to load trade-in pickups:', response.error);
+      }
+      return [];
+    }
+    const raw = Array.isArray(response?.data)
+      ? response.data
+      : Array.isArray(response)
+        ? response
+        : [];
+    return normalizeTradeInOrders(raw);
+  } catch (error) {
+    console.error('Failed to load trade-in pickups:', error);
+    return [];
+  }
 }
 
 function setLoading(isLoading) {
@@ -149,6 +185,12 @@ function getOrderMarkup(order) {
   const itemsMarkup = items.length
     ? items.map(renderOrderItem).join('')
     : '<p class="text-muted" style="font-size:0.875rem;">No items listed for this order.</p>';
+  const statusMeta = `
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.2rem;">
+      <span class="order-status ${statusClass}">${statusLabel}</span>
+      ${order.isLocal ? '<span class="text-muted" style="font-size:0.75rem;">Saved locally</span>' : ''}
+    </div>
+  `;
 
   return `
     <div class="order-header">
@@ -156,7 +198,7 @@ function getOrderMarkup(order) {
         <div class="order-id">${escapeHtml(orderId)}</div>
         <div class="text-muted" style="font-size:0.875rem;">${dateLabel}&nbsp;•&nbsp;${typeLabel}</div>
       </div>
-      <span class="order-status ${statusClass}">${statusLabel}</span>
+      ${statusMeta}
     </div>
 
     <div class="order-items">
@@ -198,17 +240,16 @@ function renderOrderItem(item) {
 
 function renderOrderActions(order) {
   const orderReference = encodeURIComponent(order.reference || order.id || '');
-
   if (order.type === 'sell') {
     return `
-      <a href="./order-tracking.html?orderId=${orderReference}" class="btn btn-outline btn-sm">
+      <a href="./order-tracking.html?id=${orderReference}&type=sell" class="btn btn-outline btn-sm">
         Track Progress
       </a>
     `;
   }
 
   return `
-    <a href="./orders.html#${orderReference}" class="btn btn-ghost btn-sm">
+    <a href="./order-tracking.html?id=${orderReference}" class="btn btn-ghost btn-sm">
       View Details
     </a>
   `;
@@ -222,16 +263,31 @@ function normalizeFilter(value) {
 
 function normalizeStatus(status) {
   const key = (status || '').toString().toLowerCase();
-  if (['completed', 'paid', 'fulfilled'].includes(key)) return 'completed';
-  if (key === 'cancelled' || key === 'canceled') return 'cancelled';
+  if (['completed', 'paid', 'fulfilled', 'finished', 'done', 'payout_completed'].includes(key)) return 'completed';
+  if (['cancelled', 'canceled', 'rejected', 'declined'].includes(key)) return 'cancelled';
   return 'pending';
 }
 
 function formatStatusLabel(status) {
   const key = (status || '').toString().toLowerCase();
-  if (['completed', 'paid', 'fulfilled'].includes(key)) return 'Completed';
-  if (key === 'cancelled' || key === 'canceled') return 'Cancelled';
-  return 'Pending';
+  const labelMap = {
+    completed: 'Completed',
+    paid: 'Paid',
+    fulfilled: 'Fulfilled',
+    quote_sent: 'Quote Sent',
+    inspecting: 'Inspecting',
+    in_pickup: 'In Pickup',
+    in_transit: 'In Transit',
+    requested: 'Requested',
+    scheduled: 'Scheduled',
+    cancelled: 'Cancelled',
+    canceled: 'Cancelled',
+    rejected: 'Rejected'
+  };
+  if (labelMap[key]) {
+    return labelMap[key];
+  }
+  return key ? key.replace(/[_-]/g, ' ').replace(/\b\w/g, char => char.toUpperCase()) : 'Pending';
 }
 
 function formatOrderDate(value) {
@@ -269,4 +325,146 @@ function setEmptyState(visible) {
     return;
   }
   toggleElement(ordersDom.empty, visible);
+}
+
+function getOfflineOrders() {
+  if (typeof orderHistoryStore === 'undefined' || typeof orderHistoryStore.get !== 'function') {
+    return [];
+  }
+  return orderHistoryStore.get().map(normalizeLocalOrder);
+}
+
+function mergeOrderSources(remote = [], offline = []) {
+  const remoteReferences = new Set(remote.map(getOrderReference).filter(Boolean));
+  const localOnly = offline.filter(order => {
+    const reference = getOrderReference(order);
+    return reference && !remoteReferences.has(reference);
+  });
+  return [...localOnly, ...remote];
+}
+
+function normalizeLocalOrder(order = {}) {
+  const reference = getOrderReference(order) || `ORD${Date.now()}`;
+  return {
+    id: order.id || reference,
+    reference,
+    status: order.status || 'pending',
+    type: order.type || 'buy',
+    total: Number(order.total) || 0,
+    subtotal: Number(order.subtotal) || 0,
+    tax: Number(order.tax) || 0,
+    shipping: Number(order.shipping) || 0,
+    date: order.date || order.timestamp || new Date().toISOString(),
+    paymentStatus: order.paymentStatus || 'pending',
+    items: Array.isArray(order.items) ? order.items : [],
+    isLocal: true,
+    raw: order
+  };
+}
+
+function getOrderReference(order) {
+  const ref = order?.reference || order?.id;
+  return ref ? ref.toString() : '';
+}
+
+function normalizeTradeInOrders(pickups = []) {
+  return pickups.map(pickup => {
+    const reference = formatTradeInReference(pickup);
+    const amount = extractTradeInValue(pickup);
+    const deviceName = formatTradeInDeviceName(pickup);
+    const image = getTradeInPhoto(pickup);
+    const condition = pickup?.condition || pickup?.device_condition || '—';
+
+    return {
+      id: pickup?.id != null ? `tradein-${pickup.id}` : reference,
+      reference,
+      status: pickup?.status || pickup?.state || 'pending',
+      type: 'sell',
+      total: amount,
+      subtotal: amount,
+      tax: 0,
+      shipping: 0,
+      date: pickup?.updated_at || pickup?.created_at || pickup?.timestamp,
+      items: [
+        {
+          id: pickup?.id ?? reference,
+          name: deviceName,
+          price: amount,
+          quantity: 1,
+          total: amount,
+          image,
+          condition
+        }
+      ],
+      tradeInMeta: {
+        condition,
+        scheduledAt: pickup?.scheduled_at,
+        address: pickup?.address_json
+      }
+    };
+  });
+}
+
+function formatTradeInReference(pickup) {
+  if (!pickup) {
+    return `PK-${Date.now()}`;
+  }
+  if (pickup.reference) {
+    return pickup.reference.toString();
+  }
+  if (pickup.code) {
+    return pickup.code.toString();
+  }
+  const id = pickup.id ?? pickup.pickup_id;
+  if (id !== undefined && id !== null) {
+    return `PK-${id}`;
+  }
+  return `PK-${Date.now()}`;
+}
+
+function extractTradeInValue(pickup) {
+  const candidates = [
+    pickup?.offer_amount,
+    pickup?.offer,
+    pickup?.quoted_amount,
+    pickup?.quote_amount,
+    pickup?.estimated_value,
+    pickup?.estimate_value,
+    pickup?.estimate_amount,
+    pickup?.payout_amount
+  ];
+
+  for (const value of candidates) {
+    const amount = Number(value);
+    if (Number.isFinite(amount)) {
+      return amount;
+    }
+  }
+  return 0;
+}
+
+function formatTradeInDeviceName(pickup) {
+  const parts = [];
+  const brandName = pickup?.brand_name || pickup?.brand?.name || pickup?.brand;
+  const model = pickup?.model_text || pickup?.model || pickup?.device_model;
+  if (brandName) {
+    parts.push(brandName);
+  }
+  if (model) {
+    parts.push(model);
+  }
+  return parts.join(' ') || 'Trade-in device';
+}
+
+function getTradeInPhoto(pickup) {
+  if (!pickup) {
+    return 'https://via.placeholder.com/80x80.png?text=Trade-in';
+  }
+  if (Array.isArray(pickup.photos) && pickup.photos.length) {
+    return pickup.photos[0];
+  }
+  if (pickup.photo) {
+    return pickup.photo;
+  }
+  return 'https://via.placeholder.com/80x80.png?text=Trade-in';
 }

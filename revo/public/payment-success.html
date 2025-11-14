@@ -169,9 +169,10 @@
         <a href="./orders.html" class="btn btn-primary btn-full">View My Orders</a>
         <a href="./index.html" class="btn btn-secondary btn-full">Continue Shopping</a>
       </div>
-    </div>
+  </div>
   </div>
 
+  <script src="./assets/js/storage.js"></script>
   <script>
     // Get order information from URL or localStorage
     const params = new URLSearchParams(window.location.search);
@@ -189,6 +190,14 @@
       hour: '2-digit',
       minute: '2-digit'
     });
+
+    if (typeof orderHistoryStore !== 'undefined' && orderHistoryStore.update) {
+      orderHistoryStore.update(orderId, {
+        status: 'completed',
+        paymentStatus: 'paid',
+        date: new Date().toISOString()
+      });
+    }
     
     // Clear cart after successful payment
     localStorage.removeItem('revo_cart');

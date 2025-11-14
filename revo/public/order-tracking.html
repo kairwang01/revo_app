@@ -372,55 +372,114 @@
   <script src="./assets/js/api.js"></script>
   <script src="./assets/js/ui.js"></script>
   <script>
-    const orderStages = [
-      {
-        key: 'pending',
-        title: 'Order Placed',
-        desc: 'We received your order and started processing it.',
-        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
-      },
-      {
-        key: 'processing',
-        title: 'Processing',
-        desc: 'Inventory and payment checks are underway.',
-        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
-      },
-      {
-        key: 'paid',
-        title: 'Payment Confirmed',
-        desc: 'Payment has been authorized.',
-        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
-      },
-      {
-        key: 'fulfilled',
-        title: 'Preparing Shipment',
-        desc: 'Warehouse is preparing the package.',
-        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
-      },
-      {
-        key: 'shipped',
-        title: 'Shipped',
-        desc: 'Your order is on the way.',
-        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
-      },
-      {
-        key: 'completed',
-        title: 'Completed',
-        desc: 'Order delivered / trade-in finalized.',
-        icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
-      }
-    ];
+    const ORDER_TIMELINES = {
+      buy: [
+        {
+          key: 'pending',
+          title: 'Order Placed',
+          desc: 'We received your order and started processing it.',
+          icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+        },
+        {
+          key: 'processing',
+          title: 'Processing',
+          desc: 'Inventory and payment checks are underway.',
+          icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+        },
+        {
+          key: 'paid',
+          title: 'Payment Confirmed',
+          desc: 'Payment has been authorized.',
+          icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+        },
+        {
+          key: 'fulfilled',
+          title: 'Preparing Shipment',
+          desc: 'Warehouse is preparing the package.',
+          icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+        },
+        {
+          key: 'shipped',
+          title: 'Shipped',
+          desc: 'Your order is on the way.',
+          icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+        },
+        {
+          key: 'completed',
+          title: 'Completed',
+          desc: 'Order delivered / trade-in finalized.',
+          icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+        }
+      ],
+      sell: [
+        {
+          key: 'requested',
+          title: 'Pickup Requested',
+          desc: 'We received your pickup request and confirmed your details.',
+          icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+        },
+        {
+          key: 'scheduled',
+          title: 'Pickup Scheduled',
+          desc: 'Courier is arranged and preparing to collect your device.',
+          icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+        },
+        {
+          key: 'in_pickup',
+          title: 'Courier En Route',
+          desc: 'Our courier is picking up your device.',
+          icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+        },
+        {
+          key: 'inspecting',
+          title: 'Inspection',
+          desc: 'Technicians are inspecting your device to confirm the quote.',
+          icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+        },
+        {
+          key: 'quote_sent',
+          title: 'Quote Sent',
+          desc: 'Final payout quote has been sent for approval.',
+          icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+        },
+        {
+          key: 'payout_completed',
+          title: 'Payout Completed',
+          desc: 'Funds have been released to your selected payout method.',
+          icon: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+        }
+      ]
+    };
 
     const STATUS_ALIASES = {
-      created: 'pending',
-      new: 'pending',
-      awaiting_confirmation: 'processing',
-      confirmed: 'paid',
-      in_pickup: 'processing',
-      in_transit: 'shipped',
-      inspecting: 'fulfilled',
-      returned: 'completed',
-      delivered: 'completed'
+      buy: {
+        created: 'pending',
+        new: 'pending',
+        awaiting_confirmation: 'processing',
+        confirmed: 'paid',
+        in_pickup: 'processing',
+        in_transit: 'shipped',
+        inspecting: 'fulfilled',
+        returned: 'completed',
+        delivered: 'completed',
+        completed: 'completed'
+      },
+      sell: {
+        created: 'requested',
+        requested: 'requested',
+        new: 'requested',
+        scheduled: 'scheduled',
+        pickup_scheduled: 'scheduled',
+        in_pickup: 'in_pickup',
+        in_transit: 'in_pickup',
+        inspecting: 'inspecting',
+        quote_sent: 'quote_sent',
+        quote_pending: 'quote_sent',
+        offer_sent: 'quote_sent',
+        confirmed: 'payout_completed',
+        payout_completed: 'payout_completed',
+        completed: 'payout_completed'
+      }
     };
 
     async function loadOrderTracking() {
@@ -431,20 +490,26 @@
       }
 
       const urlParams = new URLSearchParams(window.location.search);
-      const orderId = urlParams.get('id');
+      const orderId = urlParams.get('id') || urlParams.get('orderId');
+      const viewType = (urlParams.get('type') || 'buy').toLowerCase();
       
       if (!orderId) {
         window.location.href = './orders.html';
         return;
       }
 
+      if (viewType === 'sell') {
+        await loadTradeInTracking(orderId);
+        return;
+      }
+
+      await loadPurchaseTracking(orderId);
+    }
+
+    async function loadPurchaseTracking(orderId) {
       try {
         const orders = await api.getOrders();
-        const targetOrder = (orders || []).find(order => {
-          const matchesId = String(order.id) === orderId;
-          const matchesReference = (order.reference || '').toLowerCase() === orderId.toLowerCase();
-          return matchesId || matchesReference;
-        });
+        const targetOrder = (orders || []).find(order => matchesReference(order, orderId));
 
         if (!targetOrder) {
           showTrackingError('We could not find that order. Please check the link or visit your orders list.');
@@ -452,14 +517,49 @@
         }
 
         hideOptionalSections();
+        targetOrder.type = targetOrder.type || 'buy';
         renderOrderInfo(targetOrder);
         renderTimeline(targetOrder);
-
-        document.getElementById('loading').classList.add('hidden');
-        document.getElementById('tracking-content').classList.remove('hidden');
+        revealTrackingContent();
       } catch (error) {
         console.error('Failed to load order:', error);
         showTrackingError('Failed to load order details. Please try again later.');
+      }
+    }
+
+    async function loadTradeInTracking(orderReference) {
+      if (!api || typeof api.getMyPickups !== 'function') {
+        showTrackingError('Trade-in tracking is unavailable right now.');
+        return;
+      }
+
+      try {
+        const response = await api.getMyPickups();
+        if (response?.success === false) {
+          showTrackingError('We could not load your trade-in. Please try again later.');
+          return;
+        }
+        const raw = Array.isArray(response?.data)
+          ? response.data
+          : Array.isArray(response)
+            ? response
+            : [];
+        const normalized = raw.map(normalizeTradeInRecord);
+        const targetOrder = normalized.find(order => matchesReference(order, orderReference));
+
+        if (!targetOrder) {
+          showTrackingError('We could not find that trade-in request. Please check the link or visit your orders list.');
+          return;
+        }
+
+        hideOptionalSections();
+        targetOrder.type = 'sell';
+        renderOrderInfo(targetOrder);
+        renderTimeline(targetOrder);
+        revealTrackingContent();
+      } catch (error) {
+        console.error('Failed to load trade-in order:', error);
+        showTrackingError('Failed to load trade-in details. Please try again later.');
       }
     }
 
@@ -477,11 +577,13 @@
 
     function renderTimeline(order) {
       const timeline = document.getElementById('timeline');
-      const stageKey = resolveStageKey(order.status);
-      const currentStageIndex = orderStages.findIndex(stage => stage.key === stageKey);
+      const flowType = order.type === 'sell' ? 'sell' : 'buy';
+      const stages = ORDER_TIMELINES[flowType] || ORDER_TIMELINES.buy;
+      const stageKey = resolveStageKey(order.status, flowType);
+      const currentStageIndex = stages.findIndex(stage => stage.key === stageKey);
       const safeIndex = currentStageIndex === -1 ? 0 : currentStageIndex;
 
-      timeline.innerHTML = orderStages.map((stage, index) => {
+      timeline.innerHTML = stages.map((stage, index) => {
         const isCompleted = index < safeIndex;
         const isActive = index === safeIndex;
         return `
@@ -498,9 +600,10 @@
       }).join('');
     }
 
-    function resolveStageKey(status) {
+    function resolveStageKey(status, type = 'buy') {
       const normalized = (status || '').toLowerCase();
-      return STATUS_ALIASES[normalized] || normalized || 'pending';
+      const map = STATUS_ALIASES[type] || STATUS_ALIASES.buy;
+      return map[normalized] || normalized || 'pending';
     }
 
     function hideOptionalSections() {
@@ -536,6 +639,8 @@
       const statusMap = {
         created: 'Created',
         pending: 'Pending',
+        requested: 'Requested',
+        scheduled: 'Scheduled',
         processing: 'Processing',
         paid: 'Paid',
         fulfilled: 'Preparing Shipment',
@@ -543,9 +648,127 @@
         completed: 'Completed',
         returned: 'Returned',
         awaiting_confirmation: 'Awaiting Confirmation',
-        confirmed: 'Confirmed'
+        confirmed: 'Confirmed',
+        quote_sent: 'Quote Sent',
+        in_pickup: 'In Pickup',
+        inspecting: 'Inspecting'
       };
       return statusMap[normalized] || (status ? status : 'Pending');
+    }
+
+    function matchesReference(order, target) {
+      if (!order || !target) {
+        return false;
+      }
+      const normalizedTarget = target.toString().toLowerCase();
+      const idMatch = order.id && order.id.toString().toLowerCase() === normalizedTarget;
+      const referenceMatch = order.reference && order.reference.toString().toLowerCase() === normalizedTarget;
+      return idMatch || referenceMatch;
+    }
+
+    function revealTrackingContent() {
+      const loading = document.getElementById('loading');
+      const content = document.getElementById('tracking-content');
+      if (loading) {
+        loading.classList.add('hidden');
+      }
+      if (content) {
+        content.classList.remove('hidden');
+      }
+    }
+
+    function normalizeTradeInRecord(pickup) {
+      const reference = formatTradeInReference(pickup);
+      const amount = extractTradeInValue(pickup);
+      const name = formatTradeInDeviceName(pickup);
+      const image = getTradeInPhoto(pickup);
+      const condition = pickup?.condition || pickup?.device_condition || '—';
+
+      return {
+        id: pickup?.id != null ? `tradein-${pickup.id}` : reference,
+        reference,
+        status: pickup?.status || pickup?.state || 'pending',
+        total: amount,
+        subtotal: amount,
+        tax: 0,
+        shipping: 0,
+        date: pickup?.updated_at || pickup?.created_at || pickup?.timestamp,
+        type: 'sell',
+        items: [
+          {
+            id: pickup?.id ?? reference,
+            name,
+            price: amount,
+            quantity: 1,
+            total: amount,
+            image,
+            condition
+          }
+        ]
+      };
+    }
+
+    function formatTradeInReference(pickup) {
+      if (!pickup) {
+        return `PK-${Date.now()}`;
+      }
+      if (pickup.reference) {
+        return pickup.reference.toString();
+      }
+      if (pickup.code) {
+        return pickup.code.toString();
+      }
+      const id = pickup.id ?? pickup.pickup_id;
+      if (id !== undefined && id !== null) {
+        return `PK-${id}`;
+      }
+      return `PK-${Date.now()}`;
+    }
+
+    function extractTradeInValue(pickup) {
+      const candidates = [
+        pickup?.offer_amount,
+        pickup?.offer,
+        pickup?.quoted_amount,
+        pickup?.quote_amount,
+        pickup?.estimated_value,
+        pickup?.estimate_value,
+        pickup?.estimate_amount,
+        pickup?.payout_amount
+      ];
+      for (const value of candidates) {
+        const amount = Number(value);
+        if (Number.isFinite(amount)) {
+          return amount;
+        }
+      }
+      return 0;
+    }
+
+    function formatTradeInDeviceName(pickup) {
+      const parts = [];
+      const brandName = pickup?.brand_name || pickup?.brand?.name || pickup?.brand;
+      const model = pickup?.model_text || pickup?.model || pickup?.device_model;
+      if (brandName) {
+        parts.push(brandName);
+      }
+      if (model) {
+        parts.push(model);
+      }
+      return parts.join(' ') || 'Trade-in device';
+    }
+
+    function getTradeInPhoto(pickup) {
+      if (!pickup) {
+        return 'https://via.placeholder.com/80x80.png?text=Trade-in';
+      }
+      if (Array.isArray(pickup.photos) && pickup.photos.length) {
+        return pickup.photos[0];
+      }
+      if (pickup.photo) {
+        return pickup.photo;
+      }
+      return 'https://via.placeholder.com/80x80.png?text=Trade-in';
     }
 
     document.addEventListener('DOMContentLoaded', loadOrderTracking);
