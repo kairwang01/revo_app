@@ -122,6 +122,17 @@ class BackendAPI {
       return await this._handleResponse(response);
     } catch (error) {
       console.error(`API Error [${endpoint}]:`, error);
+      try {
+        window.dispatchEvent(new CustomEvent('revo:api-error', {
+          detail: {
+            endpoint,
+            url,
+            error
+          }
+        }));
+      } catch (eventError) {
+        console.warn('Failed to dispatch API error event', eventError);
+      }
       throw error;
     }
   }
@@ -132,33 +143,52 @@ class BackendAPI {
    * Register new user
    * POST /api/auth/register
    */
-  async register(email, password) {
+  async register(email, password, profile = {}) {
     try {
-      const data = await this._request('/auth/register', {
+      const payload = {
+        email,
+        password
+      };
+
+      const fullName = profile.full_name || profile.fullName;
+      const phoneNumber = profile.phone_number || profile.phoneNumber;
+
+      if (fullName) {
+        payload.full_name = fullName;
+      }
+      if (phoneNumber) {
+        payload.phone_number = phoneNumber;
+      }
+
+      const registration = await this._request('/auth/register', {
         method: 'POST',
         auth: false,
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify(payload)
       });
 
-      if (data && data.success === false) {
-        return {
-          success: false,
-          error: data.error || 'Registration failed'
-        };
+      // Automatically sign the user in so the frontend receives a token
+      try {
+        const loginResult = await this.login(email, password);
+        if (loginResult?.success) {
+          return {
+            ...loginResult,
+            message: registration?.message || loginResult.message || 'Registration successful',
+            data: {
+              registration,
+              user: loginResult.user
+            }
+          };
+        }
+      } catch (loginError) {
+        console.warn('Auto-login after registration failed:', loginError);
       }
 
-      const token = data.token;
-      if (token) {
-        this.token = token;
-        localStorage.setItem('authToken', token);
-      }
-      
       return {
         success: true,
-        message: data.message || 'Registration successful',
-        data,
-        token,
-        user: data.user
+        message: registration?.message || 'Registration successful',
+        data: registration,
+        token: this.token,
+        user: registration?.user
       };
     } catch (error) {
       return {
@@ -731,6 +761,105 @@ class BackendAPI {
       return {
         success: false,
         error: error.message || 'Failed to get location'
+      };
+    }
+  }
+
+  // ==================== ADDRESSES ====================
+
+  /**
+   * Get current user's addresses
+   * GET /api/addresses/
+   */
+  async getAddresses() {
+    try {
+      const data = await this._request('/addresses/', {
+        method: 'GET'
+      });
+
+      return {
+        success: true,
+        data: Array.isArray(data) ? data : []
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message || 'Failed to load addresses',
+        status: error.status,
+        data: []
+      };
+    }
+  }
+
+  /**
+   * Create a new address
+   * POST /api/addresses/
+   */
+  async createAddress(addressData) {
+    try {
+      const data = await this._request('/addresses/', {
+        method: 'POST',
+        body: JSON.stringify(addressData)
+      });
+
+      return {
+        success: true,
+        data,
+        message: 'Address added successfully'
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message || 'Failed to add address',
+        status: error.status
+      };
+    }
+  }
+
+  /**
+   * Update an address
+   * PUT /api/addresses/{address_id}
+   */
+  async updateAddress(addressId, addressData) {
+    try {
+      const data = await this._request(`/addresses/${addressId}`, {
+        method: 'PUT',
+        body: JSON.stringify(addressData)
+      });
+
+      return {
+        success: true,
+        data,
+        message: 'Address updated successfully'
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message || 'Failed to update address',
+        status: error.status
+      };
+    }
+  }
+
+  /**
+   * Delete an address
+   * DELETE /api/addresses/{address_id}
+   */
+  async deleteAddress(addressId) {
+    try {
+      await this._request(`/addresses/${addressId}`, {
+        method: 'DELETE'
+      });
+
+      return {
+        success: true,
+        message: 'Address removed successfully'
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message || 'Failed to delete address',
+        status: error.status
       };
     }
   }

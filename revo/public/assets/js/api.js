@@ -73,9 +73,9 @@ const api = {
     return await backendApi.logout();
   },
 
-  async register(email, password) {
+  async register(email, password, profile = {}) {
     if (!backendApi) throw new Error('Backend API not available');
-    return await backendApi.register(email, password);
+    return await backendApi.register(email, password, profile);
   },
 
   async getCurrentUser() {
@@ -212,5 +212,26 @@ const api = {
   async getLocation(locationId) {
     if (!backendApi) throw new Error('Backend API not available');
     return await backendApi.getLocation(locationId);
+  },
+
+  // Addresses
+  async getAddresses() {
+    if (!backendApi) throw new Error('Backend API not available');
+    return await backendApi.getAddresses();
+  },
+
+  async createAddress(addressData) {
+    if (!backendApi) throw new Error('Backend API not available');
+    return await backendApi.createAddress(addressData);
+  },
+
+  async updateAddress(addressId, addressData) {
+    if (!backendApi) throw new Error('Backend API not available');
+    return await backendApi.updateAddress(addressId, addressData);
+  },
+
+  async deleteAddress(addressId) {
+    if (!backendApi) throw new Error('Backend API not available');
+    return await backendApi.deleteAddress(addressId);
   }
 };

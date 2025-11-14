@@ -5,408 +5,1286 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#43CD80">
   <title>Product Details - Revo</title>
-  
+
   <link rel="stylesheet" href="./assets/css/tokens.css">
   <link rel="stylesheet" href="./assets/css/base.css">
   <link rel="stylesheet" href="./assets/css/layout.css">
   <link rel="stylesheet" href="./assets/css/components.css">
   <link rel="stylesheet" href="./assets/css/pages.css">
-  
+
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  
+
   <style>
-    /* Product Detail Specific Styles */
-    .pd-header {
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+    }
+
+    .pd-app {
+      min-height: 100vh;
+      background: linear-gradient(180deg, var(--surface), var(--bg));
+    }
+
+    .pd-top-bar {
       position: sticky;
       top: 0;
-      background: var(--surface);
-      padding: var(--space-4);
+      z-index: var(--z-header);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border-light);
-      z-index: 100;
+      padding: calc(var(--space-4) + var(--safe-area-inset-top)) var(--space-4) var(--space-4);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-light, var(--border));
+      box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06);
     }
-    
-    .pd-back {
-      font-size: 1.25rem;
+
+    .pd-top-button {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       color: var(--text-strong);
       text-decoration: none;
-    }
-    
-    .pd-title-text {
-      font-size: var(--font-size-base);
-      font-weight: 600;
-      color: var(--text-strong);
-    }
-    
-    .pd-actions {
-      display: flex;
-      gap: var(--space-3);
-    }
-    
-    .pd-gallery {
-      position: relative;
-      width: 100%;
-      padding-bottom: 100%;
       background: var(--surface);
     }
-    
+
+    .pd-top-title {
+      font-weight: 600;
+    }
+
+    .pd-page {
+      padding: var(--space-4);
+      padding-bottom: 140px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .pd-card {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: var(--space-5);
+      box-shadow: 0 12px 32px rgba(23, 32, 38, 0.08);
+      border: 1px solid var(--surface-subtle);
+    }
+
+    .pd-card:not(.pd-quality-strip) {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pd-section-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-strong);
+      margin-bottom: var(--space-3);
+    }
+
+    .pd-section-subtitle {
+      color: var(--muted);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-4);
+    }
+
+    .pd-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      border-radius: var(--radius-pill);
+      padding: 0.25rem 0.75rem;
+      font-size: var(--font-size-xs);
+      border: 1px solid rgba(36, 192, 125, 0.2);
+      color: var(--brand-700);
+      background: rgba(36, 192, 125, 0.08);
+    }
+
+    .pd-gallery-card {
+      padding: var(--space-4);
+    }
+
+    .pd-gallery-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
+      font-size: var(--font-size-sm);
+      color: var(--muted);
+    }
+
+    .pd-gallery-stage {
+      position: relative;
+      border-radius: 24px;
+      background: var(--surface-subtle);
+      padding-bottom: 100%;
+      overflow: hidden;
+    }
+
     .pd-gallery-image {
       position: absolute;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: contain;
       padding: var(--space-4);
+      display: none;
     }
-    
+
     .pd-placeholder {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+      background: linear-gradient(135deg, #f5f5f5, #eaeaea);
       color: var(--muted);
-      font-size: 3rem;
+      font-size: 2.75rem;
     }
-    
-    .pd-price-section {
-      padding: var(--space-4);
-      background: var(--surface);
-    }
-    
-    .pd-price {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--brand-600);
-    }
-    
-    .pd-original-price {
-      font-size: var(--font-size-sm);
-      color: var(--muted);
-      text-decoration: line-through;
-      margin-left: var(--space-2);
-    }
-    
-    .pd-badges {
+
+    .pd-gallery-tools {
       display: flex;
       gap: var(--space-2);
-      margin-top: var(--space-2);
       flex-wrap: wrap;
+      margin-top: var(--space-3);
     }
-    
-    .pd-badge {
-      padding: 0.25rem 0.5rem;
+
+    .pd-gallery-tool {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 0.4rem 0.9rem;
       background: var(--bg-alt);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-pill);
       font-size: var(--font-size-xs);
-      color: var(--text-body);
+      color: var(--muted);
     }
-    
-    .pd-info-section {
-      padding: var(--space-4);
-      background: var(--surface);
-      border-top: 8px solid var(--bg);
+
+    .pd-price-card .pd-price-label {
+      font-size: var(--font-size-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted-strong);
     }
-    
-    .pd-name {
-      font-size: var(--font-size-lg);
+
+    .pd-price-main {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pd-price {
+      font-size: 2.75rem;
+      font-weight: 700;
+      color: var(--brand-700);
+    }
+
+    .pd-price-subline {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-1);
+    }
+
+    .pd-original-price {
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .pd-price-meta-grid {
+      margin-top: var(--space-4);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .pd-coupon-row {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-top: var(--space-1);
+    }
+
+    .pd-title-card .pd-name {
+      font-size: var(--font-size-xl);
+      margin: 0 0 var(--space-2) 0;
+    }
+
+    .pd-rank-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 0.35rem 0.85rem;
+      background: rgba(67, 205, 128, 0.12);
+      color: var(--brand-700);
+      border-radius: var(--radius-pill);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+    }
+
+    .pd-feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      padding: 0;
+      margin: var(--space-4) 0 var(--space-3);
+      list-style: none;
+    }
+
+    .pd-feature-tags li {
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      font-size: var(--font-size-xs);
       font-weight: 600;
       color: var(--text-strong);
-      margin-bottom: var(--space-4);
     }
-    
-    .pd-specs-grid {
+
+    .pd-assurance {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .pd-assurance .pd-chip {
+      border: 1px solid rgba(17, 24, 39, 0.08);
+      background: var(--bg-alt);
+      color: var(--text-soft);
+    }
+
+    .pd-quality-strip {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: var(--space-3);
-      margin-top: var(--space-4);
+      padding: var(--space-4);
+      border-radius: 24px;
+      border: 1px solid var(--surface-subtle);
+      background: rgba(255, 255, 255, 0.85);
     }
-    
-    .pd-spec-card {
-      background: var(--surface);
-      border: 1px solid var(--border-light);
+
+    .pd-quality-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .pd-icon-circle {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      background: rgba(67, 205, 128, 0.12);
+      color: var(--brand-700);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pd-options-grid,
+    .pd-condition-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: var(--space-3);
+    }
+
+    .pd-option {
+      border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: var(--space-3);
       text-align: center;
+      font-weight: 600;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: var(--space-2);
     }
-    
+
+    .pd-option-label {
+      font-size: var(--font-size-xs);
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .pd-option-value {
+      font-size: 1.05rem;
+      color: var(--text-strong);
+    }
+
+    .pd-condition-card {
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      text-align: center;
+    }
+
+    .pd-shipping-toggle {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+      padding: var(--space-2);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--surface-subtle);
+      background: var(--bg-alt);
+    }
+
+    .pd-shipping-option {
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      text-align: left;
+      transition: background var(--transition-base), color var(--transition-base), box-shadow var(--transition-base);
+    }
+
+    .pd-shipping-option small {
+      display: block;
+      font-size: var(--font-size-xs);
+      font-weight: 500;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .pd-shipping-option.active {
+      background: var(--surface);
+      color: var(--brand-700);
+      box-shadow: 0 12px 24px rgba(36, 192, 125, 0.18);
+    }
+
+    .pd-shipping-option.active small {
+      color: var(--brand-600);
+    }
+
+    .pd-appearance-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space-3);
+    }
+
+    .pd-appearance-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3);
+      background: var(--surface);
+    }
+
+    .pd-appearance-photo {
+      height: 140px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, rgba(67, 205, 128, 0.15), rgba(34, 179, 122, 0.35));
+      margin-bottom: var(--space-3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pd-appearance-label {
+      position: absolute;
+      top: var(--space-2);
+      left: var(--space-2);
+      padding: 0.2rem 0.6rem;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      border-radius: var(--radius-pill);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+    }
+
+    .pd-spec-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+    }
+
+    .pd-spec-item {
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      background: var(--bg-alt);
+    }
+
     .pd-spec-label {
       font-size: var(--font-size-xs);
       color: var(--muted);
-      margin-bottom: var(--space-1);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
-    
+
     .pd-spec-value {
-      font-size: var(--font-size-sm);
       font-weight: 600;
-      color: var(--text-strong);
-    }
-    
-    .pd-quality {
-      padding: var(--space-4);
-      background: var(--bg-alt);
-    }
-    
-    .pd-quality-card {
-      background: var(--surface);
-      border-radius: var(--radius-md);
-      padding: var(--space-5);
-      border: 1px solid var(--border-light);
-      text-align: center;
-    }
-    
-    .pd-quality-badge {
-      width: 120px;
-      height: 120px;
-      margin: 0 auto var(--space-4);
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.75rem;
-      font-weight: 700;
-      border: 4px solid var(--brand-600);
-    }
-    
-    .pd-quality-label {
-      font-size: var(--font-size-xs);
       margin-top: var(--space-1);
     }
-    
-    .pd-bottom-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--surface);
-      padding: var(--space-3) var(--space-4);
-      display: flex;
+
+    .pd-delivery-card {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: var(--space-3);
-      box-shadow: 0 -4px 12px var(--shadow-color);
-      z-index: 100;
+      align-items: center;
     }
-    
-    .pd-section-title {
-      font-size: var(--font-size-base);
+
+    .pd-delivery-line {
       font-weight: 600;
       color: var(--text-strong);
-      margin-bottom: var(--space-4);
+    }
+
+    .pd-guarantee-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: var(--space-3);
+    }
+
+    .pd-guarantee-item {
+      display: flex;
+      gap: var(--space-2);
+      align-items: center;
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      background: var(--bg-alt);
+    }
+
+    .pd-inspection-flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .pd-flow-step {
+      border-left: 3px solid var(--brand-600);
+      padding-left: var(--space-3);
+    }
+
+    .pd-report-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space-3);
+    }
+
+    .pd-report-metrics {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      margin-top: var(--space-3);
+    }
+
+    .pd-metric {
+      flex: 1 1 140px;
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      background: var(--bg-alt);
+    }
+
+    .pd-accordion {
+      border-top: 1px solid var(--surface-subtle);
+    }
+
+    .pd-accordion-item {
+      border-bottom: 1px solid var(--surface-subtle);
+    }
+
+    .pd-accordion-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) 0;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .pd-accordion-body {
+      padding-bottom: var(--space-3);
+      color: var(--muted);
+    }
+
+    .pd-carousel {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(240px, 1fr);
+      gap: var(--space-3);
+      overflow-x: auto;
+      padding-bottom: var(--space-2);
+    }
+
+    .pd-carousel-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3);
+      background: var(--surface);
+      min-height: 190px;
+      color: inherit;
+      text-decoration: none;
+      transition: transform var(--transition-base), box-shadow var(--transition-base);
+    }
+
+    .pd-carousel-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 28px rgba(15, 23, 42, 0.12);
+    }
+
+    .pd-carousel-placeholder,
+    .pd-carousel-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .pd-bottom-strip {
+      margin: var(--space-2) var(--space-4) 93px;
+      padding: var(--space-3);
+      border-radius: var(--radius-lg);
+      background: rgba(36, 192, 125, 0.08);
+      color: var(--brand-700);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-weight: 600;
+    }
+
+    .pd-fixed-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: var(--space-3) var(--space-4);
+      background: rgba(255, 255, 255, 0.98);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.08);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      z-index: var(--z-header);
+    }
+
+    .pd-fixed-utility {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .pd-icon-btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 0.75rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-weight: 600;
+      color: var(--text-strong);
+    }
+
+    .pd-actions {
+      display: flex;
+      gap: var(--space-2);
+      flex: 1;
+      justify-content: flex-end;
+    }
+
+    #add-to-cart-btn {
+      flex: 0.9;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--brand-600);
+      color: var(--brand-700);
+      background: rgba(36, 192, 125, 0.08);
+      font-weight: 600;
+    }
+
+    #buy-now-btn {
+      flex: 1.1;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .pd-fade-divider {
+      height: 1px;
+      width: 100%;
+      background: linear-gradient(90deg, transparent, var(--surface-subtle), transparent);
+      margin: var(--space-3) 0;
+    }
+
+    @media (max-width: 720px) {
+      .pd-card {
+        padding: var(--space-4);
+      }
+
+      .pd-spec-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-fixed-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .pd-fixed-utility,
+      .pd-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .pd-icon-btn {
+        flex: 1;
+        justify-content: center;
+      }
+
+      #add-to-cart-btn,
+      #buy-now-btn {
+        flex: 1;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="pd-header">
-    <a href="./products.html" class="pd-back">←</a>
-    <span class="pd-title-text">Product Details</span>
-    <div class="pd-actions">
-      <a href="./cart.html" class="icon-btn">
-        <svg width="24" height="24" fill="currentColor">
-          <path d="M4 5H2v2h2l2.4 9.3a2 2 0 0 0 2 1.5h8.4a2 2 0 0 0 1.9-1.4L20 9H7.1zM9 21.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+  <div class="pd-app">
+    <header class="pd-top-bar">
+      <a href="./products.html" class="pd-top-button" aria-label="Back to products">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </a>
-    </div>
-  </header>
-
-  <!-- Loading State -->
-  <div id="loading" class="loader-container" style="min-height: 400px;">
-    <div class="spinner"></div>
-  </div>
-
-  <!-- Error State -->
-  <div id="error-state" class="empty-state hidden" style="padding: 4rem 2rem;">
-    <h3>Product Not Found</h3>
-    <p>Sorry, this product could not be found</p>
-    <a href="./products.html" class="btn btn-primary" style="margin-top: 1rem;">Browse Products</a>
-  </div>
-
-  <!-- Product Content -->
-  <main id="product-content" class="hidden" style="padding-bottom: 80px;">
-    
-    <!-- Product Gallery -->
-    <section class="pd-gallery">
-      <img id="product-image" class="pd-gallery-image" alt="Product" />
-      <div class="pd-placeholder">
-        <svg width="120" height="120" fill="currentColor" opacity="0.3">
-          <path d="M12 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zM4.5 19.6c0-3.1 3.3-5 7.5-5s7.5 1.9 7.5 5V21H4.5z"/>
+      <div class="pd-top-title">Buy with Confidence</div>
+      <a href="./cart.html" class="pd-top-button" aria-label="Go to cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M6 6h15l-1.5 7.5H8L6 6zm2 14a1 1 0 110-2 1 1 0 010 2zm8 0a1 1 0 110-2 1 1 0 010 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-      </div>
-    </section>
+      </a>
+    </header>
 
-    <!-- Price Section -->
-    <section class="pd-price-section">
-      <div style="display: flex; align-items: baseline; gap: 0.5rem;">
-        <span class="pd-price" id="product-price">$0.00</span>
-        <span class="pd-original-price" id="product-original-price">$0.00</span>
-        <span class="chip" id="product-discount" style="background: #FFF3E0; color: #E65100;">0% off</span>
-      </div>
-      
-      <div class="pd-badges">
-        <span class="pd-badge">Refurbished</span>
-        <span class="pd-badge">1-Year Warranty</span>
-        <span class="pd-badge">Free Shipping</span>
-      </div>
-    </section>
+    <div id="loading" class="loader-container" style="min-height: 420px;">
+      <div class="spinner"></div>
+    </div>
 
-    <!-- Product Info -->
-    <section class="pd-info-section">
-      <h1 class="pd-name" id="product-name">Loading...</h1>
-      
-      <div style="display: flex; gap: var(--space-4); margin-bottom: var(--space-4); flex-wrap: wrap;">
-        <div style="display: flex; align-items: center; gap: var(--space-2);">
-          <svg width="16" height="16" fill="var(--brand-600)">
-            <path d="M12 3.3 14.9 9l6.1.5-4.6 3.9 1.4 6L12 16.8 6.2 19.4l1.4-6-4.6-3.9 6.1-.5z"/>
-          </svg>
-          <span id="product-rating">4.8</span>
-          <span class="text-muted">(<span id="product-reviews">0</span> reviews)</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: var(--space-2);">
-          <svg width="16" height="16" fill="var(--muted)">
-            <path d="M12 3.5a6.5 6.5 0 0 1 6.5 6.5c0 4.2-4.4 9-6 10.7a.7.7 0 0 1-1 0c-1.6-1.7-6-6.5-6-10.7A6.5 6.5 0 0 1 12 3.5zm0 3a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/>
-          </svg>
-          <span id="product-location" class="text-muted">Ships from Ontario</span>
-        </div>
-      </div>
+    <div id="error-state" class="empty-state hidden" style="padding: 4rem 2rem;">
+      <h3>Product Not Found</h3>
+      <p>Sorry, this product could not be found</p>
+      <a href="./products.html" class="btn btn-primary" style="margin-top: 1rem;">Browse Products</a>
+    </div>
 
-      <!-- Specifications Grid -->
-      <div class="pd-specs-grid">
-        <div class="pd-spec-card">
-          <div class="pd-spec-label">Condition</div>
-          <div class="pd-spec-value" id="product-condition">99% New</div>
+    <main id="product-content" class="pd-page hidden">
+      <!-- Image Gallery -->
+      <section class="pd-card pd-gallery-card">
+        <div class="pd-gallery-meta">
+          <span>Real Photos <strong>1/10</strong></span>
+          <span>Studio lighting • 4K detail</span>
         </div>
-        <div class="pd-spec-card">
-          <div class="pd-spec-label">Brand</div>
-          <div class="pd-spec-value" id="product-brand">-</div>
-        </div>
-        <div class="pd-spec-card">
-          <div class="pd-spec-label">Warranty</div>
-          <div class="pd-spec-value">1 Year</div>
-        </div>
-        <div class="pd-spec-card">
-          <div class="pd-spec-label">Shipping</div>
-          <div class="pd-spec-value">Free</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Quality Inspection -->
-    <section class="pd-quality">
-      <h2 class="pd-section-title">Quality Inspection Report</h2>
-      <div class="pd-quality-card">
-        <div class="pd-quality-badge">
-          <div>99%</div>
-          <div class="pd-quality-label">NEW</div>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); margin-top: var(--space-4);">
-          <div style="text-align: center; padding: var(--space-3); background: var(--bg-alt); border-radius: var(--radius-sm);">
-            <div style="font-size: var(--font-size-xs); color: var(--muted);">Screen</div>
-            <div style="font-weight: 600; margin-top: var(--space-1);">Normal</div>
-          </div>
-          <div style="text-align: center; padding: var(--space-3); background: var(--bg-alt); border-radius: var(--radius-sm);">
-            <div style="font-size: var(--font-size-xs); color: var(--muted);">Wi-Fi</div>
-            <div style="font-weight: 600; margin-top: var(--space-1);">Working</div>
-          </div>
-          <div style="text-align: center; padding: var(--space-3); background: var(--bg-alt); border-radius: var(--radius-sm);">
-            <div style="font-size: var(--font-size-xs); color: var(--muted);">Battery</div>
-            <div style="font-weight: 600; margin-top: var(--space-1);">Excellent</div>
-          </div>
-          <div style="text-align: center; padding: var(--space-3); background: var(--bg-alt); border-radius: var(--radius-sm);">
-            <div style="font-size: var(--font-size-xs); color: var(--muted);">Ports</div>
-            <div style="font-weight: 600; margin-top: var(--space-1);">Cleaned</div>
+        <div class="pd-gallery-stage">
+          <img id="product-image" class="pd-gallery-image" alt="Product photo">
+          <div class="pd-placeholder">
+            <svg width="110" height="110" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="7" r="4.5" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M4 20c0-3.3 3.6-5.5 8-5.5s8 2.2 8 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
           </div>
         </div>
-        <div style="display: inline-flex; align-items: center; gap: var(--space-2); margin-top: var(--space-4); padding: var(--space-2) var(--space-4); background: var(--brand-600); color: white; border-radius: var(--radius-pill); font-size: var(--font-size-sm);">
-          <svg width="16" height="16" fill="currentColor">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-          </svg>
-          Quality Certified
+        <div class="pd-gallery-tools">
+          <span class="pd-gallery-tool">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M4 7h16M4 12h10M4 17h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Quick Specs
+          </span>
+          <span class="pd-gallery-tool">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Zoom
+          </span>
+          <span class="pd-gallery-tool">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M7 7h10v10H7z" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            Details
+          </span>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Product Description -->
-    <section style="padding: var(--space-4); background: var(--surface); border-top: 8px solid var(--bg);">
-      <h2 class="pd-section-title">Product Highlights</h2>
-      <ul id="product-highlights" style="list-style: disc; padding-left: var(--space-5); color: var(--text-body); line-height: 1.6;">
-        <li>Official Quality Inspection</li>
-        <li>100% Genuine Product</li>
-        <li>Full Functionality Guaranteed</li>
-      </ul>
-      <div id="product-description" style="margin-top: var(--space-4); color: var(--text-body); line-height: 1.6;">
-        All devices are tested and certified before shipment.
-      </div>
-    </section>
-
-    <!-- Delivery Info -->
-    <section style="padding: var(--space-4); background: var(--surface); border-top: 1px solid var(--border-light);">
-      <div style="display: flex; align-items: center; justify-content: space-between;">
-        <span style="font-size: var(--font-size-sm); color: var(--text-body);">Delivery</span>
-        <div style="display: flex; align-items: center; gap: var(--space-2);">
-          <span style="font-size: var(--font-size-sm); font-weight: 500;">Ships from Ontario</span>
-          <span style="font-size: var(--font-size-xs); color: var(--muted);">3-5 Days</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Guarantee Section -->
-    <section style="padding: var(--space-4); background: var(--bg-alt); border-top: 8px solid var(--bg);">
-      <h2 class="pd-section-title">Guarantee</h2>
-      <div style="display: flex; flex-direction: column; gap: var(--space-3);">
-        <div style="display: flex; align-items: start; gap: var(--space-3);">
-          <svg width="20" height="20" fill="var(--brand-600)" style="flex-shrink: 0; margin-top: 2px;">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-          </svg>
+      <!-- Price Block -->
+      <section class="pd-card pd-price-card">
+        <div class="pd-price-main">
           <div>
-            <div style="font-weight: 600; margin-bottom: var(--space-1);">7-Day Return Policy</div>
-            <div style="font-size: var(--font-size-sm); color: var(--muted);">Return within 7 days of receipt if not satisfied</div>
+            <div class="pd-price-label">Final Price</div>
+            <div class="pd-price-wrap">
+              <span class="pd-price" id="product-price">$0.00</span>
+              <div class="pd-price-subline">
+                <span class="pd-original-price" id="product-original-price">$0.00</span>
+                <span class="pd-chip" id="product-discount">0% off</span>
+              </div>
+            </div>
           </div>
-        </div>
-        <div style="display: flex; align-items: start; gap: var(--space-3);">
-          <svg width="20" height="20" fill="var(--brand-600)" style="flex-shrink: 0; margin-top: 2px;">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-          </svg>
           <div>
-            <div style="font-weight: 600; margin-bottom: var(--space-1);">Free Return Shipping</div>
-            <div style="font-size: var(--font-size-sm); color: var(--muted);">We cover return shipping costs</div>
+            <div class="pd-price-label">Installment Plan</div>
+            <div style="font-weight:700; font-size:1.25rem;">From $25/mo</div>
+            <div class="pd-section-subtitle" style="margin:0;">0% APR with RevoPay</div>
           </div>
         </div>
-        <div style="display: flex; align-items: start; gap: var(--space-3);">
-          <svg width="20" height="20" fill="var(--brand-600)" style="flex-shrink: 0; margin-top: 2px;">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-          </svg>
+        <div class="pd-price-meta-grid">
           <div>
-            <div style="font-weight: 600; margin-bottom: var(--space-1);">1-Year Warranty</div>
-            <div style="font-size: var(--font-size-sm); color: var(--muted);">Nationwide service at 1000+ locations</div>
+            <span class="pd-price-label">Original Retail</span>
+            <div style="font-weight:600; margin-top:4px;" id="product-retail-price">$0.00</div>
           </div>
-        </div>
-        <div style="display: flex; align-items: start; gap: var(--space-3);">
-          <svg width="20" height="20" fill="var(--brand-600)" style="flex-shrink: 0; margin-top: 2px;">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-          </svg>
           <div>
-            <div style="font-weight: 600; margin-bottom: var(--space-1);">Genuine Products</div>
-            <div style="font-size: var(--font-size-sm); color: var(--muted);">100% authentic with official invoices</div>
+            <span class="pd-price-label">Current New-Device Price</span>
+            <div style="font-weight:600; margin-top:4px;" id="product-new-price">$0.00</div>
+          </div>
+          <div>
+            <span class="pd-price-label">Coupons</span>
+            <div class="pd-coupon-row">
+              <span class="pd-chip">Save $5</span>
+              <span class="pd-chip">Save $300</span>
+            </div>
+          </div>
+          <div>
+            <span class="pd-price-label">Coverage</span>
+            <div style="font-weight:600; margin-top:4px;">12-Month ProCare</div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-  </main>
+      <!-- Product Title + Tags -->
+      <section class="pd-card pd-title-card">
+        <div class="pd-title-row" style="display:flex; justify-content:space-between; gap:var(--space-4); flex-wrap:wrap;">
+          <div>
+            <h1 class="pd-name" id="product-name">Loading...</h1>
+            <div class="pd-rank-badge" id="product-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.3-5.5-2.9-5.5 2.9 1-6.3-4.5-4.4 6.2-.9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+              </svg>
+              <span id="product-badge-text">Loading device info...</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:1.5rem; font-weight:700;" id="product-rating">4.8</div>
+            <div class="pd-section-subtitle" style="margin:0;">(<span id="product-reviews">0</span> reviews)</div>
+            <div class="pd-section-subtitle" style="margin-top:var(--space-2);">
+              Ships from <span id="product-location">Ontario</span>
+            </div>
+          </div>
+        </div>
+        <ul id="product-highlights" class="pd-feature-tags">
+          <li>Perfect Screen</li>
+          <li>Fully Functional</li>
+          <li>High Refresh Rate</li>
+          <li>Fast Charging</li>
+          <li>Camera Performance</li>
+          <li>Gaming Performance</li>
+        </ul>
+        <div class="pd-assurance" id="product-flags"></div>
+      </section>
 
-  <!-- Bottom Purchase Bar -->
-  <div id="bottom-bar" class="pd-bottom-bar hidden">
-    <button class="btn btn-secondary" id="add-to-cart-btn">Add to Cart</button>
-    <button class="btn btn-primary" id="buy-now-btn">Buy Now</button>
+      <!-- Quality Assurance Strip -->
+      <section class="pd-quality-strip">
+        <div class="pd-quality-item">
+          <div class="pd-icon-circle">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M4 12l4 4 12-12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div>Official Inspection</div>
+            <div class="pd-section-subtitle" style="margin:0;">AI-guided technicians</div>
+          </div>
+        </div>
+        <div class="pd-quality-item">
+          <div class="pd-icon-circle">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2l3 7h7l-5.8 4.2 2.3 7L12 16.5 5.5 20.2l2.3-7L2 9h7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div>100% Authentic</div>
+            <div class="pd-section-subtitle" style="margin:0;">Serial verified</div>
+          </div>
+        </div>
+        <div class="pd-quality-item">
+          <div class="pd-icon-circle">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M6 6h12v12H6z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div>7-Day Free Return</div>
+            <div class="pd-section-subtitle" style="margin:0;">No-restocking fee</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Options -->
+      <section class="pd-card">
+        <div class="pd-section-title">Options</div>
+        <div class="pd-section-subtitle">Device attributes fetched live from the inspection record.</div>
+        <div class="pd-options-grid">
+          <div class="pd-option" data-option="color">
+            <div class="pd-option-label">Color</div>
+            <div class="pd-option-value" id="product-option-color">N/A</div>
+          </div>
+          <div class="pd-option" data-option="storage">
+            <div class="pd-option-label">Storage</div>
+            <div class="pd-option-value" id="product-option-storage">N/A</div>
+          </div>
+          <div class="pd-option" data-option="variant">
+            <div class="pd-option-label">Configuration</div>
+            <div class="pd-option-value" id="product-option-variant">N/A</div>
+          </div>
+          <div class="pd-option" data-option="condition">
+            <div class="pd-option-label">Condition Grade</div>
+            <div class="pd-option-value" id="product-option-grade">N/A</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Condition -->
+      <section class="pd-card">
+        <div class="pd-section-title">Condition</div>
+        <div class="pd-condition-grid">
+          <div class="pd-condition-card">
+            <div class="pd-icon-circle" style="margin:0 auto var(--space-2);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>Original Battery</div>
+            <div class="pd-section-subtitle" style="margin-top:var(--space-1);">Health 96%</div>
+          </div>
+          <div class="pd-condition-card">
+            <div class="pd-icon-circle" style="margin:0 auto var(--space-2);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M10 17v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>Battery Health Status</div>
+            <div class="pd-section-subtitle" style="margin-top:var(--space-1);">Certified good</div>
+          </div>
+          <div class="pd-condition-card">
+            <div class="pd-icon-circle" style="margin:0 auto var(--space-2);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect x="5" y="5" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M5 10h14" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div>Original Screen</div>
+            <div class="pd-section-subtitle" style="margin-top:var(--space-1);">No replacements</div>
+          </div>
+          <div class="pd-condition-card">
+            <div class="pd-icon-circle" style="margin:0 auto var(--space-2);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>Screen Status</div>
+            <div class="pd-section-subtitle" style="margin-top:var(--space-1);">Microscopic scuffs</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Specifications -->
+      <section class="pd-card">
+        <div class="pd-section-title">Specifications</div>
+        <div class="pd-spec-grid">
+          <div class="pd-spec-item">
+            <div class="pd-spec-label">Condition</div>
+            <div class="pd-spec-value" id="product-condition">99% New</div>
+          </div>
+          <div class="pd-spec-item">
+            <div class="pd-spec-label">Brand</div>
+            <div class="pd-spec-value" id="product-brand">-</div>
+          </div>
+          <div class="pd-spec-item">
+            <div class="pd-spec-label">SIM Type</div>
+            <div class="pd-spec-value">Dual Nano + eSIM</div>
+          </div>
+          <div class="pd-spec-item">
+            <div class="pd-spec-label">Display Size</div>
+            <div class="pd-spec-value">6.73" AMOLED</div>
+          </div>
+          <div class="pd-spec-item">
+            <div class="pd-spec-label">Resolution</div>
+            <div class="pd-spec-value">3200 × 1440</div>
+          </div>
+          <div class="pd-spec-item">
+            <div class="pd-spec-label">Display Material</div>
+            <div class="pd-spec-value">Gorilla Glass Victus</div>
+          </div>
+          <div class="pd-spec-item">
+            <div class="pd-spec-label">Rear Camera</div>
+            <div class="pd-spec-value">50MP triple array</div>
+          </div>
+          <div class="pd-spec-item">
+            <div class="pd-spec-label">Battery</div>
+            <div class="pd-spec-value">4820mAh</div>
+          </div>
+          <div class="pd-spec-item">
+            <div class="pd-spec-label">CPU</div>
+            <div class="pd-spec-value">Snapdragon 8 Gen 3</div>
+          </div>
+          <div class="pd-spec-item">
+            <div class="pd-spec-label">Refresh Rate</div>
+            <div class="pd-spec-value">120Hz LTPO</div>
+          </div>
+          <div class="pd-spec-item">
+            <div class="pd-spec-label">Release Time</div>
+            <div class="pd-spec-value">Q4 2023</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Delivery -->
+      <section class="pd-card">
+        <div class="pd-section-title">Delivery</div>
+        <div class="pd-section-subtitle">Choose a delivery speed and we’ll match the right carrier.</div>
+        <div class="pd-shipping-toggle" id="shipping-selector">
+          <button class="pd-shipping-option active" type="button" data-mode="regular">
+            Regular Delivery
+            <small>Canada Post · 2-4 days</small>
+          </button>
+          <button class="pd-shipping-option" type="button" data-mode="fast">
+            Fast Delivery
+            <small>FedEx Express · 1-2 days</small>
+          </button>
+        </div>
+        <div class="pd-delivery-card">
+          <div>
+            <div class="pd-delivery-line" id="shipping-line">Free shipping via Canada Post. Pay before 18:00, ship today.</div>
+            <div class="pd-section-subtitle" id="shipping-subtext" style="margin-top:var(--space-1);">Tracking updates inside Revo app.</div>
+          </div>
+          <div>
+            <div class="pd-section-subtitle" style="margin-bottom:var(--space-1);">Carrier</div>
+            <div id="shipping-carrier">Canada Post · Regular</div>
+          </div>
+          <div>
+            <div class="pd-section-subtitle" style="margin-bottom:var(--space-1);">Warehouse</div>
+            <div>University of Ottawa - Warehouse 1</div>
+          </div>
+          <div id="delivery-destination">
+            <div class="pd-section-subtitle" style="margin-bottom:var(--space-1); display:flex; align-items:center; gap:var(--space-1);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 21c4-5 6-8.2 6-11a6 6 0 10-12 0c0 2.8 2 6 6 11z" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              Destination
+            </div>
+            <div id="shipping-destination">Ottawa, Canada</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Guarantees -->
+      <section class="pd-card">
+        <div class="pd-section-title">Guarantees</div>
+        <div class="pd-guarantee-list">
+          <div class="pd-guarantee-item">
+            <div class="pd-icon-circle" style="width:38px; height:38px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>7-Day Free Return</div>
+          </div>
+          <div class="pd-guarantee-item">
+            <div class="pd-icon-circle" style="width:38px; height:38px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M4 17l6-6 4 4 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>Free Return Shipping</div>
+          </div>
+          <div class="pd-guarantee-item">
+            <div class="pd-icon-circle" style="width:38px; height:38px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3l9 4-9 4-9-4 9-4zm0 8.5l9 4-9 4-9-4 9-4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>1-Year Warranty Nationwide</div>
+          </div>
+          <div class="pd-guarantee-item">
+            <div class="pd-icon-circle" style="width:38px; height:38px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3l7 4v6c0 4-3 7-7 8-4-1-7-4-7-8V7l7-4z" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div>Authentic Guarantee</div>
+          </div>
+          <div class="pd-guarantee-item">
+            <div class="pd-icon-circle" style="width:38px; height:38px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div>Official Invoice</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Inspection Workflow -->
+      <section class="pd-card">
+        <div class="pd-section-title">Automated Inspection Workflow</div>
+        <div class="pd-section-subtitle">Standardized • Intelligent • Low-Carbon Process</div>
+        <div class="pd-inspection-flow">
+          <div class="pd-flow-step">
+            <div class="pd-section-subtitle" style="margin-bottom:var(--space-1);">Step 01</div>
+            <div>40-point visual capture</div>
+          </div>
+          <div class="pd-flow-step">
+            <div class="pd-section-subtitle" style="margin-bottom:var(--space-1);">Step 02</div>
+            <div>AI circuit diagnostics</div>
+          </div>
+          <div class="pd-flow-step">
+            <div class="pd-section-subtitle" style="margin-bottom:var(--space-1);">Step 03</div>
+            <div>Battery endurance stress</div>
+          </div>
+          <div class="pd-flow-step">
+            <div class="pd-section-subtitle" style="margin-bottom:var(--space-1);">Step 04</div>
+            <div>Human QA & detailing</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Official Inspection Report -->
+      <section class="pd-card">
+        <div class="pd-section-title">Official Inspection Report</div>
+        <div class="pd-section-subtitle">Live capture from Revo Lab</div>
+        <div class="pd-report-details">
+          <div>
+            <div class="pd-section-subtitle" style="margin-bottom:var(--space-1);">Product</div>
+            <div style="font-weight:600;" id="product-name-report">Revo Certified Device</div>
+          </div>
+          <div>
+            <div class="pd-section-subtitle" style="margin-bottom:var(--space-1);">IMEI / SN</div>
+            <div style="font-weight:600;">86958•••421</div>
+          </div>
+          <div>
+            <div class="pd-section-subtitle" style="margin-bottom:var(--space-1);">Condition Score</div>
+            <div style="font-weight:600;">99% New</div>
+          </div>
+          <div>
+            <div class="pd-section-subtitle" style="margin-bottom:var(--space-1);">Inspection Conclusion</div>
+            <div style="font-weight:600;">Fully functional. Ready to ship.</div>
+          </div>
+        </div>
+        <div id="product-description" style="margin-top:var(--space-4); color:var(--text-body, var(--text)); line-height:1.6;">
+          Detailed condition summary will appear here after the product loads.
+        </div>
+        <div class="pd-report-metrics">
+          <div class="pd-metric">
+            <div class="pd-spec-label">Original Screen</div>
+            <div class="pd-spec-value">Verified</div>
+          </div>
+          <div class="pd-metric">
+            <div class="pd-spec-label">Screen Status</div>
+            <div class="pd-spec-value">Minor micro scuffs</div>
+          </div>
+          <div class="pd-metric">
+            <div class="pd-spec-label">Original Battery</div>
+            <div class="pd-spec-value">100% OEM</div>
+          </div>
+          <div class="pd-metric">
+            <div class="pd-spec-label">Battery Status</div>
+            <div class="pd-spec-value">Health 96%</div>
+          </div>
+          <div class="pd-metric">
+            <div class="pd-spec-label">Purchase Channel</div>
+            <div class="pd-spec-value">Official Chinese Model</div>
+          </div>
+          <div class="pd-metric">
+            <div class="pd-spec-label">Product Source</div>
+            <div class="pd-spec-value">Self-Operated</div>
+          </div>
+          <div class="pd-metric">
+            <div class="pd-spec-label">Appearance Checks</div>
+            <div class="pd-spec-value">27/27 Passed</div>
+          </div>
+          <div class="pd-metric">
+            <div class="pd-spec-label">Functional Tests</div>
+            <div class="pd-spec-value">43/43 Passed</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Appearance Details -->
+      <section class="pd-card">
+        <div class="pd-section-title">Appearance & Damage Notes</div>
+        <div class="pd-section-subtitle">Real micro photos with annotations</div>
+        <div class="pd-appearance-list">
+          <div class="pd-appearance-card">
+            <div class="pd-appearance-photo">
+              <span class="pd-appearance-label">Minor Scratch</span>
+            </div>
+            <div style="font-weight:600;">Barely visible on frame.</div>
+            <div class="pd-section-subtitle" style="margin-top:var(--space-2);">Covered once a case is used.</div>
+          </div>
+          <div class="pd-appearance-card">
+            <div class="pd-appearance-photo">
+              <span class="pd-appearance-label">Small Dent</span>
+            </div>
+            <div style="font-weight:600;">Lower speaker edge.</div>
+            <div class="pd-section-subtitle" style="margin-top:var(--space-2);">No impact on sealing.</div>
+          </div>
+          <div class="pd-appearance-card">
+            <div class="pd-appearance-photo">
+              <span class="pd-appearance-label">Hairline Mark</span>
+            </div>
+            <div style="font-weight:600;">Charging port trim.</div>
+            <div class="pd-section-subtitle" style="margin-top:var(--space-2);">Invisible when plugged in.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Function Test -->
+      <section class="pd-card">
+        <div class="pd-section-title">Functional Test</div>
+        <div style="display:flex; align-items:center; gap:var(--space-3);">
+          <div class="pd-icon-circle" style="width:60px; height:60px;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+              <path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div style="font-weight:700; font-size:1.1rem;">All 43 automated + manual tests passed</div>
+            <div class="pd-section-subtitle" style="margin-top:var(--space-1);">Sensors • 5G • NFC • Face unlock • Cameras</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Inspection Feedback -->
+      <section class="pd-card">
+        <div class="pd-section-title">Was this report helpful?</div>
+        <div class="pd-section-subtitle">Report #RVO-230212 · Inspection Date: 2024-02-18</div>
+        <button class="btn btn-secondary" style="width:100%; border-radius:var(--radius-lg);">Give Feedback</button>
+      </section>
+
+      <!-- Accessories -->
+      <section class="pd-card">
+        <div class="pd-section-title">Included Accessories</div>
+        <div class="pd-section-subtitle">Packaging is eco-friendly and minimal</div>
+        <div class="pd-guarantee-list">
+          <div class="pd-guarantee-item">
+            <div class="pd-icon-circle" style="width:38px; height:38px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M5 7h14v10H5z" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div>USB-C Cable</div>
+          </div>
+          <div class="pd-guarantee-item">
+            <div class="pd-icon-circle" style="width:38px; height:38px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M8 5h8v14H8z" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div>Fast Charger (80W)</div>
+          </div>
+          <div class="pd-guarantee-item">
+            <div class="pd-icon-circle" style="width:38px; height:38px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 4l8 5-8 5-8-5 8-5z" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div>Sim Eject Tool</div>
+          </div>
+          <div class="pd-guarantee-item">
+            <div class="pd-icon-circle" style="width:38px; height:38px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M5 19l7-14 7 14H5z" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div>Protective Sleeve</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="pd-card">
+        <div class="pd-section-title">FAQ</div>
+        <div class="pd-accordion">
+          <div class="pd-accordion-item">
+            <div class="pd-accordion-summary">
+              Where do pre-owned devices come from?
+              <span>+</span>
+            </div>
+            <div class="pd-accordion-body">
+              All inventory is sourced from Revo trade-ins, enterprise buybacks, and direct carrier partnerships with full documentation.
+            </div>
+          </div>
+          <div class="pd-accordion-item">
+            <div class="pd-accordion-summary">
+              What types of used devices exist?
+              <span>+</span>
+            </div>
+            <div class="pd-accordion-body">
+              We classify inventory by cosmetic grade (99% New, Excellent, Everyday). Every unit receives full functional certification.
+            </div>
+          </div>
+          <div class="pd-accordion-item">
+            <div class="pd-accordion-summary">
+              What if there’s an after-sales problem?
+              <span>+</span>
+            </div>
+            <div class="pd-accordion-body">
+              Chat with Revo Care 24/7 for warranty claims, instant replacements, or free return shipping labels.
+            </div>
+          </div>
+          <div class="pd-accordion-item">
+            <div class="pd-accordion-summary">
+              How long does shipping take?
+              <span>+</span>
+            </div>
+            <div class="pd-accordion-body">
+              Orders paid before 18:00 ship the same day via Canada Post (regular) or FedEx Express (fast) with 2–4 day delivery to most Canadian cities.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Popular Products -->
+      <section class="pd-card">
+        <div class="pd-section-title">Popular Products</div>
+        <div class="pd-carousel" id="popular-products">
+          <div class="pd-carousel-card pd-carousel-placeholder">
+            Loading popular devices...
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="pd-bottom-strip">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M3 7h18M5 11h14l-1 8H6l-1-8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Pay before 18:00, ship today
+    </div>
+  </div>
+
+  <!-- Bottom Fixed Bar -->
+  <div id="bottom-bar" class="pd-fixed-bar hidden">
+    <div class="pd-fixed-utility">
+      <button class="pd-icon-btn" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M2 5l10 6 10-6-10-6-10 6zm0 6l10 6 10-6" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        Customer Service
+      </button>
+      <button class="pd-icon-btn" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M12 21s-8-5.7-8-11.5S7-1 12 5.5 20-1 20 9.5 12 21 12 21z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Favorite
+      </button>
+    </div>
+    <div class="pd-actions">
+      <button class="btn" id="add-to-cart-btn" type="button">Add to Cart</button>
+      <button class="btn" id="buy-now-btn" type="button">Buy Now</button>
+    </div>
   </div>
 
   <script src="./assets/js/storage.js"></script>

@@ -315,10 +315,21 @@ function initFormSubmit() {
 function showEstimateResult(data) {
   const resultDiv = document.getElementById('estimate-result');
   const amountDiv = document.getElementById('estimate-amount');
+  const statusDiv = document.getElementById('estimate-status');
   const form = document.getElementById('trade-in-form');
 
   const estimatedValue = Number(data?.estimated_price) || 0;
   amountDiv.textContent = formatMoney(estimatedValue);
+  if (statusDiv) {
+    // Let the user know when we are still waiting on a human review
+    if (estimatedValue === 0) {
+      statusDiv.textContent = 'Waiting for Response by nearest Engineer';
+      statusDiv.style.display = 'block';
+    } else {
+      statusDiv.textContent = '';
+      statusDiv.style.display = 'none';
+    }
+  }
   
   // Show result section
   form.style.display = 'none';

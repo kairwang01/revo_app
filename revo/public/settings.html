@@ -31,74 +31,129 @@
     <h1 style="font-size: 1rem; font-weight: 600;">Settings</h1>
   </div>
 
-  <!-- Settings List -->
-  <div class="settings-list">
-    <a href="#" class="settings-item">
-      <div class="settings-item-content">
-        <span>Address Management</span>
+  <main class="settings-page">
+    <div class="container">
+      <div class="settings-wrapper">
+        <!-- City Preference -->
+        <section class="settings-section">
+          <header class="settings-section-header">
+            <div>
+              <p class="settings-section-label">City Preference</p>
+              <h2>Operating City</h2>
+              <p class="settings-helper-text">Prices, taxes, and inventory adapt to the city saved here.</p>
+            </div>
+            <span class="settings-pill" id="active-city-label">—</span>
+          </header>
+          <div class="settings-field-group">
+            <label for="city-select" class="form-label">Choose a city</label>
+            <select id="city-select" class="form-select"></select>
+          </div>
+          <div class="settings-actions">
+            <button type="button" class="btn btn-ghost btn-sm" id="open-city-picker">
+              Open city picker
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" id="use-my-location">
+              Use current location
+            </button>
+          </div>
+          <p class="settings-helper-text" id="city-tax-label">Local tax: —</p>
+        </section>
+
+        <!-- Notification Preferences -->
+        <section class="settings-section">
+          <header class="settings-section-header">
+            <div>
+              <p class="settings-section-label">Notifications</p>
+              <h2>Alerts & Subscriptions</h2>
+              <p class="settings-helper-text" id="notification-summary">Loading preferences…</p>
+            </div>
+          </header>
+          <div class="settings-toggle-list">
+            <label class="settings-toggle">
+              <div>
+                <div class="settings-toggle-title">Order status updates</div>
+                <p class="settings-toggle-description">Push reminders for all buy & sell milestones.</p>
+              </div>
+              <div class="settings-toggle-control">
+                <input type="checkbox" data-pref="orderUpdates">
+                <span class="settings-switch" aria-hidden="true"></span>
+              </div>
+            </label>
+            <label class="settings-toggle">
+              <div>
+                <div class="settings-toggle-title">Price drop alerts</div>
+                <p class="settings-toggle-description">Email alerts when saved items get discounted.</p>
+              </div>
+              <div class="settings-toggle-control">
+                <input type="checkbox" data-pref="priceAlerts">
+                <span class="settings-switch" aria-hidden="true"></span>
+              </div>
+            </label>
+            <label class="settings-toggle">
+              <div>
+                <div class="settings-toggle-title">Marketing campaigns</div>
+                <p class="settings-toggle-description">Occasional newsletters, launch news, and bonuses.</p>
+              </div>
+              <div class="settings-toggle-control">
+                <input type="checkbox" data-pref="marketing">
+                <span class="settings-switch" aria-hidden="true"></span>
+              </div>
+            </label>
+            <label class="settings-toggle">
+              <div>
+                <div class="settings-toggle-title">SMS confirmations</div>
+                <p class="settings-toggle-description">Text confirmations for payouts and delivery.</p>
+              </div>
+              <div class="settings-toggle-control">
+                <input type="checkbox" data-pref="smsAlerts">
+                <span class="settings-switch" aria-hidden="true"></span>
+              </div>
+            </label>
+          </div>
+        </section>
+
+        <!-- Data & Session Controls -->
+        <section class="settings-section">
+          <header class="settings-section-header">
+            <div>
+              <p class="settings-section-label">Data & Security</p>
+              <h2>Local Session</h2>
+              <p class="settings-helper-text">Trouble with login or cart sync? Reset below.</p>
+            </div>
+          </header>
+          <div class="settings-data-grid">
+            <div class="settings-data-card">
+              <div class="settings-data-label">Cart items</div>
+              <div class="settings-data-value" id="settings-cart-count">0</div>
+            </div>
+            <div class="settings-data-card">
+              <div class="settings-data-label">Saved addresses</div>
+              <div class="settings-data-value" id="settings-address-count">0</div>
+            </div>
+            <div class="settings-data-card">
+              <div class="settings-data-label">Auth state</div>
+              <div class="settings-data-value" id="settings-auth-state">Guest</div>
+            </div>
+          </div>
+          <p class="settings-helper-text">
+            Stored keys: <span id="settings-storage-count">0</span>
+          </p>
+          <div class="settings-reset-card">
+            <div>
+              <div class="settings-reset-title">Reset session</div>
+              <p class="settings-helper-text">Clears login tokens, cart data, and cached preferences.</p>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" id="reset-session-btn">
+              Reset session
+            </button>
+          </div>
+        </section>
       </div>
-      <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
-    </a>
-    
-    <a href="#" class="settings-item">
-      <div class="settings-item-content">
-        <span>Account Security</span>
-      </div>
-      <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
-    </a>
-    
-    <a href="#" class="settings-item">
-      <div class="settings-item-content">
-        <span>Feedback</span>
-      </div>
-      <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
-    </a>
-    
-    <a href="#" class="settings-item">
-      <div class="settings-item-content">
-        <span>User Agreement</span>
-      </div>
-      <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
-    </a>
-    
-    <a href="#" class="settings-item">
-      <div class="settings-item-content">
-        <span>Privacy Policy</span>
-      </div>
-      <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
-    </a>
-    
-    <a href="#" class="settings-item">
-      <div class="settings-item-content">
-        <span>Simplified Policy</span>
-      </div>
-      <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
-    </a>
-    
-    <a href="#" class="settings-item">
-      <div class="settings-item-content">
-        <span>Personal Data Collection</span>
-      </div>
-      <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
-    </a>
-    
-    <a href="#" class="settings-item">
-      <div class="settings-item-content">
-        <span>Sharing Settings</span>
-      </div>
-      <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
-    </a>
-    
-    <a href="#" class="settings-item">
-      <div class="settings-item-content">
-        <span>About</span>
-      </div>
-      <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
-    </a>
-  </div>
+    </div>
+  </main>
 
   <script src="./assets/js/storage.js"></script>
   <script src="./assets/js/ui.js"></script>
-  <script src="./assets/js/pages/settings.js"></script>
+  <script type="module" src="./assets/js/pages/settings.js"></script>
 </body>
 </html>

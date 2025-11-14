@@ -55,12 +55,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (token) {
           authStore.set({ token, user });
+          showToast('Account created! Redirecting...', 'success');
+          setTimeout(() => {
+            window.location.href = './account.html';
+          }, 600);
+        } else {
+          showToast('Account created! Please sign in to continue.', 'success');
+          setTimeout(() => {
+            window.location.href = './login.html';
+          }, 800);
         }
-
-        showToast('Account created! Redirecting...', 'success');
-        setTimeout(() => {
-          window.location.href = './account.html';
-        }, 600);
       } else {
         showToast(result?.error || 'Registration failed. Please try again.', 'error');
       }

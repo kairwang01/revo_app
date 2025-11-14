@@ -3,12 +3,25 @@
 let cachedHomeProducts = [];
 let cachedCity = null;
 let loadMarker = 0;
+let myItemsRenderToken = 0;
 
 document.addEventListener('DOMContentLoaded', async () => {
   await Promise.allSettled([loadCategories(), refreshHomeProducts()]);
+  renderMyItemsSection();
 
   window.addEventListener('revo:city-changed', ({ detail }) => {
     refreshHomeProducts(detail);
+    renderMyItemsSection();
+  });
+
+  window.addEventListener('revo:auth-changed', () => {
+    renderMyItemsSection();
+  });
+
+  window.addEventListener('revo:cart-changed', () => {
+    if (authStore.isAuthenticated()) {
+      renderMyItemsSection();
+    }
   });
 });
 
@@ -163,4 +176,115 @@ function renderCuratedSection(products, container) {
   curated.forEach(product => {
     container.appendChild(createProductCard(product));
   });
+}
+
+async function renderMyItemsSection() {
+  const container = document.getElementById('my-items-content');
+  if (!container) {
+    return;
+  }
+
+  const renderId = ++myItemsRenderToken;
+
+  if (!authStore.isAuthenticated()) {
+    container.innerHTML = `
+      <p class="text-muted">Sign in to track the devices you trade and purchase.</p>
+      <a href="./login.html" class="btn btn-primary btn-sm" style="margin-top: 1rem;">Sign in now</a>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="my-items-card">
+      <p class="text-muted">Loading account details…</p>
+    </div>
+  `;
+
+  const user = await ensureHomeUser();
+
+  if (renderId !== myItemsRenderToken) {
+    return;
+  }
+
+  const wallet = walletStore.get();
+  const walletBalance = Number(wallet?.balance) || 0;
+  const walletCurrency = wallet?.currency || 'CAD';
+  const cartCount = cartStore.getCount();
+  const currentCity = cityStore.get();
+
+  const greeting = buildGreeting(user);
+  const emailLine = user?.email ? `<p class="text-muted" style="margin:0;">${user.email}</p>` : '';
+
+  container.innerHTML = `
+    <div class="my-items-card">
+      <div class="my-items-header">
+        <p class="my-items-greeting">${greeting}</p>
+        ${emailLine}
+      </div>
+      <div class="my-items-meta">
+        <div class="my-items-meta-item">
+          <div class="my-items-meta-label">Wallet</div>
+          <div class="my-items-meta-value">${formatMoney(walletBalance, walletCurrency)}</div>
+        </div>
+        <div class="my-items-meta-item">
+          <div class="my-items-meta-label">Cart</div>
+          <div class="my-items-meta-value">${cartCount} item${cartCount === 1 ? '' : 's'}</div>
+        </div>
+        <div class="my-items-meta-item">
+          <div class="my-items-meta-label">City</div>
+          <div class="my-items-meta-value">${currentCity}</div>
+        </div>
+      </div>
+      <div class="my-items-actions">
+        <a href="./account.html" class="btn btn-primary btn-full">Go to account</a>
+        <a href="./orders.html" class="btn btn-secondary btn-full">View orders</a>
+      </div>
+    </div>
+  `;
+}
+
+async function ensureHomeUser() {
+  const current = authStore.get();
+  if (current?.user) {
+    return current.user;
+  }
+
+  if (!authStore.isAuthenticated() || typeof api === 'undefined') {
+    return null;
+  }
+
+  try {
+    const response = await api.getCurrentUser();
+    if (response?.success) {
+      const token = current?.token || localStorage.getItem('authToken');
+      authStore.set({
+        token,
+        user: response.data
+      });
+      return response.data;
+    }
+  } catch (error) {
+    console.error('Failed to fetch current user for home page:', error);
+  }
+
+  return current?.user || null;
+}
+
+function buildGreeting(user) {
+  if (!user) {
+    return 'Welcome back!';
+  }
+
+  const name = user.full_name || user.fullName || user.name;
+  if (typeof name === 'string' && name.trim().length > 0) {
+    const firstName = name.trim().split(' ')[0];
+    return `Welcome back, ${firstName}!`;
+  }
+
+  if (user.email) {
+    const [localPart] = user.email.split('@');
+    return `Welcome back, ${localPart}!`;
+  }
+
+  return 'Welcome back!';
 }

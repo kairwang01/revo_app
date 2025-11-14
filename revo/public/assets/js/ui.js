@@ -30,6 +30,26 @@ function toggleElement(element, show) {
   }
 }
 
+let apiErrorNoticeShown = false;
+
+window.addEventListener('revo:api-error', (event) => {
+  if (apiErrorNoticeShown) {
+    return;
+  }
+  apiErrorNoticeShown = true;
+
+  const endpoint = event?.detail?.endpoint;
+  const warning = endpoint
+    ? `Live data is temporarily unavailable (failed to reach ${endpoint}).`
+    : 'Live data is temporarily unavailable.';
+
+  if (typeof showToast === 'function') {
+    showToast(warning, 'error');
+  } else {
+    console.warn(warning);
+  }
+});
+
 // Create product card element
 function createProductCard(product) {
   const discount = Math.round((1 - product.price / product.originalPrice) * 100);
