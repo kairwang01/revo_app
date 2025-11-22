@@ -49,7 +49,6 @@ Backend URL is set in `assets/js/config.js`:
 BACKEND_URL: 'https://revo-backend-o03w.onrender.com/'
 ```
 
-To change the backend URL, edit this file.
 
 ## API Endpoints
 
@@ -282,5 +281,5 @@ Backend Server
 
 ---
 
-Last Updated: January 2025
+Last Updated: November 2025
 Version: 1.0.0
