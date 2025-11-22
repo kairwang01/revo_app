@@ -1,6 +1,6 @@
 # Revo Frontend
 
-Progressive web experience for the Revo C2B2C electronics trade-in platform. The UI now talks exclusively to the hosted backend at `https://revo-backend-o03w.onrender.com`, so there is no mock API, fixture JSON, or local data hydration step required.
+Progressive web experience for the Revo C2B2C electronics trade-in platform. The UI talks exclusively to the hosted backend at `https://revo-backend-o03w.onrender.com`, so there is no mock API, fixture JSON, or local data hydration step required.
 
 ## Tech Stack
 
