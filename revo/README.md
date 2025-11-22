@@ -176,4 +176,4 @@ These SQL definitions live in `SYSTEM_SPECIFICATION.md` and align with the endpo
 
 ## License and Contribution
 
-This repository represents an educational prototype. Contributions should focus on enhancing the static frontend, improving backend integrations, or extending the documented specification. When proposing changes, keep the documentation synchronized so product, engineering, and operations stay aligned.
+This repository represents an educational prototype. Contributions is focused on enhancing the static frontend, improving backend integrations, or extending the documented specification. When proposing changes, keep the documentation synchronized so product, engineering, and operations stay aligned.
