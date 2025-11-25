@@ -1,7 +1,9 @@
 # Revo Frontend Document
-## Author: Kair Wang
+## Author: Kair Wang Group 1
 ## Date: Nov 11th, 2025
+## Verison: 0.1
 
+## Last update date: Nov 25,2025
 Static, multi-page storefront + trade-in experience for Apple and Samsung hardware. Everything in this repo is frontend-only: vanilla HTML/CSS/JS served from `/public` with no build step or framework. The UI talks to a hosted FastAPI backend via `fetch`, but you can point it to any compatible API.
 
 ## What’s in the repo
