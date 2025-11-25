@@ -18,7 +18,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: clamp(12px, 4vw, 24px);
       color: #1f2933;
     }
 
@@ -28,10 +28,10 @@
       background: #fff;
       border: 1px solid #d9e0e6;
       border-radius: 8px;
-      padding: 24px;
+      padding: clamp(16px, 4vw, 24px);
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
     }
 
     .header {
@@ -183,6 +183,61 @@
     .btn.show {
       display: block;
     }
+
+    .card-fields {
+      display: flex;
+      gap: 10px;
+    }
+
+    .cvv-field {
+      max-width: 160px;
+    }
+
+    @media (max-width: 720px) {
+      body {
+        align-items: flex-start;
+        justify-content: flex-start;
+      }
+
+      .page {
+        grid-template-columns: 1fr;
+        border: none;
+        background: transparent;
+        padding: 0;
+        gap: 16px;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding-bottom: 8px;
+      }
+
+      .section {
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(31, 41, 51, 0.08);
+      }
+
+      .card-fields {
+        flex-direction: column;
+      }
+
+      .cvv-field {
+        max-width: none;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .section {
+        padding: 14px;
+      }
+
+      .amount {
+        font-size: 1.6rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -192,28 +247,27 @@
         <h1>Revo payment</h1>
         <p id="subtitle">Confirm your order and we will mark it paid.</p>
       </div>
-      <div class="label">Demo page · no real charge</div>
+      <div class="label">Demo</div>
     </div>
 
     <div class="section">
       <div class="label">Total to pay</div>
       <div class="amount" id="amount">$0.00</div>
-      <div class="info-block" style="margin-top: 12px;">This checkout is for testing. Keep this tab open while we finish.</div>
+      <div class="info-block" style="margin-top: 12px;">Keep this tab open while we finish.</div>
     </div>
 
     <div class="section">
       <h2>Payment method</h2>
       <div class="field">
         <label for="locked-card-number">Card number</label>
-        // fake card number
         <input id="locked-card-number" type="text" placeholder="5236 9999 9999 9999" readonly>
       </div>
-      <div style="display: flex; gap: 10px;">
-        <div class="field" style="flex: 1;">
+      <div class="card-fields">
+        <div class="field">
           <label for="locked-expiry">Expiry</label>
           <input id="locked-expiry" type="text" placeholder="MM / YY" readonly>
         </div>
-        <div class="field" style="width: 140px;">
+        <div class="field cvv-field">
           <label for="locked-cvv">CVV</label>
           <input id="locked-cvv" type="text" placeholder="123" readonly>
         </div>

@@ -3,407 +3,571 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API Test Page - Revo Backend</title>
+  <title>Revo Backend API Manual Tests</title>
   <style>
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f5f5f5;
-      padding: 20px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      background: #f7f7f7;
+      color: #1b1b1b;
+      line-height: 1.4;
+      padding: 24px;
     }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto 40px;
     }
-    
+
     h1 {
-      color: #333;
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+
+    .note {
+      color: #444;
+      font-size: 13px;
+      margin: 0 0 12px;
+    }
+
+    .status-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #b5b5b5;
+    }
+
+    .status-dot.connected {
+      background: #2f8f3a;
+    }
+
+    .status-dot.disconnected {
+      background: #c23f3f;
+    }
+
+    .env {
+      border: 1px dashed #c9c9c9;
+      background: #fff;
+      padding: 10px;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .env code {
+      background: none;
+      padding: 0;
+    }
+
+    .block {
+      background: #fff;
+      border: 1px solid #dcdcdc;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .block h2 {
+      font-size: 18px;
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border: 1px solid #cfcfcf;
+      background: #f2f2f2;
+      font-size: 12px;
+      border-radius: 2px;
+    }
+
+    .test {
+      border-top: 1px solid #e5e5e5;
+      padding-top: 12px;
+      margin-top: 12px;
+    }
+
+    .field {
       margin-bottom: 10px;
     }
-    
-    .status {
-      padding: 10px 15px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-      font-weight: 500;
-    }
-    
-    .status.connected {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-    
-    .status.disconnected {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-    
-    .section {
-      background: white;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    .section h2 {
-      color: #333;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid #43CD80;
-    }
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    
+
     label {
+      font-size: 14px;
       display: block;
-      margin-bottom: 5px;
-      color: #555;
-      font-weight: 500;
+      margin-bottom: 4px;
     }
-    
+
     input, select, textarea {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      padding: 8px;
+      border: 1px solid #cfcfcf;
+      background: #fafafa;
+      font-family: inherit;
       font-size: 14px;
     }
-    
-    textarea {
-      min-height: 80px;
-      resize: vertical;
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
     }
-    
+
     button {
-      background: #43CD80;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
+      background: #3a3a3a;
+      color: #fff;
+      border: 1px solid #3a3a3a;
+      padding: 8px 12px;
       font-size: 14px;
-      font-weight: 500;
-      margin-right: 10px;
+      cursor: pointer;
     }
-    
-    button:hover {
-      background: #3ab872;
+
+    button.secondary {
+      background: #f0f0f0;
+      color: #222;
+      border-color: #b9b9b9;
     }
-    
-    button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
+
+    button.danger {
+      background: #a73b3b;
+      border-color: #a73b3b;
     }
-    
-    .btn-secondary {
-      background: #6c757d;
-    }
-    
-    .btn-secondary:hover {
-      background: #5a6268;
-    }
-    
-    .btn-danger {
-      background: #dc3545;
-    }
-    
-    .btn-danger:hover {
-      background: #c82333;
-    }
-    
+
     .result {
-      margin-top: 15px;
-      padding: 15px;
-      background: #f8f9fa;
-      border-radius: 4px;
-      border-left: 4px solid #43CD80;
-      max-height: 400px;
-      overflow-y: auto;
+      display: none;
+      margin-top: 10px;
+      border: 1px solid #d0d0d0;
+      background: #f8f8f8;
+      padding: 10px;
+      font-size: 13px;
     }
-    
+
     .result.error {
-      border-left-color: #dc3545;
-      background: #fff5f5;
+      border-color: #a73b3b;
+      background: #fff4f4;
     }
-    
+
     .result pre {
       margin: 0;
       white-space: pre-wrap;
-      word-wrap: break-word;
-      font-size: 13px;
-      color: #333;
+      word-break: break-word;
     }
-    
-    .grid {
+
+    .two-col {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-    }
-    
-    .info {
-      background: #e7f3ff;
-      padding: 10px 15px;
-      border-radius: 4px;
-      margin-bottom: 15px;
-      font-size: 14px;
-      color: #004085;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Revo Backend API Test Page</h1>
-    <div id="connection-status" class="status disconnected">
-      Checking connection...
+  <div class="page">
+    <h1>Tests</h1>
+    <p class="note">feel free to fill in to tets!!!</p>
+
+    <div class="status-line">
+      <span id="connection-dot" class="status-dot disconnected"></span>
+      <span id="connection-text">Checking backend...</span>
+    </div>
+    <div class="env">
+      <div>URL</div>
+      <code id="backend-url"></code>
     </div>
 
-    <div class="info">
-      Backend URL: <strong id="backend-url"></strong>
-    </div>
-
-    <!-- Authentication Section -->
-    <div class="section">
-      <h2>Authentication</h2>
-      
-      <div class="grid">
-        <div>
-          <h3>Register</h3>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="reg-email" placeholder="user@example.com">
+    <section class="block">
+      <h2><span class="tag">1</span> Authentication</h2>
+      <div class="two-col">
+        <div class="test">
+          <p class="note">Create a user to validate registration.</p>
+          <div class="field">
+            <label for="reg-email">Email</label>
+            <input type="email" id="reg-email" placeholder="user@example.com" value="test@example.com">
           </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="reg-password" placeholder="Min 8 characters">
+          <div class="field">
+            <label for="reg-password">Password</label>
+            <input type="password" id="reg-password" placeholder="Min 8 characters" value="Password123">
           </div>
-          <button onclick="testRegister()">Register</button>
-          <div id="register-result" class="result" style="display:none;"></div>
+          <div class="controls">
+            <button onclick="testRegister()">Run Register</button>
+          </div>
+          <div id="register-result" class="result"></div>
         </div>
 
-        <div>
-          <h3>Login</h3>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="login-email" placeholder="user@example.com">
+        <div class="test">
+          <p class="note">Login, read session, and logout.</p>
+          <div class="field">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" placeholder="user@example.com" value="test@example.com">
           </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="login-password" placeholder="Password">
+          <div class="field">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" placeholder="Password" value="Password123">
           </div>
-          <button onclick="testLogin()">Login</button>
-          <button class="btn-secondary" onclick="testGetCurrentUser()">Get User Info</button>
-          <button class="btn-danger" onclick="testLogout()">Logout</button>
-          <div id="login-result" class="result" style="display:none;"></div>
+          <div class="controls">
+            <button onclick="testLogin()">Login</button>
+            <button class="secondary" onclick="testGetCurrentUser()">Get Current User</button>
+            <button class="danger" onclick="testLogout()">Logout</button>
+          </div>
+          <div id="login-result" class="result"></div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Products Section -->
-    <div class="section">
-      <h2>Products</h2>
-      
-      <div class="grid">
-        <div>
-          <h3>Get Products</h3>
-          <div class="form-group">
-            <label>Category</label>
-            <input type="text" id="prod-category" placeholder="Phone, Laptop, etc.">
+    <section class="block">
+      <h2><span class="tag">2</span> Products</h2>
+      <div class="test">
+        <p class="note">List products with optional filters or fetch categories.</p>
+        <div class="two-col">
+          <div class="field">
+            <label for="prod-category">Category</label>
+            <input type="text" id="prod-category" placeholder="Phone, Laptop, etc." value="Phone">
           </div>
-          <div class="form-group">
-            <label>Brand</label>
-            <input type="text" id="prod-brand" placeholder="Apple, Samsung, etc.">
+          <div class="field">
+            <label for="prod-brand">Brand</label>
+            <input type="text" id="prod-brand" placeholder="Apple, Samsung, etc." value="Apple">
           </div>
-          <div class="form-group">
-            <label>City</label>
-            <input type="text" id="prod-city" placeholder="Vancouver, Ottawa, Edmonton">
+          <div class="field">
+            <label for="prod-city">City</label>
+            <input type="text" id="prod-city" placeholder="Vancouver, Ottawa, Edmonton" value="Ottawa">
           </div>
+          <div class="field">
+            <label for="prod-condition">Condition</label>
+            <input type="text" id="prod-condition" placeholder="A / B / C / new" value="A">
+          </div>
+          <div class="field">
+            <label for="prod-min-price">Min Price</label>
+            <input type="number" id="prod-min-price" placeholder="0" step="0.01" value="0">
+          </div>
+          <div class="field">
+            <label for="prod-max-price">Max Price</label>
+            <input type="number" id="prod-max-price" placeholder="1000" step="0.01" value="1000">
+          </div>
+        </div>
+        <div class="controls">
           <button onclick="testGetProducts()">Get Products</button>
-          <button class="btn-secondary" onclick="testGetCategories()">Get Categories</button>
-          <div id="products-result" class="result" style="display:none;"></div>
+          <button class="secondary" onclick="testGetCategories()">List Categories</button>
         </div>
-
-        <div>
-          <h3>Search & Deals</h3>
-          <div class="form-group">
-            <label>Search Query</label>
-            <input type="text" id="search-query" placeholder="iPhone, MacBook, etc.">
-          </div>
-          <button onclick="testSearchProducts()">Search</button>
-          <button class="btn-secondary" onclick="testGetDeals()">Get Deals</button>
-          
-          <div class="form-group" style="margin-top: 20px;">
-            <label>Product ID</label>
-            <input type="number" id="product-id" placeholder="1">
-          </div>
-          <button onclick="testGetProduct()">Get Product by ID</button>
-          <div id="search-result" class="result" style="display:none;"></div>
-        </div>
+        <div id="products-result" class="result"></div>
       </div>
-    </div>
 
-    <!-- Cart Section -->
-    <div class="section">
-      <h2>Cart</h2>
-      
-      <div class="grid">
-        <div>
-          <h3>Cart Operations</h3>
-          <button onclick="testGetCart()">Get Cart</button>
-          <button class="btn-secondary" onclick="testGetCartCount()">Get Cart Count</button>
-          <div id="cart-result" class="result" style="display:none;"></div>
-        </div>
-
-        <div>
-          <h3>Add/Update/Remove</h3>
-          <div class="form-group">
-            <label>Product ID</label>
-            <input type="number" id="cart-product-id" placeholder="1">
+      <div class="test">
+        <p class="note">Search terms, view deals, or fetch a specific product.</p>
+        <div class="two-col">
+          <div class="field">
+            <label for="search-query">Search Query</label>
+            <input type="text" id="search-query" placeholder="iPhone, MacBook, etc." value="iphone">
           </div>
-          <div class="form-group">
-            <label>Quantity</label>
+          <div class="field">
+            <label for="search-category">Category (optional)</label>
+            <input type="text" id="search-category" placeholder="Phone" value="Phone">
+          </div>
+          <div class="field">
+            <label for="search-brand">Brand (optional)</label>
+            <input type="text" id="search-brand" placeholder="Apple" value="Apple">
+          </div>
+          <div class="field">
+            <label for="search-min-price">Min Price</label>
+            <input type="number" id="search-min-price" placeholder="0" step="0.01" value="0">
+          </div>
+          <div class="field">
+            <label for="search-max-price">Max Price</label>
+            <input type="number" id="search-max-price" placeholder="2000" step="0.01" value="1500">
+          </div>
+          <div class="field">
+            <label for="product-id">Product ID</label>
+            <input type="number" id="product-id" placeholder="1" value="1">
+          </div>
+          <div class="field">
+            <label for="deals-limit">Deals Limit</label>
+            <input type="number" id="deals-limit" placeholder="10" value="10">
+          </div>
+          <div class="field">
+            <label for="deals-min-discount">Min Discount (%)</label>
+            <input type="number" id="deals-min-discount" placeholder="0" value="10">
+          </div>
+        </div>
+        <div class="controls">
+          <button onclick="testSearchProducts()">Run Search</button>
+          <button class="secondary" onclick="testGetDeals()">Get Deals</button>
+          <button class="secondary" onclick="testGetProduct()">Get Product by ID</button>
+        </div>
+        <div id="search-result" class="result"></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2><span class="tag">3</span> Cart</h2>
+      <div class="test">
+        <p class="note">Check cart contents and item count.</p>
+        <div class="controls">
+          <button onclick="testGetCart()">Get Cart</button>
+          <button class="secondary" onclick="testGetCartCount()">Get Item Count</button>
+        </div>
+        <div id="cart-result" class="result"></div>
+      </div>
+
+      <div class="test">
+        <p class="note">Modify cart items.</p>
+        <div class="two-col">
+          <div class="field">
+            <label for="cart-product-id">Product ID</label>
+            <input type="number" id="cart-product-id" placeholder="1" value="1">
+          </div>
+          <div class="field">
+            <label for="cart-quantity">Quantity</label>
             <input type="number" id="cart-quantity" placeholder="1" value="1">
           </div>
-          <button onclick="testAddToCart()">Add to Cart</button>
-          <button class="btn-secondary" onclick="testUpdateCart()">Update</button>
-          <button class="btn-danger" onclick="testRemoveFromCart()">Remove</button>
-          <div id="cart-ops-result" class="result" style="display:none;"></div>
         </div>
+        <div class="controls">
+          <button onclick="testAddToCart()">Add Item</button>
+          <button class="secondary" onclick="testUpdateCart()">Update Quantity</button>
+          <button class="danger" onclick="testRemoveFromCart()">Remove Item</button>
+        </div>
+        <div id="cart-ops-result" class="result"></div>
       </div>
-    </div>
+    </section>
 
-    <!-- Orders Section -->
-    <div class="section">
-      <h2>Orders</h2>
-      
-      <div class="grid">
-        <div>
-          <h3>Order Operations</h3>
-          <button onclick="testGetOrders()">Get My Orders</button>
-          <button class="btn-secondary" onclick="testCreateOrder()">Create Order from Cart</button>
-          <div id="orders-result" class="result" style="display:none;"></div>
-        </div>
-
-        <div>
-          <h3>Checkout</h3>
-          <div class="form-group">
-            <label>Total Amount</label>
-            <input type="number" id="checkout-total" placeholder="299.99" step="0.01">
+    <section class="block">
+      <h2><span class="tag">4</span> Orders & Checkout</h2>
+      <div class="test">
+        <p class="note">Pull existing orders or create one from the active cart.</p>
+        <div class="two-col">
+          <div class="field">
+            <label for="orders-status">Status (optional)</label>
+            <input type="text" id="orders-status" placeholder="pending / completed" value="pending">
           </div>
-          <div class="form-group">
-            <label>Payment Method</label>
+          <div class="field">
+            <label for="orders-limit">Limit</label>
+            <input type="number" id="orders-limit" placeholder="50" value="50">
+          </div>
+          <div class="field">
+            <label for="orders-offset">Offset</label>
+            <input type="number" id="orders-offset" placeholder="0" value="0">
+          </div>
+        </div>
+        <div class="controls">
+          <button onclick="testGetOrders()">Get My Orders</button>
+          <button class="secondary" onclick="testCreateOrder()">Create Order from Cart</button>
+        </div>
+        <div id="orders-result" class="result"></div>
+      </div>
+
+      <div class="test">
+        <p class="note">Checkout with a total amount and payment method.</p>
+        <div class="two-col">
+          <div class="field">
+            <label for="checkout-total">Total Amount</label>
+            <input type="number" id="checkout-total" placeholder="299.99" step="0.01" value="299.99">
+          </div>
+          <div class="field">
+            <label for="checkout-payment">Payment Method</label>
             <select id="checkout-payment">
               <option value="credit_card">Credit Card</option>
               <option value="debit_card">Debit Card</option>
               <option value="paypal">PayPal</option>
             </select>
           </div>
+        </div>
+        <div class="controls">
           <button onclick="testCheckout()">Checkout</button>
-          <div id="checkout-result" class="result" style="display:none;"></div>
         </div>
+        <div id="checkout-result" class="result"></div>
       </div>
-    </div>
+    </section>
 
-    <!-- Trade-in Section -->
-    <div class="section">
-      <h2>Trade-in</h2>
-      
-      <div class="grid">
-        <div>
-          <h3>Get Estimate</h3>
-          <div class="form-group">
-            <label>Brand</label>
-            <input type="text" id="tradein-brand" placeholder="Apple">
+    <section class="block">
+      <h2><span class="tag">5</span> Trade-in</h2>
+      <div class="test">
+        <p class="note">Estimate value and list available brands.</p>
+        <div class="two-col">
+          <div class="field">
+            <label for="tradein-brand">Brand</label>
+            <input type="text" id="tradein-brand" placeholder="Apple" value="Apple">
           </div>
-          <div class="form-group">
-            <label>Model</label>
-            <input type="text" id="tradein-model" placeholder="iPhone 14">
+          <div class="field">
+            <label for="tradein-model">Model</label>
+            <input type="text" id="tradein-model" placeholder="iPhone 14" value="iPhone 14">
           </div>
-          <div class="form-group">
-            <label>Condition (A/B/C)</label>
-            <input type="text" id="tradein-condition" placeholder="A" maxlength="1">
+          <div class="field">
+            <label for="tradein-condition">Condition (A/B/C)</label>
+            <input type="text" id="tradein-condition" placeholder="A" maxlength="1" value="A">
           </div>
-          <div class="form-group">
-            <label>Storage</label>
-            <input type="text" id="tradein-storage" placeholder="256GB">
+          <div class="field">
+            <label for="tradein-storage">Storage</label>
+            <input type="text" id="tradein-storage" placeholder="256GB" value="256GB">
           </div>
+        </div>
+        <div class="controls">
           <button onclick="testGetEstimate()">Get Estimate</button>
-          <button class="btn-secondary" onclick="testGetBrands()">Get Brands</button>
-          <div id="estimate-result" class="result" style="display:none;"></div>
+          <button class="secondary" onclick="testGetBrands()">List Brands</button>
         </div>
+        <div id="estimate-result" class="result"></div>
+      </div>
 
-        <div>
-          <h3>Pickup Request</h3>
-          <div class="form-group">
-            <label>Brand Name</label>
-            <input type="text" id="pickup-brand" placeholder="Apple">
+      <div class="test">
+        <p class="note">Book a pickup for the trade-in item.</p>
+        <div class="two-col">
+          <div class="field">
+            <label for="pickup-brand">Brand Name</label>
+            <input type="text" id="pickup-brand" placeholder="Apple" value="Apple">
           </div>
-          <div class="form-group">
-            <label>Model</label>
-            <input type="text" id="pickup-model" placeholder="iPhone 14 Pro">
+          <div class="field">
+            <label for="pickup-model">Model</label>
+            <input type="text" id="pickup-model" placeholder="iPhone 14 Pro" value="iPhone 14 Pro">
           </div>
-          <div class="form-group">
-            <label>Condition</label>
-            <input type="text" id="pickup-condition" placeholder="A">
+          <div class="field">
+            <label for="pickup-condition">Condition</label>
+            <input type="text" id="pickup-condition" placeholder="A" value="A">
           </div>
-          <div class="form-group">
-            <label>Storage</label>
-            <input type="text" id="pickup-storage" placeholder="256GB">
+          <div class="field">
+            <label for="pickup-storage">Storage</label>
+            <input type="text" id="pickup-storage" placeholder="256GB" value="256GB">
           </div>
+        </div>
+        <div class="controls">
           <button onclick="testCreatePickup()">Create Pickup</button>
-          <button class="btn-secondary" onclick="testGetMyPickups()">Get My Pickups</button>
-          <div id="pickup-result" class="result" style="display:none;"></div>
+          <button class="secondary" onclick="testGetMyPickups()">Get My Pickups</button>
         </div>
+        <div id="pickup-result" class="result"></div>
       </div>
-    </div>
 
-    <!-- Locations Section -->
-    <div class="section">
-      <h2>Locations</h2>
-      <button onclick="testGetLocations()">Get All Locations</button>
-      <div class="form-group" style="margin-top: 15px;">
-        <label>Location ID</label>
-        <input type="text" id="location-id" placeholder="1">
+      <div class="test">
+        <p class="note">Respond to an offer on an existing pickup request.</p>
+        <div class="two-col">
+          <div class="field">
+            <label for="respond-pickup-id">Pickup ID</label>
+            <input type="text" id="respond-pickup-id" placeholder="pickup id" value="1">
+          </div>
+          <div class="field">
+            <label for="respond-action">Action</label>
+            <select id="respond-action">
+              <option value="accept">accept</option>
+              <option value="decline">decline</option>
+            </select>
+          </div>
+        </div>
+        <div class="controls">
+          <button onclick="testRespondToOffer()">Respond</button>
+        </div>
+        <div id="respond-result" class="result"></div>
       </div>
-      <button onclick="testGetLocation()">Get Location by ID</button>
-      <div id="locations-result" class="result" style="display:none;"></div>
-    </div>
+    </section>
+
+    <section class="block">
+      <h2><span class="tag">6</span> Locations</h2>
+      <div class="test">
+        <p class="note">Read store/warehouse locations.</p>
+        <div class="controls">
+          <button onclick="testGetLocations()">All Locations</button>
+        </div>
+          <div class="field">
+            <label for="location-id">Location ID</label>
+            <input type="text" id="location-id" placeholder="1" value="1">
+          </div>
+        <div class="controls">
+          <button class="secondary" onclick="testGetLocation()">Get Location by ID</button>
+        </div>
+        <div id="locations-result" class="result"></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2><span class="tag">7</span> Addresses</h2>
+      <div class="test">
+        <p class="note">CRUD for saved addresses.</p>
+        <div class="controls">
+          <button onclick="testGetAddresses()">Get Addresses</button>
+        </div>
+        <div class="two-col">
+          <div class="field">
+            <label for="address-id">Address ID (for update/delete)</label>
+            <input type="text" id="address-id" placeholder="uuid or numeric" value="1">
+          </div>
+          <div class="field">
+            <label for="address-full-name">Full Name</label>
+            <input type="text" id="address-full-name" placeholder="John Doe" value="John Doe">
+          </div>
+          <div class="field">
+            <label for="address-phone">Phone Number</label>
+            <input type="text" id="address-phone" placeholder="123-456-7890" value="123-456-7890">
+          </div>
+          <div class="field">
+            <label for="address-line1">Address Line 1</label>
+            <input type="text" id="address-line1" placeholder="123 Main St" value="123 Main St">
+          </div>
+          <div class="field">
+            <label for="address-line2">Address Line 2</label>
+            <input type="text" id="address-line2" placeholder="Unit 4B (optional)" value="Unit 4B">
+          </div>
+          <div class="field">
+            <label for="address-city">City</label>
+            <input type="text" id="address-city" placeholder="Ottawa" value="Ottawa">
+          </div>
+          <div class="field">
+            <label for="address-state">State/Province</label>
+            <input type="text" id="address-state" placeholder="ON" value="ON">
+          </div>
+          <div class="field">
+            <label for="address-postal">Postal Code</label>
+            <input type="text" id="address-postal" placeholder="K1A 0B1" value="K1A0B1">
+          </div>
+          <div class="field">
+            <label for="address-country">Country</label>
+            <input type="text" id="address-country" placeholder="Canada" value="Canada">
+          </div>
+          <div class="field">
+            <label for="address-default">Default?</label>
+            <select id="address-default">
+              <option value="">No change</option>
+              <option value="true" selected>Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+        </div>
+        <div class="controls">
+          <button onclick="testCreateAddress()">Create Address</button>
+          <button class="secondary" onclick="testUpdateAddress()">Update Address</button>
+          <button class="danger" onclick="testDeleteAddress()">Delete Address</button>
+        </div>
+        <div id="addresses-result" class="result"></div>
+      </div>
+    </section>
   </div>
 
-  <!-- Scripts -->
   <script src="./assets/js/config.js"></script>
   <script src="./assets/js/backendApi.js"></script>
   <script src="./assets/js/api.js"></script>
 
   <script>
-    // Initialize
     document.getElementById('backend-url').textContent = CONFIG.BACKEND_URL;
 
     async function init() {
       const connected = await api.init();
-      const statusEl = document.getElementById('connection-status');
-      
-      if (connected) {
-        statusEl.className = 'status connected';
-        statusEl.textContent = 'Backend Connected';
-      } else {
-        statusEl.className = 'status disconnected';
-        statusEl.textContent = 'Backend Not Connected';
-      }
+      const dot = document.getElementById('connection-dot');
+      const text = document.getElementById('connection-text');
+
+      dot.classList.toggle('connected', connected);
+      dot.classList.toggle('disconnected', !connected);
+      text.textContent = connected ? 'Backend reachable' : 'Backend not reachable';
     }
 
-    function showResult(elementId, data, isError = false) {
+    function showResult(elementId, data, isErrorOverride = null) {
       const el = document.getElementById(elementId);
+      const isError = typeof isErrorOverride === 'boolean'
+        ? isErrorOverride
+        : (data?.success === false || Boolean(data?.error));
+
       el.style.display = 'block';
       el.className = isError ? 'result error' : 'result';
       el.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
@@ -413,10 +577,10 @@
     async function testRegister() {
       const email = document.getElementById('reg-email').value;
       const password = document.getElementById('reg-password').value;
-      
+
       try {
         const result = await api.register(email, password);
-        showResult('register-result', result, !result.success);
+        showResult('register-result', result);
       } catch (error) {
         showResult('register-result', { error: error.message }, true);
       }
@@ -425,10 +589,10 @@
     async function testLogin() {
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
-      
+
       try {
         const result = await api.login(email, password);
-        showResult('login-result', result, !result.success);
+        showResult('login-result', result);
       } catch (error) {
         showResult('login-result', { error: error.message }, true);
       }
@@ -437,7 +601,7 @@
     async function testGetCurrentUser() {
       try {
         const result = await api.getCurrentUser();
-        showResult('login-result', result, !result.success);
+        showResult('login-result', result);
       } catch (error) {
         showResult('login-result', { error: error.message }, true);
       }
@@ -446,7 +610,7 @@
     async function testLogout() {
       try {
         const result = await api.logout();
-        showResult('login-result', result, !result.success);
+        showResult('login-result', result);
       } catch (error) {
         showResult('login-result', { error: error.message }, true);
       }
@@ -457,12 +621,18 @@
       const filters = {
         category: document.getElementById('prod-category').value,
         brand: document.getElementById('prod-brand').value,
-        city: document.getElementById('prod-city').value
+        city: document.getElementById('prod-city').value,
+        condition: document.getElementById('prod-condition').value,
+        min_price: document.getElementById('prod-min-price').value,
+        max_price: document.getElementById('prod-max-price').value
       };
-      
-      // Remove empty filters
-      Object.keys(filters).forEach(key => !filters[key] && delete filters[key]);
-      
+
+      Object.keys(filters).forEach(key => {
+        if (!filters[key] && filters[key] !== 0) {
+          delete filters[key];
+        }
+      });
+
       try {
         const result = await api.getProducts(filters);
         showResult('products-result', result);
@@ -482,9 +652,21 @@
 
     async function testSearchProducts() {
       const query = document.getElementById('search-query').value;
-      
+      const filters = {
+        category: document.getElementById('search-category').value,
+        brand: document.getElementById('search-brand').value,
+        min_price: document.getElementById('search-min-price').value,
+        max_price: document.getElementById('search-max-price').value
+      };
+
+      Object.keys(filters).forEach(key => {
+        if (!filters[key] && filters[key] !== 0) {
+          delete filters[key];
+        }
+      });
+
       try {
-        const result = await api.searchProducts(query);
+        const result = await api.searchProducts(query, filters);
         showResult('search-result', result);
       } catch (error) {
         showResult('search-result', { error: error.message }, true);
@@ -492,8 +674,16 @@
     }
 
     async function testGetDeals() {
+      const limit = document.getElementById('deals-limit').value;
+      const minDiscount = document.getElementById('deals-min-discount').value;
+
       try {
-        const result = await api.getDeals(10);
+        const parsedLimit = parseInt(limit, 10);
+        const parsedDiscount = parseInt(minDiscount, 10);
+        const result = await api.getDeals(
+          Number.isFinite(parsedLimit) ? parsedLimit : 10,
+          Number.isFinite(parsedDiscount) ? parsedDiscount : null
+        );
         showResult('search-result', result);
       } catch (error) {
         showResult('search-result', { error: error.message }, true);
@@ -502,7 +692,7 @@
 
     async function testGetProduct() {
       const id = document.getElementById('product-id').value;
-      
+
       try {
         const result = await api.getProduct(id);
         showResult('search-result', result);
@@ -515,7 +705,7 @@
     async function testGetCart() {
       try {
         const result = await api.getCart();
-        showResult('cart-result', result, !result.success);
+        showResult('cart-result', result);
       } catch (error) {
         showResult('cart-result', { error: error.message }, true);
       }
@@ -524,7 +714,7 @@
     async function testGetCartCount() {
       try {
         const result = await api.getCartCount();
-        showResult('cart-result', result, !result.success);
+        showResult('cart-result', result);
       } catch (error) {
         showResult('cart-result', { error: error.message }, true);
       }
@@ -533,10 +723,10 @@
     async function testAddToCart() {
       const productId = document.getElementById('cart-product-id').value;
       const quantity = document.getElementById('cart-quantity').value;
-      
+
       try {
-        const result = await api.addToCart(parseInt(productId), parseInt(quantity));
-        showResult('cart-ops-result', result, !result.success);
+        const result = await api.addToCart(parseInt(productId, 10), parseInt(quantity, 10));
+        showResult('cart-ops-result', result);
       } catch (error) {
         showResult('cart-ops-result', { error: error.message }, true);
       }
@@ -545,10 +735,10 @@
     async function testUpdateCart() {
       const productId = document.getElementById('cart-product-id').value;
       const quantity = document.getElementById('cart-quantity').value;
-      
+
       try {
-        const result = await api.updateCartItem(parseInt(productId), parseInt(quantity));
-        showResult('cart-ops-result', result, !result.success);
+        const result = await api.updateCartItem(parseInt(productId, 10), parseInt(quantity, 10));
+        showResult('cart-ops-result', result);
       } catch (error) {
         showResult('cart-ops-result', { error: error.message }, true);
       }
@@ -556,10 +746,10 @@
 
     async function testRemoveFromCart() {
       const productId = document.getElementById('cart-product-id').value;
-      
+
       try {
-        const result = await api.removeFromCart(parseInt(productId));
-        showResult('cart-ops-result', result, !result.success);
+        const result = await api.removeFromCart(parseInt(productId, 10));
+        showResult('cart-ops-result', result);
       } catch (error) {
         showResult('cart-ops-result', { error: error.message }, true);
       }
@@ -567,9 +757,13 @@
 
     // Orders Tests
     async function testGetOrders() {
+      const status = document.getElementById('orders-status').value || null;
+      const limit = parseInt(document.getElementById('orders-limit').value, 10);
+      const offset = parseInt(document.getElementById('orders-offset').value, 10);
+
       try {
-        const result = await api.getOrders();
-        showResult('orders-result', result, !result.success);
+        const result = await api.getOrders(status, Number.isFinite(limit) ? limit : 50, Number.isFinite(offset) ? offset : 0);
+        showResult('orders-result', result);
       } catch (error) {
         showResult('orders-result', { error: error.message }, true);
       }
@@ -578,7 +772,7 @@
     async function testCreateOrder() {
       try {
         const result = await api.createOrder();
-        showResult('orders-result', result, !result.success);
+        showResult('orders-result', result);
       } catch (error) {
         showResult('orders-result', { error: error.message }, true);
       }
@@ -587,14 +781,14 @@
     async function testCheckout() {
       const total = document.getElementById('checkout-total').value;
       const paymentMethod = document.getElementById('checkout-payment').value;
-      
+
       try {
         const result = await api.checkout({
           items: [],
           total: parseFloat(total),
           paymentMethod: paymentMethod
         });
-        showResult('checkout-result', result, !result.success);
+        showResult('checkout-result', result);
       } catch (error) {
         showResult('checkout-result', { error: error.message }, true);
       }
@@ -608,10 +802,10 @@
         condition: document.getElementById('tradein-condition').value,
         storage: document.getElementById('tradein-storage').value
       };
-      
+
       try {
         const result = await api.getTradeInEstimate(deviceData);
-        showResult('estimate-result', result, !result.success);
+        showResult('estimate-result', result);
       } catch (error) {
         showResult('estimate-result', { error: error.message }, true);
       }
@@ -620,7 +814,7 @@
     async function testGetBrands() {
       try {
         const result = await api.getTradeinBrands();
-        showResult('estimate-result', result, !result.success);
+        showResult('estimate-result', result);
       } catch (error) {
         showResult('estimate-result', { error: error.message }, true);
       }
@@ -632,10 +826,10 @@
       formData.append('model_text', document.getElementById('pickup-model').value);
       formData.append('condition', document.getElementById('pickup-condition').value);
       formData.append('storage', document.getElementById('pickup-storage').value);
-      
+
       try {
         const result = await api.createPickupRequest(formData);
-        showResult('pickup-result', result, !result.success);
+        showResult('pickup-result', result);
       } catch (error) {
         showResult('pickup-result', { error: error.message }, true);
       }
@@ -644,9 +838,21 @@
     async function testGetMyPickups() {
       try {
         const result = await api.getMyPickups();
-        showResult('pickup-result', result, !result.success);
+        showResult('pickup-result', result);
       } catch (error) {
         showResult('pickup-result', { error: error.message }, true);
+      }
+    }
+
+    async function testRespondToOffer() {
+      const pickupId = document.getElementById('respond-pickup-id').value;
+      const action = document.getElementById('respond-action').value;
+
+      try {
+        const result = await api.respondToOffer(pickupId, action);
+        showResult('respond-result', result);
+      } catch (error) {
+        showResult('respond-result', { error: error.message }, true);
       }
     }
 
@@ -654,7 +860,7 @@
     async function testGetLocations() {
       try {
         const result = await api.getLocations();
-        showResult('locations-result', result, !result.success);
+        showResult('locations-result', result);
       } catch (error) {
         showResult('locations-result', { error: error.message }, true);
       }
@@ -662,16 +868,94 @@
 
     async function testGetLocation() {
       const id = document.getElementById('location-id').value;
-      
+
       try {
         const result = await api.getLocation(id);
-        showResult('locations-result', result, !result.success);
+        showResult('locations-result', result);
       } catch (error) {
         showResult('locations-result', { error: error.message }, true);
       }
     }
 
-    // Initialize on load
+    // Addresses Tests
+    async function testGetAddresses() {
+      try {
+        const result = await api.getAddresses();
+        showResult('addresses-result', result);
+      } catch (error) {
+        showResult('addresses-result', { error: error.message }, true);
+      }
+    }
+
+    function buildAddressPayload() {
+      const isDefaultRaw = document.getElementById('address-default').value;
+      const isDefault = isDefaultRaw === '' ? undefined : isDefaultRaw === 'true';
+
+      const payload = {
+        full_name: document.getElementById('address-full-name').value,
+        phone_number: document.getElementById('address-phone').value,
+        address_line1: document.getElementById('address-line1').value,
+        address_line2: document.getElementById('address-line2').value,
+        city: document.getElementById('address-city').value,
+        state: document.getElementById('address-state').value,
+        postal_code: document.getElementById('address-postal').value,
+        country: document.getElementById('address-country').value,
+        is_default: isDefault
+      };
+
+      Object.keys(payload).forEach(key => {
+        if (payload[key] === '' || payload[key] === undefined) {
+          delete payload[key];
+        }
+      });
+
+      return payload;
+    }
+
+    async function testCreateAddress() {
+      const payload = buildAddressPayload();
+
+      try {
+        const result = await api.createAddress(payload);
+        showResult('addresses-result', result);
+      } catch (error) {
+        showResult('addresses-result', { error: error.message }, true);
+      }
+    }
+
+    async function testUpdateAddress() {
+      const addressId = document.getElementById('address-id').value;
+      const payload = buildAddressPayload();
+
+      if (!addressId) {
+        showResult('addresses-result', { error: 'Address ID required for update' }, true);
+        return;
+      }
+
+      try {
+        const result = await api.updateAddress(addressId, payload);
+        showResult('addresses-result', result);
+      } catch (error) {
+        showResult('addresses-result', { error: error.message }, true);
+      }
+    }
+
+    async function testDeleteAddress() {
+      const addressId = document.getElementById('address-id').value;
+
+      if (!addressId) {
+        showResult('addresses-result', { error: 'Address ID required for delete' }, true);
+        return;
+      }
+
+      try {
+        const result = await api.deleteAddress(addressId);
+        showResult('addresses-result', result);
+      } catch (error) {
+        showResult('addresses-result', { error: error.message }, true);
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
