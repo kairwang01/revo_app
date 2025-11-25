@@ -14,8 +14,16 @@ Static, multi-page storefront + trade-in experience for Apple and Samsung hardwa
 - **HTML**: Semantic, multi-page structure with inline SVG sprites for icons and dedicated HTML per flow (no SPA router).
 - **CSS**: Token-driven design system (brand palette, spacing/radius scales, typography stack), mobile-first layout utilities, reusable buttons/cards/forms, and page-specific overrides. Light + airy aesthetic with gradients on hero/payment screens.
 - **JavaScript**: Plain ES modules and globals. `fetch`-based API client with JSON parsing and graceful error dispatch (`revo:api-error` event). LocalStorage-backed state for city, cart, auth, wallet, preferences, and offline order history.
-- **City + tax logic**: `geo.js` houses supported cities, tax rates, nearest-city detection (Haversine), `setCity`/`getCity`, and emits `revo:cityChanged`. `storage.js` exposes a `getTaxRate` helper that reads `revo_city_tax`.
+- **City + tax logic**: `geo.js` houses supported cities, tax rates, nearest-city detection (Haversine), `setCity`/`getCity`, and emits both `revo:cityChanged` (document) and `revo:city-changed` (window) for module/inline listeners. `storage.js` exposes a `getTaxRate` helper that reads `revo_city_tax`.
 - **UI utilities**: `ui.js` (money formatting, toasts, dropdown/search helpers), `main.js` (auto backend health check, active tab highlighting, cart badge sync), `storage.js` (auth/cart/user/wallet stores with events).
+
+## How it works (high level)
+- Load any HTML from `/public` in a browser (served via simple static server). Scripts are plain `<script>` tags; order matters: `storage.js` → `config.js` → `backendApi.js` → `api.js` → `ui.js` → page script → `main.js` (when present).
+- On first load, `storage.js` seeds defaults (city, empty cart) and exposes LocalStorage-backed stores. `geo.js` tries to detect the nearest city; if blocked, it emits `revo:cityChanged`/`revo:city-changed` so pages know to show the manual picker (`choose-city.html`).
+- `main.js` runs a backend health check (`CONFIG.FEATURES.AUTO_INIT`), highlights the current tab, and wires cart badge updates via `revo:cart-changed`.
+- Page controllers in `assets/js/pages/*.js` call the `api` facade, which delegates to `backendApi` (uses `CONFIG.BACKEND_URL` + `/api`). Failed requests emit `revo:api-error`; cart/auth/city changes emit their own events for cross-page updates.
+- Checkout happy path: cart → `checkout.html` (requires auth) → collects address/shipping → calls `api.checkout` → redirects to `fake-payment.php?amount=&orderId=` → fake gateway sets `lastOrder*` + address in LocalStorage → `payment-success.html` marks the local order paid, clears cart, and shows confirmation.
+- Trade-in path: `sell.html` pulls brands/models, calculates estimate, collects photos/condition, creates a pickup via `api.createPickupRequest`, then surfaces the “sell” order in `orders.html` and `order-tracking.html`.
 
 ## Runtime architecture
 - **Configuration** (`assets/js/config.js`): `CONFIG.BACKEND_URL`, `API_PREFIX`, feature flags (`USE_BACKEND`, `AUTO_INIT`, `DEBUG_MODE`), and timeouts. Exposed globally as `window.REVO_CONFIG`.
@@ -30,7 +38,7 @@ Static, multi-page storefront + trade-in experience for Apple and Samsung hardwa
 - **Product detail (`product-detail.html`, `pages/product-detail.js`)**: Loads a product by `id` query param, renders dynamic badges/flags/options, toggles shipping mode (regular vs fast), shows popular products carousel, and syncs cart both locally and remotely on add/buy.
 - **Cart (`cart.html`, `pages/cart.js`)**: Pure LocalStorage cart with quantity updates/removal, city-based tax calculation, and checkout gating.
 - **Checkout (`checkout.html`, `pages/checkout.js`)**: Auth-only (redirects to login with `return` param). Manages shipping option persistence, local/remote address book (falls back to LocalStorage when the backend is unavailable), validates addresses, computes totals (tax + shipping), calls `api.checkout`, saves offline order snapshots, and redirects to the fake payment gateway.
-- **Fake payment + success (`fake-payment.php`, `payment-success.html`)**: Simulated processor that echoes query params, shows locked card UI, and redirects to `payment-success.html` which finalizes local order state and clears the cart.
+- **Fake payment + success (`fake-payment.php`, `payment-success.html`)**: Simulated processor that echoes query params (`amount`, `orderId`, optional `method`), hydrates shipping from `lastCheckoutAddress` in LocalStorage, shows a locked card UI, then redirects to `payment-success.html` which marks local orders paid, clears the cart, and animates a success state.
 - **Auth (`login.html`, `pages/login.js`; `register.html`, `pages/register.js`)**: OAuth2 password login and registration; tokens persisted to LocalStorage. Supports `?return=` redirect.
 - **Account (`account.html`, `pages/account.js`)**: Ensures session validity, caches current user, shows wallet balance, order counts, and logout (clears auth + redirects home).
 - **Orders (`orders.html`, `pages/orders.js`)**: Merges remote purchase orders (`api.getOrders`) with trade-in pickups (`api.getMyPickups`) and offline snapshots. Filter tabs for buy/sell/all. Each card links to tracking.
@@ -65,6 +73,7 @@ python -m http.server 8000   # or `npx http-server -p 8000`, `php -S 127.0.0.1:8
 ```
 - Update `public/assets/js/config.js` to point at your backend. `CONFIG.FEATURES.AUTO_INIT` pings `/api/health` on load; disable if you’re offline.
 - For quick contract checks, open `api-test.html` and run through auth/products/cart flows.
+- Geolocation (`geo.js`) only works on `https://` or `http://localhost`; if blocked, users are redirected to `choose-city.html` to pick manually.
 
 ## Manual test checklist
 - City switch + tax recalc: change city (header dropdown or Settings) and verify cart/checkout totals update.
