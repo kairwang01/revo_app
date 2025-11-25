@@ -1,5 +1,6 @@
 // Sell/Trade-in Page Logic
 
+// four conditions based on which we calculate trade-in value
 const CONDITION_MAP = {
   excellent: 'A',
   good: 'B',
@@ -8,7 +9,7 @@ const CONDITION_MAP = {
 };
 
 const TRADEIN_DEPOSIT_AMOUNT = 29;
-const DEFAULT_PICKUP_ADDRESS = 'University of Ottawa';
+const DEFAULT_PICKUP_ADDRESS = 'University of Ottawa'; //contact kair if you want to change this :)
 
 let lastFormValues = null;
 
