@@ -1,4 +1,5 @@
 // Account page functionality
+// wallets and profile bits live here, say hi
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!authStore.isAuthenticated()) {

@@ -1,3 +1,4 @@
+// settings brain dump incoming, sorry future me
 import { REVO_CITIES, setCity, getCity, nearestCity } from '../geo.js';
 
 const PREFERENCES_KEY = 'revo_preferences';

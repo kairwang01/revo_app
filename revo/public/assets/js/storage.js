@@ -1,4 +1,5 @@
 // Storage utility for managing localStorage
+// where data naps, try not to wake it loudly
 const STORAGE_KEYS = {
   CITY: 'revo_city',
   AUTH: 'revo_auth',

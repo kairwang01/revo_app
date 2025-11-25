@@ -1,4 +1,5 @@
 // Cart page functionality
+// shopping gremlins count stuff here
 
 const cartDom = {
   items: null,

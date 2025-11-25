@@ -1,4 +1,5 @@
 // Register page functionality
+// welcome wagon, now with extra paperwork
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('register-form');

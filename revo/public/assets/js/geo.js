@@ -1,5 +1,6 @@
 // assets/js/geo.js
 // City geofencing + selection (local only)
+// cartographers with caffeine wrote this
 
 // Haversine distance in km
 function haversine(a, b) {

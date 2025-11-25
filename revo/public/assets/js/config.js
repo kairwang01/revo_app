@@ -2,6 +2,7 @@
  * Configuration file for Revo Frontend
  * Update BACKEND_URL to match your backend deployment
  */
+// config vibes: change with care, hydrate often
 
 const CONFIG = {
   // Backend API URL

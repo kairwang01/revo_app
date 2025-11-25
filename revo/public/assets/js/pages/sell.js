@@ -1,4 +1,5 @@
 // Sell/Trade-in Page Logic
+// where gadgets get second chances, big yay
 
 // four conditions based on which we calculate trade-in value
 const CONDITION_MAP = {

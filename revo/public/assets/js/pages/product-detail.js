@@ -1,4 +1,5 @@
 // Product detail page functionality
+// gadgets showing off here, no fingerprints pls
 
 let currentProduct = null;
 const DEFAULT_SHIPPING_MODE = 'regular';

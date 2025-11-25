@@ -1,4 +1,4 @@
-/* Layout structure */
+/* Layout structure - lines and boxes behaving (mostly) */
 .container {
   width: 100%;
   max-width: 1200px;

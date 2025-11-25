@@ -1,4 +1,5 @@
 // UI utility functions
+// lil bag of tricks, handle with mild optimism
 
 // Format money
 function formatMoney(amount, currency = 'CAD') {

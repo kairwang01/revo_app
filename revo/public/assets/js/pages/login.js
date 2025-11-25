@@ -1,4 +1,5 @@
 // Login page functionality
+// passwords go brr, keep them secret ok
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('login-form');

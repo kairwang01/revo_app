@@ -1,4 +1,5 @@
 // Products page functionality
+// endless scrolling buffet, bring snacks
 
 let allProducts = [];
 let filteredProducts = [];

@@ -1,4 +1,5 @@
 // Main application initialization
+// hi, this file ties loose ends together, like duct tape but nicer
 
 // Initialize common UI elements
 document.addEventListener('DOMContentLoaded', () => {

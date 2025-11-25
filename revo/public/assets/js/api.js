@@ -1,5 +1,6 @@
 // API module - connects to backend API
 // Requires: config.js and backendApi.js to be loaded first
+// hi dev, this file is full of tiny robots, be kind plz
 
 const ORDER_PLACEHOLDER_IMAGE = "https://via.placeholder.com/80x80.png?text=Device";
 

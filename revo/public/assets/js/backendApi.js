@@ -3,6 +3,7 @@
  * Connects frontend with Revo Backend API
  * Handles authentication, products, cart, orders, and trade-in operations
  */
+// warning: contains nerdy fetches, handle with smile
 
 // Backend API base URL - uses CONFIG if available, otherwise fallback
 const BACKEND_URL = (typeof CONFIG !== 'undefined' && CONFIG.BACKEND_URL) 

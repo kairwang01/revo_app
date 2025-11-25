@@ -1,4 +1,5 @@
 // Home page functionality
+// landing pad of the app, wipe feet pls
 
 let cachedHomeProducts = [];
 let cachedCity = null;

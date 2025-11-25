@@ -1,4 +1,5 @@
 // Checkout page functionality
+// shipping choices live here, hope they behave
 const SHIPPING_STORAGE_KEY = 'revo-shipping-mode';
 const SHIPPING_CHOICES = {
   regular: {

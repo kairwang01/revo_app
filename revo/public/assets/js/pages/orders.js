@@ -1,4 +1,5 @@
 // Orders page functionality
+// pile of receipts lives here, comfy
 
 let allOrders = [];
 let activeFilter = 'all';
