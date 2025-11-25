@@ -205,6 +205,16 @@
   padding: var(--space-2) 0 var(--space-10);
 }
 
+.settings-note {
+  margin: 0 var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--brand-300, #a7f3d0);
+  background: linear-gradient(135deg, rgba(67, 205, 128, 0.12), rgba(34, 179, 122, 0.08));
+  color: var(--text-strong);
+  font-size: var(--font-size-sm);
+}
+
 .settings-section {
   background: var(--surface);
   border-radius: var(--radius-lg);

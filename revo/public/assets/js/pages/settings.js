@@ -2,6 +2,7 @@ import { REVO_CITIES, setCity, getCity, nearestCity } from '../geo.js';
 
 const PREFERENCES_KEY = 'revo_preferences';
 const LOCAL_ADDRESS_STORAGE_KEY = 'revo-addresses';
+const LOCAL_ORDER_STORAGE_KEY = 'revo_orders_local';
 const SESSION_KEYS = [
   'revo_auth',
   'authToken',
@@ -11,7 +12,8 @@ const SESSION_KEYS = [
   'revo_preferences',
   'revo_city',
   'revo_city_tax',
-  LOCAL_ADDRESS_STORAGE_KEY
+  LOCAL_ADDRESS_STORAGE_KEY,
+  LOCAL_ORDER_STORAGE_KEY
 ];
 
 const DEFAULT_PREFERENCES = {
@@ -29,6 +31,8 @@ let citySelect = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   citySelect = document.getElementById('city-select');
+  // Ensure defaults are persisted so toggles stay in sync across visits.
+  savePreferences(preferences);
   renderCityOptions();
   initNotificationToggles();
   updateLocalDataSummary();
@@ -45,6 +49,18 @@ window.addEventListener('revo:city-changed', (event) => {
   const nextCity = event?.detail || getActiveCity();
   updateCityDisplay(nextCity);
   updateLocalDataSummary();
+});
+
+window.addEventListener('revo:cart-changed', updateLocalDataSummary);
+window.addEventListener('revo:auth-changed', updateLocalDataSummary);
+window.addEventListener('storage', (event) => {
+  if (!event.key) {
+    return;
+  }
+  const isRevoKey = event.key.startsWith('revo') || event.key === 'authToken';
+  if (isRevoKey) {
+    updateLocalDataSummary();
+  }
 });
 
 function bindActions() {
@@ -208,6 +224,11 @@ function updateLocalDataSummary() {
     authNode.textContent = hasAuthSession() ? 'Signed in' : 'Guest';
   }
 
+  const orderNode = document.getElementById('settings-order-count');
+  if (orderNode) {
+    orderNode.textContent = getOrderSnapshotCount();
+  }
+
   const storageNode = document.getElementById('settings-storage-count');
   if (storageNode) {
     storageNode.textContent = formatStoredKeyCount();
@@ -270,6 +291,20 @@ function getAddressCount() {
     return Array.isArray(addresses) ? addresses.length : 0;
   } catch (error) {
     console.warn('Failed to parse addresses:', error);
+    return 0;
+  }
+}
+
+function getOrderSnapshotCount() {
+  try {
+    const raw = localStorage.getItem(LOCAL_ORDER_STORAGE_KEY);
+    if (!raw) {
+      return 0;
+    }
+    const orders = JSON.parse(raw);
+    return Array.isArray(orders) ? orders.length : 0;
+  } catch (error) {
+    console.warn('Failed to parse orders:', error);
     return 0;
   }
 }
