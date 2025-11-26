@@ -39,7 +39,6 @@ export function setCity(cityKey) {
   
   // Dispatch event for other components
   window.dispatchEvent(new CustomEvent("revo:city-changed", { detail: city }));
-  document.dispatchEvent(new CustomEvent("revo:cityChanged", { detail: city }));
   
   return city;
 }
@@ -58,7 +57,7 @@ export function getCityTax(cityKey) {
 export function initCitySelection() {
   const saved = getCity();
   if (saved) {
-    document.dispatchEvent(new CustomEvent("revo:cityChanged", { detail: saved }));
+    window.dispatchEvent(new CustomEvent("revo:city-changed", { detail: saved }));
     return Promise.resolve(saved);
   }
   

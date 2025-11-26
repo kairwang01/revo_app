@@ -1,4 +1,4 @@
-// settings brain dump incoming, sorry future me
+// settings
 import { REVO_CITIES, setCity, getCity, nearestCity } from '../geo.js';
 
 const PREFERENCES_KEY = 'revo_preferences';
@@ -40,14 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
   bindActions();
 });
 
-document.addEventListener('revo:cityChanged', (event) => {
-  const nextCity = event?.detail || getActiveCity();
-  updateCityDisplay(nextCity);
-  updateLocalDataSummary();
-});
-
 window.addEventListener('revo:city-changed', (event) => {
-  const nextCity = event?.detail || getActiveCity();
+  const nextCity = resolveCityInput(event?.detail);
   updateCityDisplay(nextCity);
   updateLocalDataSummary();
 });
@@ -113,6 +107,33 @@ function getActiveCity() {
   return getCity() || REVO_CITIES[0] || null;
 }
 
+function resolveCityInput(input) {
+  if (!input) {
+    return getActiveCity();
+  }
+
+  if (typeof input === 'string') {
+    return REVO_CITIES.find(city => city.key === input || city.name === input) || getActiveCity();
+  }
+
+  if (input && typeof input === 'object') {
+    const key = input.key || input.name;
+    if (key) {
+      const match = REVO_CITIES.find(city => city.key === key || city.name === key);
+      if (match) {
+        return { ...match, ...input };
+      }
+      return {
+        key,
+        name: input.name || key,
+        tax: input.tax
+      };
+    }
+  }
+
+  return getActiveCity();
+}
+
 async function handleUseCurrentLocation(event) {
   const button = event.currentTarget;
   setButtonBusy(button, true, 'Locating…');
@@ -156,7 +177,7 @@ function locateCityByGPS() {
 function updateCityDisplay(city = null) {
   const label = document.getElementById('active-city-label');
   const taxLabel = document.getElementById('city-tax-label');
-  const active = city || getActiveCity();
+  const active = resolveCityInput(city);
 
   if (citySelect && active) {
     citySelect.value = active.key;

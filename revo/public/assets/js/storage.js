@@ -1,5 +1,5 @@
 // Storage utility for managing localStorage
-// where data naps, try not to wake it loudly
+// where data takin naps
 const STORAGE_KEYS = {
   CITY: 'revo_city',
   AUTH: 'revo_auth',
@@ -9,12 +9,36 @@ const STORAGE_KEYS = {
   ORDERS: 'revo_orders_local'
 };
 
+const DEFAULT_CITY = 'Ottawa';
+const DEFAULT_TAX_RATES = {
+  Vancouver: 0.12,
+  Edmonton: 0.05,
+  Ottawa: 0.13,
+  Toronto: 0.13,
+  Montreal: 0.14
+};
+
 // City storage
 const cityStore = {
-  get: () => localStorage.getItem(STORAGE_KEYS.CITY) || 'Vancouver',
+  get: () => localStorage.getItem(STORAGE_KEYS.CITY) || DEFAULT_CITY,
   set: (city) => {
-    localStorage.setItem(STORAGE_KEYS.CITY, city);
-    window.dispatchEvent(new CustomEvent('revo:city-changed', { detail: city }));
+    const cityKey = city || DEFAULT_CITY;
+    const taxRate = lookupTaxRate(cityKey);
+
+    localStorage.setItem(STORAGE_KEYS.CITY, cityKey);
+    if (Number.isFinite(taxRate)) {
+      localStorage.setItem('revo_city_tax', String(taxRate));
+    } else {
+      localStorage.removeItem('revo_city_tax');
+    }
+
+    window.dispatchEvent(new CustomEvent('revo:city-changed', {
+      detail: {
+        key: cityKey,
+        name: cityKey,
+        tax: taxRate
+      }
+    }));
   }
 };
 
@@ -222,27 +246,27 @@ function matchOrderReference(order, reference) {
 
 // Tax rates by city - now handled by geo.js
 function getTaxRate(city) {
-  // First check localStorage for tax rate set by geo.js
-  const taxFromStorage = localStorage.getItem("revo_city_tax");
-  if (taxFromStorage) {
-    return parseFloat(taxFromStorage);
+  const cityKey = city || localStorage.getItem(STORAGE_KEYS.CITY) || DEFAULT_CITY;
+  const storedCity = localStorage.getItem(STORAGE_KEYS.CITY);
+  const taxFromStorage = parseFloat(localStorage.getItem('revo_city_tax'));
+
+  if (storedCity && storedCity === cityKey && Number.isFinite(taxFromStorage)) {
+    return taxFromStorage;
   }
-  
-  // Fallback tax rates
-  const TAX_RATES = {
-    'Vancouver': 0.12,
-    'Edmonton': 0.05,
-    'Ottawa': 0.13,
-    'Toronto': 0.13,
-    'Montreal': 0.14975
-  };
-  
-  return TAX_RATES[city] || 0.12;
+
+  return lookupTaxRate(cityKey);
+}
+
+function lookupTaxRate(cityKey) {
+  if (cityKey && Object.prototype.hasOwnProperty.call(DEFAULT_TAX_RATES, cityKey)) {
+    return DEFAULT_TAX_RATES[cityKey];
+  }
+  return DEFAULT_TAX_RATES[DEFAULT_CITY];
 }
 
 // Initialize default values
 if (!localStorage.getItem(STORAGE_KEYS.CITY)) {
-  cityStore.set('Vancouver');
+  cityStore.set(DEFAULT_CITY);
 }
 
 if (!localStorage.getItem(STORAGE_KEYS.CART)) {

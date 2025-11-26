@@ -223,7 +223,8 @@
     }
 
     // Listen for city changes
-    document.addEventListener("revo:cityChanged", renderCity);
+    // listen for city updates from anywhere
+    window.addEventListener("revo:city-changed", renderCity);
 
     // On first load try to auto-select; if not, go to Choose City
     initCitySelection().then(city => {
