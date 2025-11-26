@@ -265,6 +265,49 @@
   margin-bottom: var(--space-4);
 }
 
+.account-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.account-footer-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-strong);
+  margin: 0;
+}
+
+.account-footer p {
+  margin: 0;
+}
+
+.account-team-list {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--muted);
+}
+
+.account-team-list strong {
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.account-footer-copy {
+  font-size: var(--font-size-sm);
+  color: var(--muted);
+}
+
+@media (min-width: 640px) {
+  .account-team-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* Settings Page */
 .settings-header {
   display: flex;

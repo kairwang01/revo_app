@@ -127,10 +127,10 @@
             <span>Refer a Friend</span>
             <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
           </a>
-          <a href="#" class="list-item">
+          <button type="button" class="list-item" id="about-revo-trigger">
             <span>About Revo</span>
             <svg width="20" height="20"><use href="#icon-chevron-right"></use></svg>
-          </a>
+          </button>
         </div>
       </section>
 
@@ -142,6 +142,31 @@
       </section>
     </div>
   </main>
+
+  <!-- About Revo Modal -->
+  <div class="modal-overlay hidden" id="about-modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 class="account-footer-title" style="margin: 0;">About Revo</h3>
+        <button class="icon-btn" id="about-modal-close" aria-label="Close about modal">×</button>
+      </header>
+      <div class="modal-body account-footer">
+        <div class="chip">GNG 5300 · Group 1</div>
+        <p>Revo is a course product built for GNG 5300, focused on sustainable device trade-ins and resale.</p>
+        <ul class="account-team-list">
+          <li><strong>Kair Wang</strong> · Front-end</li>
+          <li><strong>Jingxuan Xu</strong> · Backend</li>
+          <li><strong>Yifei Yu</strong> · Group Leader</li>
+          <li><strong>Abrar Habib Haque</strong> · Database, ChatBot Designer</li>
+          <li><strong>Yunsong Zhang</strong> · UI Designer</li>
+        </ul>
+        <p class="account-footer-copy">Copyright © GNG 5300 Group 1. All rights reserved.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="about-modal-close-secondary">Close</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Bottom Navigation -->
   <nav class="bottom-tabbar">

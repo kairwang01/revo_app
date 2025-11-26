@@ -2,6 +2,8 @@
 // wallets and profile bits live here, say hi
 
 document.addEventListener('DOMContentLoaded', async () => {
+  setupAboutModal();
+
   if (!authStore.isAuthenticated()) {
     redirectToLogin();
     return;
@@ -108,4 +110,48 @@ async function handleLogout() {
       window.location.href = './index.html';
     }, 500);
   }
+}
+
+function setupAboutModal() {
+  const trigger = document.getElementById('about-revo-trigger');
+  const modal = document.getElementById('about-modal');
+  const closeButtons = [
+    document.getElementById('about-modal-close'),
+    document.getElementById('about-modal-close-secondary')
+  ];
+
+  if (!trigger || !modal) return;
+
+  const openModal = () => {
+    modal.classList.remove('hidden');
+    modal.setAttribute('aria-hidden', 'false');
+  };
+
+  const closeModal = () => {
+    modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
+  };
+
+  trigger.addEventListener('click', (event) => {
+    event.preventDefault();
+    openModal();
+  });
+
+  closeButtons.forEach(btn => {
+    if (btn) {
+      btn.addEventListener('click', closeModal);
+    }
+  });
+
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+      closeModal();
+    }
+  });
 }
