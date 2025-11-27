@@ -607,14 +607,27 @@ class BackendAPI {
    */
   async getTradeInEstimate(deviceData) {
     try {
-      const data = await this._request('/tradein/estimate', {
+      const response = await this._request('/tradein/estimate', {
         method: 'POST',
         body: JSON.stringify(deviceData)
       });
-      
+
+      const success = response?.success !== false;
+      const payload = response && typeof response === 'object' && 'data' in response
+        ? response.data
+        : response;
+
+      if (!success) {
+        return {
+          success: false,
+          error: response?.error || 'Failed to get estimate'
+        };
+      }
+
       return {
         success: true,
-        data
+        data: payload,
+        message: response?.message
       };
     } catch (error) {
       return {

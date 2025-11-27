@@ -400,5 +400,6 @@
       }
     }
   </script>
+  <script src="./assets/js/support.js"></script>
 </body>
 </html>

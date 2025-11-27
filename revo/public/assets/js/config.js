@@ -8,6 +8,9 @@ const CONFIG = {
   // Backend API URL
   BACKEND_URL: 'https://revo-backend-o03w.onrender.com/',
   
+  // Optional customer support endpoint (kept null until wired)
+  SUPPORT_API_URL: null,
+  
   // API endpoints
   API_PREFIX: '/api',
   
@@ -21,7 +24,8 @@ const CONFIG = {
   // Timeouts (in milliseconds)
   TIMEOUTS: {
     HEALTH_CHECK: 3000,
-    API_REQUEST: 10000
+    API_REQUEST: 10000,
+    SUPPORT_REQUEST: 8000
   },
   
   // Get full API URL
