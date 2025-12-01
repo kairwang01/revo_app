@@ -404,7 +404,7 @@
         <p class="support-hint" data-support-hint>We will surface live chat or ticketing here once the API is wired.</p>
         <div class="support-actions">
           <button class="support-action primary" type="button" data-support-retry>Retry connection</button>
-          <a class="support-action" href="mailto:support@revo.market" data-support-email>Email us</a>
+          <a class="support-action" href="mailto:bwang105@uottawa.ca" data-support-email>Email us</a>
         </div>
       </div>
     `;
