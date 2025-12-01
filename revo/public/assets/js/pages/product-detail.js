@@ -2,6 +2,8 @@
 // gadgets showing off here, no fingerprints pls
 
 let currentProduct = null;
+let galleryImages = [];
+let activeGalleryIndex = 0;
 const DEFAULT_SHIPPING_MODE = 'regular';
 const SHIPPING_STORAGE_KEY = 'revo-shipping-mode';
 const POPULAR_PRODUCTS_LIMIT = 6;
@@ -73,6 +75,20 @@ const OPTION_PATHS = {
   ]
 };
 
+const PURCHASE_CHANNEL_PATHS = [
+  ['purchaseChannel'],
+  ['purchase_channel'],
+  ['purchase', 'channel'],
+  ['channel'],
+  ['origin'],
+  ['originCountry'],
+  ['origin_country'],
+  ['market'],
+  ['region'],
+  ['source'],
+  ['sourcing', 'channel']
+];
+
 document.addEventListener('DOMContentLoaded', async () => {
   const params = getUrlParams();
   const productId = params.id;
@@ -83,6 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   setupShippingSelector();
+  setupGalleryTools();
   await loadProduct(productId);
   setupAddToCart(productId);
 });
@@ -106,28 +123,9 @@ async function loadProduct(productId) {
     toggleElement(loading, false);
     toggleElement(content, true);
 
+    setupGallery(product);
+
     // Populate product data
-    const productImage = document.getElementById('product-image');
-    const placeholder = document.querySelector('.pd-placeholder');
-    
-    productImage.src = product.image;
-    productImage.alt = product.name;
-    
-    //hide placeholder when image loads
-    productImage.onload = function() {
-      if (placeholder) {
-        placeholder.style.display = 'none';
-      }
-      productImage.style.display = 'block';
-    };
-    
-    // Show placeholder if image fails to load
-    productImage.onerror = function() {
-      if (placeholder) {
-        placeholder.style.display = 'flex';
-      }
-      productImage.style.display = 'none';
-    };
     setTextContentById('product-brand', product.brand);
     setTextContentById('product-condition', product.condition);
     setTextContentById('product-name', product.name);
@@ -139,6 +137,7 @@ async function loadProduct(productId) {
     setTextContentById('product-location', product.location);
     updateProductBadge(product);
     renderProductFlags(product);
+    updatePurchaseChannel(product);
     const priceValue = Number(product.price) || 0;
     const originalValue = Number(product.originalPrice);
 
@@ -181,6 +180,195 @@ async function loadProduct(productId) {
     console.error('Error loading product:', error);
     showError();
   }
+}
+
+// Build the hero gallery from any available media fields and make it clickable when multiple images exist
+function setupGallery(product = {}) {
+  const stage = document.querySelector('.pd-gallery-stage');
+  const productImage = document.getElementById('product-image');
+  const placeholder = document.querySelector('.pd-placeholder');
+
+  galleryImages = normalizeProductImages(product);
+  activeGalleryIndex = 0;
+
+  const hasImages = galleryImages.length > 0;
+  const total = Math.max(galleryImages.length || 0, 1);
+
+  if (productImage) {
+    productImage.onload = () => {
+      if (placeholder) {
+        placeholder.style.display = 'none';
+      }
+      productImage.style.display = 'block';
+    };
+
+    productImage.onerror = () => {
+      if (placeholder) {
+        placeholder.style.display = 'flex';
+      }
+      productImage.style.display = 'none';
+    };
+  }
+
+  if (hasImages) {
+    setGalleryImage(activeGalleryIndex);
+  } else {
+    updateGalleryCounter(1, total);
+  }
+
+  if (stage) {
+    stage.classList.toggle('is-interactive', galleryImages.length > 1);
+    stage.onclick = galleryImages.length > 1
+      ? () => {
+          const nextIndex = (activeGalleryIndex + 1) % galleryImages.length;
+          setGalleryImage(nextIndex);
+        }
+      : null;
+  }
+}
+
+// Wire gallery chips to actions: scroll to specs/details or open a zoomed image
+function setupGalleryTools() {
+  const tools = document.querySelectorAll('.pd-gallery-tool[data-action]');
+  if (!tools.length) {
+    return;
+  }
+
+  const actions = {
+    'quick-specs': () => scrollToSectionById('quick-specs-section'),
+    zoom: () => openCurrentImage(),
+    details: () => scrollToSectionById('product-description', 'report-section')
+  };
+
+  tools.forEach(tool => {
+    const action = tool.dataset.action;
+    const handler = actions[action];
+    if (!handler) {
+      return;
+    }
+
+    tool.addEventListener('click', handler);
+    tool.addEventListener('keypress', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        handler();
+      }
+    });
+  });
+}
+
+function setGalleryImage(index = 0) {
+  if (!galleryImages.length) {
+    updateGalleryCounter(1, 1);
+    return;
+  }
+
+  const productImage = document.getElementById('product-image');
+  const safeIndex = ((index % galleryImages.length) + galleryImages.length) % galleryImages.length;
+  activeGalleryIndex = safeIndex;
+
+  if (productImage) {
+    productImage.src = galleryImages[safeIndex];
+    productImage.alt = formatOptionValue(currentProduct?.name) || 'Product photo';
+  }
+
+  updateGalleryCounter(safeIndex + 1, Math.max(galleryImages.length, 1));
+}
+
+function updateGalleryCounter(current = 1, total = 1) {
+  const counter = document.getElementById('gallery-counter');
+  if (!counter) {
+    return;
+  }
+
+  const safeTotal = Math.max(1, Number(total) || 0);
+  const safeCurrent = Math.min(Math.max(1, Number(current) || 1), safeTotal);
+
+  counter.textContent = `${safeCurrent}/${safeTotal}`;
+}
+
+function scrollToSectionById(id, fallbackId = null) {
+  const target = document.getElementById(id) || (fallbackId ? document.getElementById(fallbackId) : null);
+  if (!target) {
+    return;
+  }
+  const highlightTarget = target.classList.contains('pd-card') ? target : target.closest('.pd-card') || target;
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  highlightElement(highlightTarget);
+}
+
+function highlightElement(element) {
+  if (!element) {
+    return;
+  }
+  element.classList.add('pd-section-highlight');
+  setTimeout(() => element.classList.remove('pd-section-highlight'), 1200);
+}
+
+function openCurrentImage() {
+  const imageEl = document.getElementById('product-image');
+  const src = formatOptionValue(galleryImages[activeGalleryIndex]) || imageEl?.src;
+
+  if (!src) {
+    return;
+  }
+
+  const popup = window.open(src, '_blank', 'noopener');
+  if (!popup && typeof showToast === 'function') {
+    showToast('Opening full-size image blocked. Please allow pop-ups or long-press to open.', 'info');
+  }
+}
+
+// Gather possible image URLs from different backend shapes so the gallery counter reflects reality
+function normalizeProductImages(product = {}) {
+  const candidates = [
+    product.images,
+    product.photos,
+    product.gallery,
+    getValueByPath(product, ['media', 'images']),
+    getValueByPath(product, ['media', 'photos']),
+    getValueByPath(product, ['assets', 'images']),
+    getValueByPath(product, ['assets', 'photos']),
+    getValueByPath(product, ['details', 'images']),
+    getValueByPath(product, ['details', 'photos']),
+    product.image
+  ];
+
+  const unique = [];
+  candidates.forEach(candidate => {
+    extractImageUrls(candidate).forEach(url => {
+      const normalized = formatOptionValue(url);
+      if (normalized && !unique.includes(normalized)) {
+        unique.push(normalized);
+      }
+    });
+  });
+
+  return unique;
+}
+
+// Accept strings, arrays, or objects with url-ish keys and normalize them into a flat list of URLs
+function extractImageUrls(value) {
+  if (!value) {
+    return [];
+  }
+  if (typeof value === 'string') {
+    return [value];
+  }
+  if (Array.isArray(value)) {
+    return value.flatMap(item => extractImageUrls(item));
+  }
+  if (typeof value === 'object') {
+    const possibleKeys = ['url', 'src', 'image', 'href', 'path'];
+    const nested = possibleKeys
+      .map(key => value[key])
+      .filter(Boolean);
+
+    if (nested.length) {
+      return nested.flatMap(item => extractImageUrls(item));
+    }
+  }
+  return [];
 }
 
 function computeDiscountPercent(product) {
@@ -416,6 +604,51 @@ function setTextContentById(id, value, fallback = 'N/A') {
   }
   const text = formatOptionValue(value);
   node.textContent = text || fallback;
+}
+
+function updatePurchaseChannel(product = {}) {
+  const purchaseChannel = derivePurchaseChannel(product);
+  setTextContentById('product-purchase-channel', purchaseChannel, 'Canada');
+}
+
+// Prefer explicit purchase channel; otherwise infer Canada based on location/availability
+function derivePurchaseChannel(product = {}) {
+  const directValue = getOptionValue(product, PURCHASE_CHANNEL_PATHS);
+  if (directValue) {
+    return directValue;
+  }
+
+  const locationValue = detectCanadianOrigin(product.location);
+  if (locationValue) {
+    return locationValue;
+  }
+
+  const availabilityValue = detectCanadianOrigin(product.cityAvailability);
+  if (availabilityValue) {
+    return availabilityValue;
+  }
+
+  const countryValue = formatOptionValue(product.country || product.countryOfOrigin);
+  if (countryValue) {
+    return countryValue;
+  }
+
+  return 'Canada';
+}
+
+// Lightweight matcher that treats any Canadian city/marker as a Canada origin
+function detectCanadianOrigin(value) {
+  const normalized = Array.isArray(value)
+    ? value.map(entry => formatOptionValue(entry)).filter(Boolean).join(' ')
+    : formatOptionValue(value);
+
+  if (!normalized) {
+    return null;
+  }
+
+  const markers = ['canada', 'ottawa', 'vancouver', 'edmonton', 'toronto', 'montreal', 'calgary', 'quebec'];
+  const text = normalized.toLowerCase();
+  return markers.some(marker => text.includes(marker)) ? 'Canada' : null;
 }
 
 function updateProductBadge(product = {}) {

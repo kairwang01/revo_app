@@ -125,6 +125,15 @@
       padding-bottom: 100%;
       overflow: hidden;
     }
+    
+    .pd-gallery-stage.is-interactive {
+      cursor: pointer;
+    }
+
+    .pd-section-highlight {
+      box-shadow: 0 0 0 3px rgba(67, 205, 128, 0.3);
+      transition: box-shadow 0.4s ease;
+    }
 
     .pd-gallery-image {
       position: absolute;
@@ -163,6 +172,8 @@
       border-radius: var(--radius-pill);
       font-size: var(--font-size-xs);
       color: var(--muted);
+      cursor: pointer;
+      user-select: none;
     }
 
     .pd-price-card .pd-price-label {
@@ -676,7 +687,7 @@
       <!-- Image Gallery -->
       <section class="pd-card pd-gallery-card">
         <div class="pd-gallery-meta">
-          <span>Real Photos <strong>1/10</strong></span>
+          <span>Real Photos <strong id="gallery-counter">1/10</strong></span>
           <span>Studio lighting • 4K detail</span>
         </div>
         <div class="pd-gallery-stage">
@@ -689,19 +700,19 @@
           </div>
         </div>
         <div class="pd-gallery-tools">
-          <span class="pd-gallery-tool">
+          <span class="pd-gallery-tool" data-action="quick-specs" role="button" tabindex="0">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M4 7h16M4 12h10M4 17h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
             Quick Specs
           </span>
-          <span class="pd-gallery-tool">
+          <span class="pd-gallery-tool" data-action="zoom" role="button" tabindex="0">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
             Zoom
           </span>
-          <span class="pd-gallery-tool">
+          <span class="pd-gallery-tool" data-action="details" role="button" tabindex="0">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M7 7h10v10H7z" stroke="currentColor" stroke-width="1.5"/>
             </svg>
@@ -891,7 +902,7 @@
       </section>
 
       <!-- Specifications -->
-      <section class="pd-card">
+      <section class="pd-card" id="quick-specs-section">
         <div class="pd-section-title">Specifications</div>
         <div class="pd-spec-grid">
           <div class="pd-spec-item">
@@ -1052,7 +1063,7 @@
       </section>
 
       <!-- Official Inspection Report -->
-      <section class="pd-card">
+      <section class="pd-card" id="report-section">
         <div class="pd-section-title">Official Inspection Report</div>
         <div class="pd-section-subtitle">Live capture from Revo Lab</div>
         <div class="pd-report-details">
@@ -1095,7 +1106,7 @@
           </div>
           <div class="pd-metric">
             <div class="pd-spec-label">Purchase Channel</div>
-            <div class="pd-spec-value">Official Chinese Model</div>
+            <div class="pd-spec-value" id="product-purchase-channel">Official Chinese Model</div>
           </div>
           <div class="pd-metric">
             <div class="pd-spec-label">Product Source</div>

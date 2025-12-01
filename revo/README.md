@@ -7,6 +7,17 @@ Static multi-page storefront and trade-in UI for Revo. Everything lives in `publ
 - Start the static server from repo root: `cd public && python -m http.server 8000`.
 - Open `http://localhost:8000` and sign up or log in. Use `api-test.html` to quickly verify connectivity.
 
+## Setup & usage
+1) Clone the repo and update `public/assets/js/config.js` with your backend URL (`BACKEND_URL` + `API_PREFIX`) and any optional integrations (GA `ANALYTICS_ID`, Google OAuth, support endpoint).  
+2) Serve the `public/` folder (no build step): `cd public && python -m http.server 8000` (Python 3 required).  
+3) Visit `http://localhost:8000` in a modern browser.  
+4) Validate backend connectivity via `api-test.html` before exercising auth/checkout flows.
+
+### Product detail data notes
+- The gallery pulls from `product.images`, `photos`, `gallery`, or `media/assets/details.*` image arrays (falls back to `product.image`). The counter uses the detected length and clicking the hero cycles when multiple images exist.
+- Purchase channel shows `purchaseChannel`/`purchase_channel` if provided, otherwise infers `Canada` when the location or availability includes Canadian cities; final fallback is `Canada`.
+- Option fields read from flexible paths (`options/attributes/details` for color, storage, variant, grade) and safely default to `N/A`.
+
 ## Configuration
 Edit `public/assets/js/config.js`:
 - `BACKEND_URL` / `API_PREFIX`: backend base URL and API prefix.
