@@ -329,6 +329,51 @@
     state.closeBtn = state.panel.querySelector('[data-support-close]');
   }
 
+  function setupChatFallback() {
+    const launcher = document.getElementById('chat-launcher');
+    const widget = document.getElementById('chat-widget');
+    const close = document.getElementById('chat-close');
+
+    if (!launcher || !widget) {
+      return;
+    }
+
+    if (launcher.dataset.chatBound === 'true' || widget.dataset.chatBound === 'true') {
+      return;
+    }
+
+    const closeChat = () => {
+      widget.classList.remove('is-open');
+      widget.setAttribute('aria-hidden', 'true');
+      launcher.classList.remove('is-active');
+    };
+
+    const openChat = () => {
+      widget.classList.add('is-open');
+      widget.setAttribute('aria-hidden', 'false');
+      launcher.classList.add('is-active');
+    };
+
+    const toggleChat = () => {
+      if (widget.classList.contains('is-open')) {
+        closeChat();
+      } else {
+        openChat();
+      }
+    };
+
+    launcher.addEventListener('click', toggleChat);
+    close?.addEventListener('click', closeChat);
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeChat();
+      }
+    });
+
+    launcher.dataset.chatBound = 'true';
+    widget.dataset.chatBound = 'true';
+  }
+
   function createLauncher() {
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -464,6 +509,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     const hasChatWidget = document.getElementById('chat-widget') || document.getElementById('chat-launcher');
     if (hasChatWidget) {
+      setupChatFallback();
       // Skip rendering the live support launcher on pages that already have the AI chat bubble.
       window.supportApi = supportApi;
       window.openSupportPanel = () => {};

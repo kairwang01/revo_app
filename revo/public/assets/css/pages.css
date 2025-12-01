@@ -17,7 +17,7 @@
 .chat-launcher {
   position: fixed;
   right: var(--space-4);
-  bottom: calc(var(--space-5) + 64px);
+  bottom: calc(var(--tabbar-height) + var(--safe-area-inset-bottom) + var(--space-3));
   background: var(--brand-500);
   color: #fff;
   border: none;
@@ -47,7 +47,7 @@
 .chat-widget {
   position: fixed;
   right: var(--space-3);
-  bottom: calc(var(--space-5) + 72px);
+  bottom: calc(var(--tabbar-height) + var(--safe-area-inset-bottom) + var(--space-4));
   width: min(400px, 92vw);
   max-height: 80vh;
   background: var(--surface);
@@ -283,13 +283,13 @@
 
 @media (max-width: 640px) {
   .chat-launcher {
-    bottom: calc(var(--space-4) + 72px);
+    bottom: calc(var(--tabbar-height) + var(--safe-area-inset-bottom) + var(--space-4));
     right: var(--space-3);
   }
 
   .chat-widget {
     right: var(--space-2);
-    bottom: calc(var(--space-4) + 80px);
+    bottom: calc(var(--tabbar-height) + var(--safe-area-inset-bottom) + var(--space-4));
     width: 94vw;
   }
   
