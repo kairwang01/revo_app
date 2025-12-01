@@ -1,0 +1,310 @@
+[
+  {
+    "matchers": ["apple iphone 17 pro", "iphone 17 pro"],
+    "specs": {
+      "sim": "Dual eSIM / Nano + eSIM",
+      "displaySize": "6.3\" LTPO OLED",
+      "resolution": "2796 × 1290",
+      "material": "Ceramic Shield front, titanium frame",
+      "camera": "48MP main + 12MP ultra-wide + 12MP 5x tele",
+      "battery": "3650mAh",
+      "cpu": "Apple A20 Pro",
+      "refreshRate": "1–120Hz ProMotion",
+      "release": "2026"
+    }
+  },
+  {
+    "matchers": ["apple iphone 17", "iphone 17"],
+    "specs": {
+      "sim": "Dual eSIM / Nano + eSIM",
+      "displaySize": "6.1\" LTPO OLED",
+      "resolution": "2556 × 1179",
+      "material": "Ceramic Shield front, titanium frame",
+      "camera": "48MP main + 12MP ultra-wide",
+      "battery": "3450mAh",
+      "cpu": "Apple A20",
+      "refreshRate": "1–120Hz ProMotion",
+      "release": "2026"
+    }
+  },
+  {
+    "matchers": ["apple iphone 16 pro", "iphone 16 pro"],
+    "specs": {
+      "sim": "Dual eSIM / Nano + eSIM",
+      "displaySize": "6.3\" LTPO OLED",
+      "resolution": "2796 × 1290",
+      "material": "Ceramic Shield front, titanium frame",
+      "camera": "48MP main + 12MP ultra-wide + 12MP 5x tele",
+      "battery": "3355mAh",
+      "cpu": "Apple A19 Pro",
+      "refreshRate": "1–120Hz ProMotion",
+      "release": "2025"
+    }
+  },
+  {
+    "matchers": ["apple iphone 16", "iphone 16"],
+    "specs": {
+      "sim": "Dual eSIM / Nano + eSIM",
+      "displaySize": "6.1\" OLED",
+      "resolution": "2556 × 1179",
+      "material": "Ceramic Shield front, aluminum frame",
+      "camera": "48MP main + 12MP ultra-wide",
+      "battery": "3400mAh",
+      "cpu": "Apple A19",
+      "refreshRate": "60Hz",
+      "release": "2025"
+    }
+  },
+  {
+    "matchers": ["apple iphone 15 pro max", "iphone 15 pro max"],
+    "specs": {
+      "sim": "Dual eSIM / Nano + eSIM",
+      "displaySize": "6.7\" LTPO OLED",
+      "resolution": "2796 × 1290",
+      "material": "Ceramic Shield front, titanium frame",
+      "camera": "48MP main + 12MP ultra-wide + 12MP 5x tele",
+      "battery": "4422mAh",
+      "cpu": "Apple A17 Pro",
+      "refreshRate": "1–120Hz ProMotion",
+      "release": "2023"
+    }
+  },
+  {
+    "matchers": ["apple iphone 14 plus", "iphone 14 plus"],
+    "specs": {
+      "sim": "Dual eSIM / Nano + eSIM",
+      "displaySize": "6.7\" OLED",
+      "resolution": "2778 × 1284",
+      "material": "Ceramic Shield front, aluminum frame",
+      "camera": "12MP main + 12MP ultra-wide",
+      "battery": "4325mAh",
+      "cpu": "Apple A15 Bionic",
+      "refreshRate": "60Hz",
+      "release": "2022"
+    }
+  },
+  {
+    "matchers": ["apple iphone 13", "iphone 13"],
+    "specs": {
+      "sim": "Dual eSIM / Nano + eSIM",
+      "displaySize": "6.1\" OLED",
+      "resolution": "2532 × 1170",
+      "material": "Ceramic Shield front, aluminum frame",
+      "camera": "12MP main + 12MP ultra-wide",
+      "battery": "3240mAh",
+      "cpu": "Apple A15 Bionic",
+      "refreshRate": "60Hz",
+      "release": "2021"
+    }
+  },
+  {
+    "matchers": ["apple iphone 12", "iphone 12"],
+    "specs": {
+      "sim": "Dual SIM (nano + eSIM)",
+      "displaySize": "6.1\" OLED",
+      "resolution": "2532 × 1170",
+      "material": "Ceramic Shield front, aluminum frame",
+      "camera": "12MP main + 12MP ultra-wide",
+      "battery": "2815mAh",
+      "cpu": "Apple A14 Bionic",
+      "refreshRate": "60Hz",
+      "release": "2020"
+    }
+  },
+  {
+    "matchers": ["samsung galaxy s24 ultra", "galaxy s24 ultra"],
+    "specs": {
+      "sim": "Dual SIM (nano/eSIM)",
+      "displaySize": "6.8\" LTPO AMOLED",
+      "resolution": "3120 × 1440",
+      "material": "Gorilla Armor glass, titanium frame",
+      "camera": "200MP main + 50MP 5x + 10MP 3x + 12MP ultra-wide",
+      "battery": "5000mAh",
+      "cpu": "Snapdragon 8 Gen 3",
+      "refreshRate": "1–120Hz",
+      "release": "2024"
+    }
+  },
+  {
+    "matchers": ["samsung galaxy s24 plus", "galaxy s24 plus"],
+    "specs": {
+      "sim": "Dual SIM (nano/eSIM)",
+      "displaySize": "6.7\" LTPO AMOLED",
+      "resolution": "3120 × 1440",
+      "material": "Gorilla Glass Victus 2, Armor Aluminum",
+      "camera": "50MP main + 10MP 3x tele + 12MP ultra-wide",
+      "battery": "4900mAh",
+      "cpu": "Snapdragon 8 Gen 3",
+      "refreshRate": "1–120Hz",
+      "release": "2024"
+    }
+  },
+  {
+    "matchers": ["samsung galaxy s23 ultra", "galaxy s23 ultra"],
+    "specs": {
+      "sim": "Dual SIM (nano/eSIM)",
+      "displaySize": "6.8\" LTPO AMOLED",
+      "resolution": "3088 × 1440",
+      "material": "Gorilla Glass Victus 2, Armor Aluminum",
+      "camera": "200MP main + 10MP 10x + 10MP 3x + 12MP ultra-wide",
+      "battery": "5000mAh",
+      "cpu": "Snapdragon 8 Gen 2",
+      "refreshRate": "1–120Hz",
+      "release": "2023"
+    }
+  },
+  {
+    "matchers": ["google pixel 8 pro", "pixel 8 pro"],
+    "specs": {
+      "sim": "Dual SIM (nano + eSIM)",
+      "displaySize": "6.7\" LTPO OLED",
+      "resolution": "2992 × 1344",
+      "material": "Gorilla Glass Victus 2, aluminum frame",
+      "camera": "50MP main + 48MP 5x tele + 48MP ultra-wide",
+      "battery": "5050mAh",
+      "cpu": "Google Tensor G3",
+      "refreshRate": "1–120Hz",
+      "release": "2023"
+    }
+  },
+  {
+    "matchers": ["google pixel 8a", "pixel 8a"],
+    "specs": {
+      "sim": "Dual SIM (nano + eSIM)",
+      "displaySize": "6.1\" OLED",
+      "resolution": "2400 × 1080",
+      "material": "Gorilla Glass 3, plastic frame",
+      "camera": "64MP main + 13MP ultra-wide",
+      "battery": "4492mAh",
+      "cpu": "Google Tensor G3",
+      "refreshRate": "60–120Hz",
+      "release": "2024"
+    }
+  },
+  {
+    "matchers": ["oneplus 12", "oneplus12"],
+    "specs": {
+      "sim": "Dual SIM (nano)",
+      "displaySize": "6.82\" LTPO AMOLED",
+      "resolution": "3168 × 1440",
+      "material": "Gorilla Glass Victus 2, aluminum frame",
+      "camera": "50MP main + 64MP 3x + 48MP ultra-wide",
+      "battery": "5400mAh",
+      "cpu": "Snapdragon 8 Gen 3",
+      "refreshRate": "1–120Hz",
+      "release": "2023"
+    }
+  },
+  {
+    "matchers": ["xiaomi 14 pro", "xiaomi 14 pro"],
+    "specs": {
+      "sim": "Dual SIM (nano)",
+      "displaySize": "6.73\" LTPO OLED",
+      "resolution": "3200 × 1440",
+      "material": "Gorilla Glass Victus 2, aluminum frame",
+      "camera": "50MP main + 50MP tele + 50MP ultra-wide",
+      "battery": "4880mAh",
+      "cpu": "Snapdragon 8 Gen 3",
+      "refreshRate": "1–120Hz",
+      "release": "2023"
+    }
+  },
+  {
+    "matchers": ["xiaomi 13", "xiaomi 13"],
+    "specs": {
+      "sim": "Dual SIM (nano)",
+      "displaySize": "6.36\" AMOLED",
+      "resolution": "2400 × 1080",
+      "material": "Gorilla Glass Victus, aluminum frame",
+      "camera": "50MP main + 10MP 3.2x + 12MP ultra-wide",
+      "battery": "4500mAh",
+      "cpu": "Snapdragon 8 Gen 2",
+      "refreshRate": "120Hz",
+      "release": "2022"
+    }
+  },
+  {
+    "matchers": ["sony xperia 1 v", "xperia 1 v"],
+    "specs": {
+      "sim": "Dual SIM (nano/eSIM)",
+      "displaySize": "6.5\" OLED",
+      "resolution": "3840 × 1644",
+      "material": "Gorilla Glass Victus 2, metal frame",
+      "camera": "48MP main + 12MP 3.5–5.2x + 12MP ultra-wide",
+      "battery": "5000mAh",
+      "cpu": "Snapdragon 8 Gen 2",
+      "refreshRate": "120Hz",
+      "release": "2023"
+    }
+  },
+  {
+    "matchers": ["asus rog phone 8 pro", "rog phone 8 pro"],
+    "specs": {
+      "sim": "Dual SIM (nano)",
+      "displaySize": "6.78\" LTPO AMOLED",
+      "resolution": "2400 × 1080",
+      "material": "Gorilla Glass Victus 2, aluminum frame",
+      "camera": "50MP main + 32MP 3x + 13MP ultra-wide",
+      "battery": "5500mAh",
+      "cpu": "Snapdragon 8 Gen 3",
+      "refreshRate": "1–120Hz",
+      "release": "2024"
+    }
+  },
+  {
+    "matchers": ["apple watch series 9", "watch series 9", "apple watch s9"],
+    "specs": {
+      "sim": "eSIM (Cellular models)",
+      "displaySize": "45mm / 41mm Retina LTPO OLED",
+      "resolution": "484 × 396 (45mm)",
+      "material": "Aluminum/Stainless/ Titanium options",
+      "camera": "N/A",
+      "battery": "Up to 18 hours",
+      "cpu": "Apple S9 SiP",
+      "refreshRate": "Always-On LTPO",
+      "release": "2023"
+    }
+  },
+  {
+    "matchers": ["apple watch ultra 2", "watch ultra 2"],
+    "specs": {
+      "sim": "eSIM (Cellular)",
+      "displaySize": "49mm Retina LTPO OLED",
+      "resolution": "502 × 410",
+      "material": "Titanium case, sapphire glass",
+      "camera": "N/A",
+      "battery": "Up to 36 hours",
+      "cpu": "Apple S9 SiP",
+      "refreshRate": "Always-On LTPO",
+      "release": "2023"
+    }
+  },
+  {
+    "matchers": ["airpods pro 2", "airpods pro (2nd generation)"],
+    "specs": {
+      "sim": "N/A",
+      "displaySize": "N/A",
+      "resolution": "N/A",
+      "material": "Plastic, silicone tips, MagSafe case",
+      "camera": "N/A",
+      "battery": "Up to 6 hours listening (30 hours with case)",
+      "cpu": "Apple H2",
+      "refreshRate": "N/A",
+      "release": "2022"
+    }
+  },
+  {
+    "matchers": ["airpods 3", "airpods (3rd generation)"],
+    "specs": {
+      "sim": "N/A",
+      "displaySize": "N/A",
+      "resolution": "N/A",
+      "material": "Plastic, MagSafe case",
+      "camera": "N/A",
+      "battery": "Up to 6 hours listening (30 hours with case)",
+      "cpu": "Apple H1",
+      "refreshRate": "N/A",
+      "release": "2021"
+    }
+  }
+]

@@ -75,6 +75,203 @@ const OPTION_PATHS = {
   ]
 };
 
+const SPEC_PATHS = {
+  sim: [
+    ['specs', 'sim'],
+    ['specs', 'simType'],
+    ['specs', 'sim_type'],
+    ['simType'],
+    ['sim'],
+    ['sim_type'],
+    ['network', 'sim'],
+    ['connectivity', 'sim']
+  ],
+  displaySize: [
+    ['specs', 'displaySize'],
+    ['specs', 'screenSize'],
+    ['displaySize'],
+    ['screenSize'],
+    ['display', 'size'],
+    ['screen', 'size']
+  ],
+  resolution: [
+    ['specs', 'resolution'],
+    ['specs', 'displayResolution'],
+    ['resolution'],
+    ['displayResolution'],
+    ['display', 'resolution'],
+    ['screen', 'resolution']
+  ],
+  material: [
+    ['specs', 'displayMaterial'],
+    ['specs', 'screenMaterial'],
+    ['displayMaterial'],
+    ['screenMaterial'],
+    ['display', 'material'],
+    ['screen', 'material'],
+    ['glass']
+  ],
+  camera: [
+    ['specs', 'rearCamera'],
+    ['specs', 'camera'],
+    ['rearCamera'],
+    ['camera'],
+    ['cameraRear'],
+    ['camera_main']
+  ],
+  battery: [
+    ['specs', 'battery'],
+    ['specs', 'batteryCapacity'],
+    ['batteryCapacity'],
+    ['battery', 'capacity'],
+    ['battery']
+  ],
+  cpu: [
+    ['specs', 'cpu'],
+    ['specs', 'processor'],
+    ['cpu'],
+    ['processor'],
+    ['chipset'],
+    ['soc']
+  ],
+  refreshRate: [
+    ['specs', 'refreshRate'],
+    ['refreshRate'],
+    ['display', 'refreshRate'],
+    ['screen', 'refreshRate']
+  ],
+  release: [
+    ['specs', 'releaseTime'],
+    ['specs', 'release'],
+    ['releaseTime'],
+    ['releaseDate'],
+    ['release'],
+    ['launched'],
+    ['year']
+  ]
+};
+
+const SPEC_FALLBACK = 'See inspection report';
+
+// Local spec catalog to backfill missing fields when the API lacks details
+const LOCAL_SPEC_CATALOG = [
+  {
+    matchers: ['apple iphone 17 pro', 'iphone 17 pro'],
+    specs: {
+      sim: 'Dual eSIM / Nano + eSIM',
+      displaySize: '6.3" LTPO OLED',
+      resolution: '2796 × 1290',
+      material: 'Ceramic Shield front, titanium frame',
+      camera: '48MP main + 12MP ultra-wide + 12MP 5x tele',
+      battery: '3650mAh',
+      cpu: 'Apple A20 Pro',
+      refreshRate: '1–120Hz ProMotion',
+      release: '2026'
+    }
+  },
+  {
+    matchers: ['apple iphone 15 pro', 'iphone 15 pro'],
+    specs: {
+      sim: 'Dual eSIM / Nano + eSIM',
+      displaySize: '6.1" LTPO OLED',
+      resolution: '2556 × 1179',
+      material: 'Ceramic Shield front, titanium frame',
+      camera: '48MP main + 12MP ultra-wide + 12MP 5x tele',
+      battery: '3274mAh',
+      cpu: 'Apple A17 Pro',
+      refreshRate: '1–120Hz ProMotion',
+      release: '2023'
+    }
+  },
+  {
+    matchers: ['apple iphone 15', 'iphone 15'],
+    specs: {
+      sim: 'Dual eSIM / Nano + eSIM',
+      displaySize: '6.1" OLED',
+      resolution: '2556 × 1179',
+      material: 'Ceramic Shield front, aluminum frame',
+      camera: '48MP main + 12MP ultra-wide',
+      battery: '3349mAh',
+      cpu: 'Apple A16 Bionic',
+      refreshRate: '60Hz',
+      release: '2023'
+    }
+  },
+  {
+    matchers: ['apple iphone 14', 'iphone 14'],
+    specs: {
+      sim: 'Dual eSIM / Nano + eSIM',
+      displaySize: '6.1" OLED',
+      resolution: '2532 × 1170',
+      material: 'Ceramic Shield front, aluminum frame',
+      camera: '12MP main + 12MP ultra-wide',
+      battery: '3279mAh',
+      cpu: 'Apple A15 Bionic',
+      refreshRate: '60Hz',
+      release: '2022'
+    }
+  },
+  {
+    matchers: ['samsung galaxy s24', 'galaxy s24'],
+    specs: {
+      sim: 'Dual SIM (nano/eSIM)',
+      displaySize: '6.2" LTPO AMOLED',
+      resolution: '2340 × 1080',
+      material: 'Gorilla Glass Victus 2, Armor Aluminum',
+      camera: '50MP main + 10MP 3x tele + 12MP ultra-wide',
+      battery: '4000mAh',
+      cpu: 'Snapdragon 8 Gen 3',
+      refreshRate: '1–120Hz',
+      release: '2024'
+    }
+  },
+  {
+    matchers: ['samsung galaxy s23', 'galaxy s23'],
+    specs: {
+      sim: 'Dual SIM (nano/eSIM)',
+      displaySize: '6.1" AMOLED',
+      resolution: '2340 × 1080',
+      material: 'Gorilla Glass Victus 2, Armor Aluminum',
+      camera: '50MP main + 10MP 3x tele + 12MP ultra-wide',
+      battery: '3900mAh',
+      cpu: 'Snapdragon 8 Gen 2',
+      refreshRate: '48–120Hz',
+      release: '2023'
+    }
+  },
+  {
+    matchers: ['google pixel 8', 'pixel 8'],
+    specs: {
+      sim: 'Dual SIM (nano + eSIM)',
+      displaySize: '6.2" OLED',
+      resolution: '2400 × 1080',
+      material: 'Gorilla Glass Victus 2, aluminum frame',
+      camera: '50MP main + 12MP ultra-wide',
+      battery: '4575mAh',
+      cpu: 'Google Tensor G3',
+      refreshRate: '60–120Hz',
+      release: '2023'
+    }
+  },
+  {
+    matchers: ['google pixel 7', 'pixel 7'],
+    specs: {
+      sim: 'Dual SIM (nano + eSIM)',
+      displaySize: '6.3" OLED',
+      resolution: '2400 × 1080',
+      material: 'Gorilla Glass Victus, aluminum frame',
+      camera: '50MP main + 12MP ultra-wide',
+      battery: '4355mAh',
+      cpu: 'Google Tensor G2',
+      refreshRate: '60–90Hz',
+      release: '2022'
+    }
+  }
+];
+
+let specCatalog = [...LOCAL_SPEC_CATALOG];
+const SPEC_CATALOG_URL = './assets/data/spec-catalog.json';
+
 const PURCHASE_CHANNEL_PATHS = [
   ['purchaseChannel'],
   ['purchase_channel'],
@@ -100,6 +297,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   setupShippingSelector();
   setupGalleryTools();
+  await ensureSpecCatalogLoaded();
   await loadProduct(productId);
   setupAddToCart(productId);
 });
@@ -172,6 +370,7 @@ async function loadProduct(productId) {
     setTextContentById('product-description', product.description);
 
     populateProductOptions(product);
+    populateProductSpecs(product);
     
     // Show bottom bar
     toggleElement(document.getElementById('bottom-bar'), true);
@@ -544,6 +743,30 @@ function populateProductOptions(product = {}) {
   setOptionValue('product-option-grade', gradeValue);
 }
 
+function populateProductSpecs(product = {}) {
+  const localSpecs = getLocalSpecs(product);
+  const specMap = [
+    { id: 'product-condition', paths: OPTION_PATHS.grade, fallback: 'N/A', defaultValue: product.condition },
+    { id: 'product-brand', paths: [['brand']], fallback: 'N/A', defaultValue: product.brand },
+    { id: 'product-spec-sim', paths: SPEC_PATHS.sim, fallback: SPEC_FALLBACK, specKey: 'sim' },
+    { id: 'product-spec-display-size', paths: SPEC_PATHS.displaySize, fallback: SPEC_FALLBACK, specKey: 'displaySize' },
+    { id: 'product-spec-resolution', paths: SPEC_PATHS.resolution, fallback: SPEC_FALLBACK, specKey: 'resolution' },
+    { id: 'product-spec-material', paths: SPEC_PATHS.material, fallback: SPEC_FALLBACK, specKey: 'material' },
+    { id: 'product-spec-camera', paths: SPEC_PATHS.camera, fallback: SPEC_FALLBACK, specKey: 'camera' },
+    { id: 'product-spec-battery', paths: SPEC_PATHS.battery, fallback: SPEC_FALLBACK, specKey: 'battery' },
+    { id: 'product-spec-cpu', paths: SPEC_PATHS.cpu, fallback: SPEC_FALLBACK, specKey: 'cpu' },
+    { id: 'product-spec-refresh', paths: SPEC_PATHS.refreshRate, fallback: SPEC_FALLBACK, specKey: 'refreshRate' },
+    { id: 'product-spec-release', paths: SPEC_PATHS.release, fallback: SPEC_FALLBACK, specKey: 'release' }
+  ];
+
+  specMap.forEach(spec => {
+    const valueFromProduct = getOptionValue(product, spec.paths) || formatOptionValue(spec.defaultValue);
+    const valueFromLocal = spec.specKey ? formatOptionValue(localSpecs?.[spec.specKey]) : null;
+    const value = valueFromProduct || valueFromLocal;
+    setTextContentById(spec.id, value, spec.fallback);
+  });
+}
+
 function setOptionValue(id, value) {
   setTextContentById(id, value);
 }
@@ -739,4 +962,56 @@ function renderProductFlags(product = {}) {
   container.innerHTML = '';
   container.appendChild(fragment);
   container.classList.remove('hidden');
+}
+
+function getLocalSpecs(product = {}) {
+  const candidates = [
+    formatOptionValue(product.model),
+    formatOptionValue(product.name),
+    `${formatOptionValue(product.brand)} ${formatOptionValue(product.model)}`.trim()
+  ]
+    .filter(Boolean)
+    .map(value => value.toLowerCase());
+
+  return specCatalog.find(entry =>
+    entry.matchers.some(matcher =>
+      candidates.some(candidate => candidate.includes(matcher))
+    )
+  )?.specs || null;
+}
+
+async function ensureSpecCatalogLoaded() {
+  if (!SPEC_CATALOG_URL || !window.fetch) {
+    return;
+  }
+
+  try {
+    const response = await fetch(SPEC_CATALOG_URL, { cache: 'force-cache' });
+    if (!response.ok) {
+      return;
+    }
+    const data = await response.json();
+    const entries = Array.isArray(data) ? data : [];
+
+    entries.forEach(entry => {
+      if (!entry || !Array.isArray(entry.matchers) || !entry.matchers.length || !entry.specs) {
+        return;
+      }
+
+      const normalizedMatchers = entry.matchers
+        .map(m => formatOptionValue(m)?.toLowerCase())
+        .filter(Boolean);
+
+      if (!normalizedMatchers.length) {
+        return;
+      }
+
+      specCatalog.push({
+        matchers: normalizedMatchers,
+        specs: entry.specs
+      });
+    });
+  } catch (error) {
+    console.warn('Unable to load spec catalog:', error);
+  }
 }
