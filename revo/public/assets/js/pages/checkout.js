@@ -47,6 +47,7 @@ const localAddressService = createLocalAddressService();
 let addressAuthRedirectScheduled = false;
 
 function getAddressService() {
+  // Prefer live API clients but fall back to an in-browser store so checkout still works offline
   if (typeof api !== 'undefined' && api && typeof api.getAddresses === 'function') {
     return api;
   }
@@ -877,6 +878,7 @@ function escapeHtml(value) {
 }
 
 function handleAddressAuthFailure(source) {
+  // Centralize unauthorized handling so we only queue one redirect + toast, even if multiple requests fail
   if (!isUnauthorizedResponse(source)) {
     return false;
   }
@@ -935,6 +937,7 @@ function isUnauthorizedResponse(source) {
 }
 
 function createLocalAddressService() {
+  // Local fallback mirrors the backend address contract so users can still check out without an API connection
   if (typeof localStorage === 'undefined') {
     return null;
   }
@@ -1068,6 +1071,7 @@ function writeLocalAddresses(addresses) {
 }
 
 function ensureLocalDefault(addresses, defaultId) {
+  // Keep exactly one default address after inserts/updates/deletes to mimic backend behavior
   let hasDefault = false;
   if (defaultId !== undefined) {
     addresses.forEach(addr => {
@@ -1094,6 +1098,7 @@ function generateLocalAddressId() {
 }
 
 function saveLocalOrderSnapshot(orderId, cartItems, shippingAddress, paymentMethodLabel, shippingDetails) {
+  // Cache a local order copy so the Orders page has something to render while backend confirmation returns
   if (typeof orderHistoryStore === 'undefined' || !orderHistoryStore.add) {
     return;
   }
