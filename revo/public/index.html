@@ -161,18 +161,22 @@
     <div class="chat-widget-header">
       <div>
         <p class="text-muted" style="margin: 0;">Need help?</p>
-        <strong>Chat with Revo</strong>
+        <a href="https://console.dialogflow.com/api-client/demo/embedded/9885ee5e-4983-440a-8fb9-f035a9193ea6"><strong>Chat with Revo</strong></a>
       </div>
       <button class="chat-close" id="chat-close" aria-label="Close chat">×</button>
     </div>
     <div class="chat-widget-body">
+      <div id="chat-consent" class="text-muted" style="font-size:0.95rem; line-height:1.5;">
+        The chat loads from Dialogflow. Some mobile browsers block it until you tap to allow it.
+        <button id="chat-consent-btn" class="btn btn-primary btn-sm" style="margin-top:0.75rem;">Load chat</button>
+      </div>
       <iframe
         allow="microphone;"
-        src="https://console.dialogflow.com/api-client/demo/embedded/9885ee5e-4983-440a-8fb9-f035a9193ea6"
+        data-chat-src="https://console.dialogflow.com/api-client/demo/embedded/9885ee5e-4983-440a-8fb9-f035a9193ea6"
         title="Revo AI assistant"
-        loading="lazy">
+        loading="lazy"
+        style="display:none;">
       </iframe>
-      <a href="https://console.dialogflow.com/api-client/demo/embedded/9885ee5e-4983-440a-8fb9-f035a9193ea6">if not showing anything. <strong>Click Me</strong>to verify by the browswer</a>
     </div>
   </div>
 
@@ -277,6 +281,9 @@
     const chatLauncher = document.getElementById('chat-launcher');
     const chatWidget = document.getElementById('chat-widget');
     const chatClose = document.getElementById('chat-close');
+    const chatIframe = chatWidget?.querySelector('iframe');
+    const chatConsent = document.getElementById('chat-consent');
+    const chatConsentBtn = document.getElementById('chat-consent-btn');
 
     // tiny brain: two states, open or nope
     const closeChat = () => {
@@ -287,10 +294,24 @@
 
     // open sesame (pls work)
     const openChat = () => {
+      ensureChatLoaded();
       chatWidget?.classList.add('is-open');
       chatWidget?.setAttribute('aria-hidden', 'false');
       chatLauncher?.classList.add('is-active');
     };
+
+    function ensureChatLoaded() {
+      if (!chatIframe) return;
+      const alreadyLoaded = chatIframe.getAttribute('src');
+      if (alreadyLoaded) return;
+      const src = chatIframe.dataset.chatSrc;
+      if (!src) return;
+      chatIframe.src = src;
+      chatIframe.style.display = 'block';
+      if (chatConsent) {
+        chatConsent.style.display = 'none';
+      }
+    }
 
     if (chatLauncher && chatWidget && chatClose) {
       chatLauncher.addEventListener('click', () => {
@@ -303,6 +324,10 @@
       });
 
       chatClose.addEventListener('click', closeChat);
+      chatConsentBtn?.addEventListener('click', () => {
+        ensureChatLoaded();
+        openChat();
+      });
 
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
