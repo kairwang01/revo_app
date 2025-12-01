@@ -306,5 +306,61 @@
       "refreshRate": "N/A",
       "release": "2021"
     }
+  },
+  {
+    "matchers": ["macbook pro 14 m3", "macbook pro m3 14", "macbook pro 14\" m3"],
+    "specs": {
+      "sim": "N/A",
+      "displaySize": "14.2\" Liquid Retina XDR",
+      "resolution": "3024 × 1964",
+      "material": "Aluminum unibody",
+      "camera": "1080p FaceTime HD",
+      "battery": "Up to 18 hours video playback",
+      "cpu": "Apple M3",
+      "refreshRate": "120Hz ProMotion",
+      "release": "2023"
+    }
+  },
+  {
+    "matchers": ["macbook pro 16 m3", "macbook pro m3 16", "macbook pro 16\" m3"],
+    "specs": {
+      "sim": "N/A",
+      "displaySize": "16.2\" Liquid Retina XDR",
+      "resolution": "3456 × 2234",
+      "material": "Aluminum unibody",
+      "camera": "1080p FaceTime HD",
+      "battery": "Up to 22 hours video playback",
+      "cpu": "Apple M3 Pro / M3 Max",
+      "refreshRate": "120Hz ProMotion",
+      "release": "2023"
+    }
+  },
+  {
+    "matchers": ["macbook pro 14 m2", "macbook pro m2 14", "macbook pro 14\" m2"],
+    "specs": {
+      "sim": "N/A",
+      "displaySize": "14.2\" Liquid Retina XDR",
+      "resolution": "3024 × 1964",
+      "material": "Aluminum unibody",
+      "camera": "1080p FaceTime HD",
+      "battery": "Up to 17 hours video playback",
+      "cpu": "Apple M2 Pro / M2 Max",
+      "refreshRate": "120Hz ProMotion",
+      "release": "2022"
+    }
+  },
+  {
+    "matchers": ["macbook pro 16 m2", "macbook pro m2 16", "macbook pro 16\" m2"],
+    "specs": {
+      "sim": "N/A",
+      "displaySize": "16.2\" Liquid Retina XDR",
+      "resolution": "3456 × 2234",
+      "material": "Aluminum unibody",
+      "camera": "1080p FaceTime HD",
+      "battery": "Up to 21 hours video playback",
+      "cpu": "Apple M2 Pro / M2 Max",
+      "refreshRate": "120Hz ProMotion",
+      "release": "2022"
+    }
   }
 ]
