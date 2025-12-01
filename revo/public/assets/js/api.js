@@ -204,6 +204,22 @@ const api = {
     return await backendApi.respondToOffer(pickupId, action);
   },
 
+  // Admin trade-ins
+  async getAdminTradeins() {
+    if (!backendApi) throw new Error('Backend API not available');
+    return await backendApi.getAdminTradeins();
+  },
+
+  async evaluateTradein(pickupId, evaluation) {
+    if (!backendApi) throw new Error('Backend API not available');
+    return await backendApi.evaluateTradein(pickupId, evaluation);
+  },
+
+  async deleteTradein(pickupId) {
+    if (!backendApi) throw new Error('Backend API not available');
+    return await backendApi.deleteTradein(pickupId);
+  },
+
   // Locations
   async getLocations() {
     if (!backendApi) throw new Error('Backend API not available');

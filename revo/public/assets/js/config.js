@@ -7,6 +7,14 @@
 const CONFIG = {
   // Backend API URL
   BACKEND_URL: 'https://revo-backend-o03w.onrender.com/',
+
+  // Analytics (set to a GA4 Measurement ID like G-XXXXXX to enable)
+  ANALYTICS_ID: null,
+
+  // Optional override for Google auth endpoint. Leave null to use `${BACKEND_URL}${API_PREFIX}/auth/google`
+  GOOGLE_AUTH_ENDPOINT: null,
+  // Google OAuth client ID (frontend uses token client)
+  GOOGLE_CLIENT_ID: '512280577272-d5tpr43puu3fqdrk81i2pfrik74ahlr3.apps.googleusercontent.com',
   
   // Optional customer support endpoint (kept null until wired)
   SUPPORT_API_URL: null,

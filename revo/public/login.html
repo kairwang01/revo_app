@@ -54,6 +54,7 @@
             <span class="text-muted" style="font-size: 0.875rem;">Remember me</span>
           </label>
         </div>
+        <input type="hidden" name="recaptcha_token" id="login-recaptcha-token">
 
         <button type="submit" class="btn btn-primary btn-full btn-lg">
           Sign In
@@ -67,10 +68,7 @@
       <div class="auth-divider">or</div>
 
       <div class="stack-sm">
-        <button type="button" class="btn btn-secondary btn-full">
-          Continue with Apple
-        </button>
-        <button type="button" class="btn btn-secondary btn-full">
+        <button type="button" class="btn btn-secondary btn-full" id="google-login-btn">
           Continue with Google
         </button>
       </div>
@@ -90,7 +88,10 @@
   <script src="./assets/js/backendApi.js"></script>
   <script src="./assets/js/api.js"></script>
   <script src="./assets/js/ui.js"></script>
+  <script src="./assets/js/googleAuth.js"></script>
   <script src="./assets/js/pages/login.js"></script>
   <script src="./assets/js/support.js"></script>
+  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LcbbhwsAAAAAPq5fx5TfatMN8MhgTeggarDm8jf" async defer></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </body>
 </html>

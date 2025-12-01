@@ -239,6 +239,25 @@ function setupPlaceOrder() {
       if (result && result.success) {
         // Generate order ID
         const orderId = result.orderId || result.data?.orderId || result.data?.order_id || 'ORD' + Date.now();
+        try {
+          window.dispatchEvent(new CustomEvent('revo:order-placed', {
+            detail: {
+              orderId,
+              total: checkoutTotal,
+              payment_method: paymentMethodName
+            }
+          }));
+          if (window.analytics && typeof window.analytics.trackEvent === 'function') {
+            window.analytics.trackEvent('order_placed', {
+              order_id: orderId,
+              total_value: checkoutTotal,
+              payment_method: paymentMethodName,
+              shipping_mode: shippingDetails?.mode
+            });
+          }
+        } catch (eventError) {
+          console.warn('Order event failed', eventError);
+        }
         
         rememberLastCheckoutAddress(shippingAddressPayload, shippingDetails);
         saveLocalOrderSnapshot(orderId, cart, shippingAddressPayload, paymentMethodName, shippingDetails);

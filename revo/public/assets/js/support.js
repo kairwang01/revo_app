@@ -1,3 +1,73 @@
+// Lightweight analytics bootstrap (GA4-friendly, respects CONFIG.ANALYTICS_ID)
+(function () {
+  const cfg = typeof CONFIG !== 'undefined' ? CONFIG : (typeof REVO_CONFIG !== 'undefined' ? REVO_CONFIG : {});
+  const MEASUREMENT_ID = cfg?.ANALYTICS_ID || null;
+  const DEBUG = !!cfg?.FEATURES?.DEBUG_MODE;
+
+  const analytics = {
+    ready: false,
+    init() {
+      if (!MEASUREMENT_ID) {
+        if (DEBUG) console.info('[analytics] Measurement ID not set; skipping GA init');
+        return;
+      }
+      if (this.ready) return;
+
+      this.loadGtag();
+      this.ready = true;
+      this.trackPageView();
+    },
+    loadGtag() {
+      if (window.gtag) return;
+
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function gtag() {
+        window.dataLayer.push(arguments);
+      };
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(MEASUREMENT_ID)}`;
+      document.head.appendChild(script);
+      window.gtag('js', new Date());
+      window.gtag('config', MEASUREMENT_ID, { send_page_view: false });
+    },
+    trackPageView(path = window.location.pathname) {
+      if (!this.ready || !window.gtag) return;
+      window.gtag('event', 'page_view', {
+        page_location: window.location.href,
+        page_path: path,
+        page_title: document.title || undefined
+      });
+    },
+    trackEvent(name, params = {}) {
+      if (!this.ready || !window.gtag || !name) return;
+      const safeParams = params && typeof params === 'object' ? params : { value: params };
+      window.gtag('event', name, safeParams);
+    }
+  };
+
+  window.analytics = analytics;
+
+  document.addEventListener('DOMContentLoaded', () => analytics.init());
+
+  window.addEventListener('revo:cart-changed', () => {
+    const count = typeof cartStore !== 'undefined' && cartStore?.getCount ? cartStore.getCount() : 0;
+    analytics.trackEvent('cart_updated', {
+      item_count: count,
+      page: window.location.pathname
+    });
+  });
+
+  window.addEventListener('revo:pickup-created', (event) => {
+    const detail = event?.detail || {};
+    analytics.trackEvent('tradein_pickup_created', {
+      pickup_id: detail.id,
+      deposit_amount: detail.deposit,
+      page: window.location.pathname
+    });
+  });
+})();
+
 /**
  * Customer support launcher (frontend stub).
  * Creates a shared support button on every page and exposes a tiny API wrapper.

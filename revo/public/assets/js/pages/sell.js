@@ -13,6 +13,7 @@ const TRADEIN_DEPOSIT_AMOUNT = 29;
 const DEFAULT_PICKUP_ADDRESS = 'University of Ottawa'; //contact kair if you want to change this :)
 
 let lastFormValues = null;
+let lastEstimate = null;
 
 let brandSelect = null;
 let modelInput = null;
@@ -23,6 +24,7 @@ const brandModelPromises = new Map();
 let modelRequestToken = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
+  const RECAPTCHA_SITE_KEY = '6LekfRwsAAAAACOnMLKlTmk0nd_HacmHzW8jCOsT';
   cacheTradeInFormElements();
   loadBrandOptions();
   initFormSubmit();
@@ -253,6 +255,14 @@ function initFormSubmit() {
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
     
+    const token = await getRecaptchaToken(RECAPTCHA_SITE_KEY, 'tradein_submit');
+    if (!token) {
+      console.warn('reCAPTCHA unavailable, proceeding without verification.');
+      form.dataset.recaptchaToken = '';
+    } else {
+      form.dataset.recaptchaToken = token;
+    }
+
     // Get form data
     const formData = new FormData(form);
     const brandValue = (formData.get('brand') || '').trim();
@@ -313,14 +323,31 @@ function initFormSubmit() {
   });
 }
 
+async function getRecaptchaToken(siteKey, action) {
+  if (typeof grecaptcha === 'undefined' || !siteKey) {
+    console.warn('reCAPTCHA not available or site key missing. 密钥类型无效?');
+    return null;
+  }
+  try {
+    await grecaptcha.ready();
+    const token = await grecaptcha.execute(siteKey, { action });
+    return token || null;
+  } catch (error) {
+    console.warn('Unable to get reCAPTCHA token', error);
+    return null;
+  }
+}
+
 // Show estimate result
 function showEstimateResult(data) {
+  const estimate = normalizeEstimateData(data);
+
   const resultDiv = document.getElementById('estimate-result');
   const amountDiv = document.getElementById('estimate-amount');
   const statusDiv = document.getElementById('estimate-status');
   const form = document.getElementById('trade-in-form');
 
-  const estimatedValue = Number(data?.estimated_price) || 0;
+  const estimatedValue = estimate.estimated_price;
   amountDiv.textContent = formatMoney(estimatedValue);
   if (statusDiv) {
     // Let the user know when we are still waiting on a human review
@@ -338,21 +365,23 @@ function showEstimateResult(data) {
   resultDiv.classList.remove('hidden');
   
   // Store estimate data for later use
-  sessionStorage.setItem('currentEstimate', JSON.stringify(data));
+  lastEstimate = estimate;
+  sessionStorage.setItem('currentEstimate', JSON.stringify(estimate));
   
   // Handle accept offer
   const acceptBtn = document.getElementById('accept-offer-btn');
   acceptBtn.onclick = function() {
-    showDepositPayment(data);
+    showDepositPayment(estimate);
   };
 }
 
 // Show deposit payment modal
 function showDepositPayment(estimateData) {
+  const estimate = normalizeEstimateData(estimateData);
   const depositAmount = TRADEIN_DEPOSIT_AMOUNT;
-  const estimatedValue = Number(estimateData?.estimated_price) || 0;
-  const serviceFee = Number(estimateData?.service_fee) || 0;
-  const rawNetAmount = Number(estimateData?.net_amount);
+  const estimatedValue = estimate.estimated_price;
+  const serviceFee = estimate.service_fee;
+  const rawNetAmount = estimate.net_amount;
   const computedNet = Number.isFinite(rawNetAmount) ? rawNetAmount : estimatedValue - serviceFee;
   const netAmount = Number.isFinite(computedNet) ? computedNet : 0;
 
@@ -456,6 +485,25 @@ async function processDepositPayment(estimateData, depositAmount, modal) {
     const pickupResponse = await api.createPickupRequest(formData);
     
     if (pickupResponse.success) {
+      const pickupId = pickupResponse?.data?.id || pickupResponse?.data?.pickup_id || pickupResponse?.data?.pickup?.id;
+      try {
+        window.dispatchEvent(new CustomEvent('revo:pickup-created', {
+          detail: {
+            id: pickupId,
+            deposit: depositAmount
+          }
+        }));
+        if (window.analytics && typeof window.analytics.trackEvent === 'function') {
+          window.analytics.trackEvent('tradein_pickup_created', {
+            pickup_id: pickupId,
+            deposit_amount: depositAmount,
+            brand: lastFormValues?.brand,
+            model: lastFormValues?.model
+          });
+        }
+      } catch (eventError) {
+        console.warn('Analytics event failed', eventError);
+      }
       modal.remove();
       showEngineerNotification(pickupResponse.data, depositAmount);
     } else {
@@ -528,6 +576,36 @@ function normalizeCondition(value) {
   if (!value) return 'B';
   const key = value.toLowerCase();
   return CONDITION_MAP[key] || 'B';
+}
+
+function normalizeEstimateData(rawEstimate) {
+  if (!rawEstimate) {
+    return { estimated_price: 0, service_fee: 0, net_amount: 0 };
+  }
+
+  let payload = rawEstimate;
+  if (typeof payload === 'object') {
+    if (!('estimated_price' in payload) && payload.data) {
+      payload = payload.data;
+      if (payload && typeof payload === 'object' && !('estimated_price' in payload) && payload.data) {
+        payload = payload.data;
+      }
+    }
+  }
+
+  const estimatedPrice = Number(payload?.estimated_price);
+  const serviceFee = Number(payload?.service_fee);
+  const netAmount = Number(payload?.net_amount);
+
+  const safeEstimated = Number.isFinite(estimatedPrice) ? estimatedPrice : 0;
+  const safeServiceFee = Number.isFinite(serviceFee) ? serviceFee : 0;
+  const computedNet = Number.isFinite(netAmount) ? netAmount : safeEstimated - safeServiceFee;
+
+  return {
+    estimated_price: safeEstimated,
+    service_fee: safeServiceFee,
+    net_amount: Number.isFinite(computedNet) ? computedNet : 0
+  };
 }
 
 function buildPickupRequestFormData(depositAmount) {

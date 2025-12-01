@@ -69,7 +69,8 @@
             <input type="checkbox" name="terms" id="terms" required style="margin-top: 0.25rem;">
             <span class="text-muted" style="font-size: 0.875rem;">
               I agree to the <a href="#" style="color: var(--brand-600);">Terms of Service</a> 
-              and <a href="#" style="color: var(--brand-600);">Privacy Policy</a>
+              and <a href="#" style="color: var(--brand-600);">Privacy Policy</a>.
+              Copyright by GNG 5300 Group 1. For questions, email <a href="mailto:bwang105@uottawa.ca" style="color: var(--brand-600);">bwang105@uottawa.ca</a>.
             </span>
           </label>
         </div>
@@ -82,10 +83,7 @@
       <div class="auth-divider">or</div>
 
       <div class="stack-sm">
-        <button type="button" class="btn btn-secondary btn-full">
-          Sign up with Apple
-        </button>
-        <button type="button" class="btn btn-secondary btn-full">
+        <button type="button" class="btn btn-secondary btn-full" id="google-register-btn">
           Sign up with Google
         </button>
       </div>
@@ -105,7 +103,9 @@
   <script src="./assets/js/backendApi.js"></script>
   <script src="./assets/js/api.js"></script>
   <script src="./assets/js/ui.js"></script>
+  <script src="./assets/js/googleAuth.js"></script>
   <script src="./assets/js/pages/register.js"></script>
   <script src="./assets/js/support.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </body>
 </html>

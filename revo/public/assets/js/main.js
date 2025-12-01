@@ -3,6 +3,7 @@
 
 // Initialize common UI elements
 document.addEventListener('DOMContentLoaded', () => {
+  enforceSecureContext();
   initBackend();
   // Setup city dropdown if it exists
   setupCityDropdown();
@@ -35,6 +36,14 @@ async function initBackend() {
     await api.init();
   } catch (error) {
     console.error('Failed to initialize backend connection:', error);
+  }
+}
+
+// Encourage secure transport for auth and payments
+function enforceSecureContext() {
+  const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  if (window.location.protocol === 'http:' && !isLocal) {
+    console.warn('Insecure HTTP detected. Switch to HTTPS to protect authentication and payment flows.');
   }
 }
 

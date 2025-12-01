@@ -3,6 +3,9 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('register-form');
+  const GOOGLE_CLIENT_ID = (typeof CONFIG !== 'undefined' && CONFIG.GOOGLE_CLIENT_ID)
+    ? CONFIG.GOOGLE_CLIENT_ID
+    : '512280577272-d5tpr43puu3fqdrk81i2pfrik74ahlr3.apps.googleusercontent.com';
   if (!form) {
     return;
   }
@@ -11,6 +14,47 @@ document.addEventListener('DOMContentLoaded', () => {
   if (authStore.isAuthenticated()) {
     window.location.href = './account.html';
     return;
+  }
+
+  const searchParams = new URLSearchParams(window.location.search);
+  const prefillEmail = searchParams.get('googleEmail') || searchParams.get('email');
+  if (prefillEmail) {
+    const emailInput = form.querySelector('#email');
+    if (emailInput) {
+      emailInput.value = prefillEmail;
+    }
+  }
+
+  if (window.googleAuth?.setupGoogleButton) {
+    googleAuth.setupGoogleButton('google-register-btn', {
+      clientId: GOOGLE_CLIENT_ID,
+      loadingLabel: 'Signing in...',
+      onAuthenticated: (backendResult) => {
+        authStore.set({
+          token: backendResult.token,
+          user: backendResult.user
+        });
+        showToast('Signed up with Google', 'success');
+        setTimeout(() => {
+          window.location.href = './account.html';
+        }, 300);
+      },
+      onNeedRegister: (profile) => {
+        const emailInput = form.querySelector('#email');
+        if (profile?.email && emailInput) {
+          emailInput.value = profile.email;
+          emailInput.focus();
+        }
+        showToast('Finish creating your account with your Google email.', 'info');
+      },
+      onError: (message) => {
+        if (message) {
+          showToast(message, 'error');
+        }
+      }
+    });
+  } else {
+    console.warn('Google auth helper unavailable; Google sign-up disabled.');
   }
 
   form.addEventListener('submit', async (event) => {

@@ -21,6 +21,33 @@ class BackendAPI {
     
     // Load token from storage if exists
     this.token = localStorage.getItem('authToken');
+    this._ensureValidToken();
+  }
+
+  /**
+   * Decode JWT payload (base64url)
+   */
+  _decodeJwt(token) {
+    try {
+      const payload = token.split('.')[1];
+      const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(decoded);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Check if the stored token is expired and clear it if so
+   */
+  _ensureValidToken() {
+    if (!this.token) return;
+    const payload = this._decodeJwt(this.token);
+    if (payload?.exp && Date.now() >= payload.exp * 1000) {
+      this.token = null;
+      localStorage.removeItem('authToken');
+      console.warn('Auth token expired and was cleared for safety');
+    }
   }
 
   /**
@@ -220,6 +247,7 @@ class BackendAPI {
       
       // Store token
       this.token = data.access_token;
+      this._ensureValidToken();
       localStorage.setItem('authToken', this.token);
       
       // Get user info
@@ -278,6 +306,7 @@ class BackendAPI {
    * Check if user is authenticated
    */
   isAuthenticated() {
+    this._ensureValidToken();
     return !!this.token;
   }
 
@@ -706,6 +735,77 @@ class BackendAPI {
       return {
         success: false,
         error: error.message || 'Failed to respond to offer'
+      };
+    }
+  }
+
+  // ==================== ADMIN TRADE-INS ====================
+
+  /**
+   * List all trade-in pickup requests with evaluation and user info
+   * GET /api/admin/tradeins
+   */
+  async getAdminTradeins() {
+    try {
+      const data = await this._request('/admin/tradeins', {
+        method: 'GET'
+      });
+
+      return {
+        success: true,
+        data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message || 'Failed to load trade-ins',
+        data: []
+      };
+    }
+  }
+
+  /**
+   * Create or update an evaluation for a pickup
+   * PUT /api/admin/tradeins/{pickup_id}/evaluate
+   */
+  async evaluateTradein(pickupId, evaluation) {
+    try {
+      const data = await this._request(`/admin/tradeins/${pickupId}/evaluate`, {
+        method: 'PUT',
+        body: JSON.stringify(evaluation)
+      });
+
+      return {
+        success: true,
+        data,
+        message: 'Evaluation saved'
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message || 'Failed to save evaluation'
+      };
+    }
+  }
+
+  /**
+   * Delete a pickup request and its evaluations
+   * DELETE /api/admin/tradeins/{pickup_id}
+   */
+  async deleteTradein(pickupId) {
+    try {
+      await this._request(`/admin/tradeins/${pickupId}`, {
+        method: 'DELETE'
+      });
+
+      return {
+        success: true,
+        message: 'Trade-in deleted'
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message || 'Failed to delete trade-in'
       };
     }
   }

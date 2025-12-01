@@ -1,0 +1,7 @@
+{
+  "event": {
+    "token": "TOKEN_FROM_grecaptcha_enterprise_execute",
+    "expectedAction": "login_submit",
+    "siteKey": "6LcbbhwsAAAAAPq5fx5TfatMN8MhgTeggarDm8jf"
+  }
+}
